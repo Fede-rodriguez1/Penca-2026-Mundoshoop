@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -148,13 +149,9 @@ export default function LoginPage() {
 
           <p className="text-center text-xs text-gray-400 mt-8">
             ¿No tenés cuenta?{" "}
-            <button
-              type="button"
-              className="font-semibold hover:underline"
-              style={{ color: "#00217E" }}
-            >
+            <Link href="/register" className="font-semibold hover:underline" style={{ color: "#00217E" }}>
               Registrate
-            </button>
+            </Link>
           </p>
         </div>
       </div>
