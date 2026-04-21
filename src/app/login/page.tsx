@@ -1,15 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // auth logic goes here
+    setError("");
+    setLoading(true);
+    const res = await signIn("credentials", { email, password, redirect: false });
+    setLoading(false);
+    if (res?.error) {
+      setError("Email o contraseña incorrectos");
+    } else {
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -138,12 +151,17 @@ export default function LoginPage() {
               />
             </div>
 
+            {error && (
+              <p className="text-xs text-red-500 text-center">{error}</p>
+            )}
+
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 mt-2"
-              style={{ backgroundColor: "#00217E" }}
+              style={{ backgroundColor: "#00217E", opacity: loading ? 0.6 : 1 }}
             >
-              Ingresar
+              {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 

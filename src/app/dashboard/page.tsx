@@ -1,10 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
+
+type Prediction = { matchId: string; homeScore: number; awayScore: number };
+type RankingEntry = { id: string; name: string; initials: string; points: number; exact: number; correct: number; predictions: number; pos: number };
 
 type Tab = "upcoming" | "finished" | "ranking";
 type NavItem = "home" | "matches" | "groups" | "ranking" | "profile";
+
+const GROUP_LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+
+type Standing = {
+  team: Match["home"];
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  gf: number;
+  ga: number;
+  pts: number;
+};
+
+function computeStandings(group: string): Standing[] {
+  const groupMatches = matches.filter((m) => m.group === group);
+  const table: Record<string, Standing> = {};
+
+  // Init all teams
+  groupMatches.forEach((m) => {
+    if (!table[m.home.name]) table[m.home.name] = { team: m.home, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
+    if (!table[m.away.name]) table[m.away.name] = { team: m.away, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
+  });
+
+  // Compute from finished matches only
+  groupMatches
+    .filter((m) => m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined)
+    .forEach((m) => {
+      const h = table[m.home.name];
+      const a = table[m.away.name];
+      const hg = m.homeScore!;
+      const ag = m.awayScore!;
+      h.played++; a.played++;
+      h.gf += hg; h.ga += ag;
+      a.gf += ag; a.ga += hg;
+      if (hg > ag) { h.won++; h.pts += 3; a.lost++; }
+      else if (hg < ag) { a.won++; a.pts += 3; h.lost++; }
+      else { h.drawn++; h.pts++; a.drawn++; a.pts++; }
+    });
+
+  return Object.values(table).sort((a, b) =>
+    b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf
+  );
+}
 
 const sampleRanking = [
   { pos: 1, name: "Lucas G.", pts: 42, initials: "LG" },
@@ -18,10 +66,41 @@ const sampleRanking = [
 ];
 
 export default function DashboardPage() {
+  const { data: session } = useSession();
   const [tab, setTab] = useState<Tab>("upcoming");
   const [nav, setNav] = useState<NavItem>("matches");
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [viewMatch, setViewMatch] = useState<Match | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState("A");
+
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [ranking, setRanking] = useState<RankingEntry[]>([]);
+
+  useEffect(() => {
+    fetch("/api/predictions")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setPredictions(data); });
+    fetch("/api/ranking")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setRanking(data); });
+  }, []);
+
+  function onPredictionSaved(p: Prediction) {
+    setPredictions((prev) => {
+      const idx = prev.findIndex((x) => x.matchId === p.matchId);
+      if (idx >= 0) { const next = [...prev]; next[idx] = p; return next; }
+      return [...prev, p];
+    });
+  }
+
+  const userName = session?.user?.name ?? "";
+  const userEmail = session?.user?.email ?? "";
+  const userInitials = userName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
+  const myRank = ranking.find((r) => r.id === session?.user?.id);
+  const myPoints = myRank?.points ?? 0;
+  const myPos = myRank?.pos ?? "—";
+  const myPredictions = predictions.length;
 
   const upcoming = matches.filter((m) => m.status === "upcoming");
   const finished = matches.filter((m) => m.status === "finished");
@@ -34,7 +113,12 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#f3f4f6" }}>
       {selectedMatch && (
-        <PredictionModal match={selectedMatch} onClose={() => setSelectedMatch(null)} />
+        <PredictionModal
+          match={selectedMatch}
+          existing={predictions.find((p) => p.matchId === selectedMatch.id)}
+          onClose={() => setSelectedMatch(null)}
+          onSaved={onPredictionSaved}
+        />
       )}
       {viewMatch && (
         <MatchInfoModal match={viewMatch} onClose={() => setViewMatch(null)} />
@@ -75,7 +159,7 @@ export default function DashboardPage() {
         {/* Header */}
         <header className="bg-white border-b border-gray-100 px-5 lg:px-8 h-16 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🏆</span>
+            <img src="/wc2026.png" alt="FIFA World Cup 2026" className="h-10 w-auto object-contain" />
             <div className="leading-tight">
               <p className="text-sm font-bold text-gray-900">Mundial 2026</p>
               <p className="text-xs text-gray-400">FIFA WC 26</p>
@@ -156,7 +240,7 @@ export default function DashboardPage() {
                   {upcoming.slice(0, 4).map((match, idx) => (
                     <div key={match.id}>
                       {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                      <MatchRow match={match} onPredict={() => setSelectedMatch(match)} />
+                      <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
                     </div>
                   ))}
                 </div>
@@ -205,7 +289,7 @@ export default function DashboardPage() {
                     {upcomingByDate[date].map((match, idx) => (
                       <div key={match.id}>
                         {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} />
+                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
                       </div>
                     ))}
                   </div>
@@ -246,12 +330,117 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* ── Grupos ── */}
+          {nav === "groups" && (
+            <div className="max-w-2xl mx-auto space-y-5">
+              {/* Group selector */}
+              <div className="flex gap-1.5 flex-wrap">
+                {GROUP_LETTERS.map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setSelectedGroup(g)}
+                    className="w-9 h-9 rounded-xl text-sm font-bold transition-colors"
+                    style={
+                      selectedGroup === g
+                        ? { backgroundColor: "#00217E", color: "white" }
+                        : { backgroundColor: "white", color: "#6b7280" }
+                    }
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+
+              {/* Standings table */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">Grupo {selectedGroup}</h2>
+                </div>
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left px-4 py-2 text-xs font-semibold text-gray-400 w-8">#</th>
+                      <th className="text-left px-2 py-2 text-xs font-semibold text-gray-400">Equipo</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-8">PJ</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-8">G</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-8">E</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-8">P</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-8">DG</th>
+                      <th className="text-center py-2 text-xs font-semibold text-gray-400 w-10 pr-4">Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {computeStandings(selectedGroup).map((row, idx) => {
+                      const qualified = idx < 2;
+                      return (
+                        <tr key={row.team.name} className="border-b border-gray-50 last:border-0">
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1">
+                              {qualified && (
+                                <div className="w-1 h-5 rounded-full" style={{ backgroundColor: idx === 0 ? "#FFCA61" : "#00217E" }} />
+                              )}
+                              <span className="text-xs font-bold text-gray-400">{idx + 1}</span>
+                            </div>
+                          </td>
+                          <td className="px-2 py-3">
+                            <div className="flex items-center gap-2">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={row.team.shield} alt={row.team.name} className="w-6 h-6 object-contain flex-shrink-0" />
+                              <span className="text-xs font-semibold text-gray-800 truncate">{row.team.shortName}</span>
+                            </div>
+                          </td>
+                          <td className="text-center text-xs text-gray-500 py-3">{row.played}</td>
+                          <td className="text-center text-xs text-gray-500 py-3">{row.won}</td>
+                          <td className="text-center text-xs text-gray-500 py-3">{row.drawn}</td>
+                          <td className="text-center text-xs text-gray-500 py-3">{row.lost}</td>
+                          <td className="text-center text-xs text-gray-500 py-3">{row.gf - row.ga}</td>
+                          <td className="text-center text-xs font-bold py-3 pr-4" style={{ color: "#00217E" }}>{row.pts}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1 h-4 rounded-full" style={{ backgroundColor: "#FFCA61" }} />
+                    <span className="text-xs text-gray-400">1° clasifica</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1 h-4 rounded-full" style={{ backgroundColor: "#00217E" }} />
+                    <span className="text-xs text-gray-400">2° clasifica</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Group matches */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">Partidos</h2>
+                </div>
+                {matches.filter((m) => m.group === selectedGroup).map((match, idx, arr) => (
+                  <div key={match.id}>
+                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                    {match.status === "finished" ? (
+                      <FinishedRow match={match} />
+                    ) : match.status === "live" ? (
+                      <button className="w-full text-left" onClick={() => setViewMatch(match)}>
+                        <FinishedRow match={match} />
+                      </button>
+                    ) : (
+                      <MatchRow match={match} onPredict={() => setSelectedMatch(match)} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ── Ranking ── */}
           {nav === "matches" && tab === "ranking" && (
             <div className="max-w-lg mx-auto">
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                {sampleRanking.map((user, idx) => (
-                  <div key={user.pos}>
+                {ranking.map((user, idx) => (
+                  <div key={user.id}>
                     {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
                     <div className="flex items-center gap-4 px-5 py-4">
                       <span
@@ -262,13 +451,13 @@ export default function DashboardPage() {
                       </span>
                       <div
                         className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                        style={{ backgroundColor: "#00217E" }}
+                        style={{ backgroundColor: user.id === session?.user?.id ? "#FFCA61" : "#00217E", color: user.id === session?.user?.id ? "#00217E" : "white" }}
                       >
                         {user.initials}
                       </div>
                       <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
                       <span className="text-sm font-bold" style={{ color: "#00217E" }}>
-                        {user.pts} pts
+                        {user.points} pts
                       </span>
                     </div>
                   </div>
@@ -276,6 +465,176 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+          {/* ── Ranking ── */}
+          {nav === "ranking" && (
+            <div className="max-w-lg mx-auto space-y-6">
+
+              {/* Podio top 3 */}
+              <style>{`
+                @keyframes podium-up {
+                  from { transform: scaleY(0); opacity: 0; }
+                  to   { transform: scaleY(1); opacity: 1; }
+                }
+                @keyframes trophy-float {
+                  0%, 100% { transform: translateY(0); }
+                  50%       { transform: translateY(-6px); }
+                }
+                .podium-bar { transform-origin: bottom; animation: podium-up 0.5s ease-out forwards; }
+                .trophy-float { animation: trophy-float 2s ease-in-out infinite; }
+              `}</style>
+              <div className="flex items-end justify-center gap-3 pt-4 pb-2">
+
+                {/* 2° — plata */}
+                <div className="flex flex-col items-center gap-2 flex-1">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white ring-2 ring-slate-300"
+                    style={{ background: "linear-gradient(135deg, #94a3b8, #cbd5e1)" }}>
+                    {ranking[1]?.initials ?? "—"}
+                  </div>
+                  <p className="text-xs font-bold text-gray-700 text-center">{ranking[1]?.name ?? "—"}</p>
+                  <p className="text-xs font-semibold text-slate-400">{ranking[1]?.points ?? 0} pts</p>
+                  <div className="podium-bar w-full rounded-t-xl flex items-center justify-center py-3"
+                    style={{ background: "linear-gradient(180deg, #cbd5e1, #94a3b8)", minHeight: 60, animationDelay: "0.1s" }}>
+                    <span className="text-xl font-black text-white drop-shadow">2</span>
+                  </div>
+                </div>
+
+                {/* 1° — oro */}
+                <div className="flex flex-col items-center gap-2 flex-1">
+                  <span className="text-3xl trophy-float">🏆</span>
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-base font-bold text-white ring-4 ring-yellow-200"
+                    style={{ background: "linear-gradient(135deg, #00217E, #1a3a9e)" }}>
+                    {ranking[0]?.initials ?? "—"}
+                  </div>
+                  <p className="text-xs font-bold text-gray-700 text-center">{ranking[0]?.name ?? "—"}</p>
+                  <p className="text-xs font-bold" style={{ color: "#FFCA61" }}>{ranking[0]?.points ?? 0} pts</p>
+                  <div className="podium-bar w-full rounded-t-xl flex items-center justify-center py-4"
+                    style={{ background: "linear-gradient(180deg, #FFD87A, #FFCA61)", minHeight: 80, animationDelay: "0s" }}>
+                    <span className="text-2xl font-black drop-shadow" style={{ color: "#00217E" }}>1</span>
+                  </div>
+                </div>
+
+                {/* 3° — bronce */}
+                <div className="flex flex-col items-center gap-2 flex-1">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white ring-2 ring-amber-600"
+                    style={{ background: "linear-gradient(135deg, #b87333, #cd9b4a)" }}>
+                    {ranking[2]?.initials ?? "—"}
+                  </div>
+                  <p className="text-xs font-bold text-gray-700 text-center">{ranking[2]?.name ?? "—"}</p>
+                  <p className="text-xs font-semibold" style={{ color: "#b87333" }}>{ranking[2]?.points ?? 0} pts</p>
+                  <div className="podium-bar w-full rounded-t-xl flex items-center justify-center py-2"
+                    style={{ background: "linear-gradient(180deg, #cd9b4a, #b87333)", minHeight: 44, animationDelay: "0.2s" }}>
+                    <span className="text-lg font-black text-white drop-shadow">3</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Lista completa */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                {ranking.map((user, idx) => (
+                  <div key={user.id}>
+                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                    <div
+                      className="flex items-center gap-4 px-5 py-4"
+                      style={user.id === session?.user?.id ? { backgroundColor: "#eff6ff" } : idx === 0 ? { backgroundColor: "#fffbeb" } : {}}
+                    >
+                      <span
+                        className="text-sm font-bold w-5 text-center flex-shrink-0"
+                        style={{ color: idx === 0 ? "#FFCA61" : idx === 1 ? "#9ca3af" : idx === 2 ? "#b45309" : "#d1d5db" }}
+                      >
+                        {user.pos}
+                      </span>
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                        style={{ backgroundColor: user.id === session?.user?.id ? "#FFCA61" : "#00217E", color: user.id === session?.user?.id ? "#00217E" : "white" }}
+                      >
+                        {user.initials}
+                      </div>
+                      <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
+                      <span className="text-sm font-bold" style={{ color: "#00217E" }}>{user.points} pts</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-center text-xs text-gray-400">{ranking.length} participantes</p>
+            </div>
+          )}
+
+          {/* ── Perfil ── */}
+          {nav === "profile" && (
+            <div className="max-w-lg mx-auto space-y-6 pb-4">
+
+              {/* Avatar + stats */}
+              <div className="bg-white rounded-2xl shadow-sm px-5 py-6">
+                <div className="flex items-center gap-4 mb-6">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
+                    style={{ backgroundColor: "#00217E" }}
+                  >
+                    {userInitials}
+                  </div>
+                  <div>
+                    <p className="text-base font-bold text-gray-900">{userName}</p>
+                    <p className="text-sm text-gray-400">{userEmail}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Puntos", value: String(myPoints) },
+                    { label: "Posición", value: String(myPos) },
+                    { label: "Predicciones", value: String(myPredictions) },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-xl py-3 text-center" style={{ backgroundColor: "#f3f4f6" }}>
+                      <p className="text-lg font-bold" style={{ color: "#00217E" }}>{stat.value}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CUENTA */}
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 mb-2">Cuenta</p>
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  <ProfileRow
+                    icon={<IconUser />}
+                    label="Editar perfil"
+                    onClick={() => {}}
+                  />
+                </div>
+              </div>
+
+              {/* INFORMACIÓN */}
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 mb-2">Información</p>
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  <ProfileRow icon={<IconRules />} label="Reglas del juego" onClick={() => {}} />
+                  <div className="h-px bg-gray-100 mx-4" />
+                  <ProfileRow icon={<IconHelp />} label="Ayuda" onClick={() => {}} />
+                  <div className="h-px bg-gray-100 mx-4" />
+                  <ProfileRow icon={<IconTerms />} label="Términos y condiciones" onClick={() => {}} />
+                </div>
+              </div>
+
+              {/* Cerrar sesión */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-50 transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  <span className="text-sm font-bold text-red-500">Cerrar sesión</span>
+                </button>
+              </div>
+
+            </div>
+          )}
+
         </main>
 
         {/* ── Mobile Bottom Nav ── */}
@@ -325,7 +684,7 @@ function TeamDisplay({ team }: { team: Match["home"] }) {
   );
 }
 
-function MatchRow({ match, onPredict }: { match: Match; onPredict: () => void }) {
+function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: () => void; prediction?: Prediction }) {
   return (
     <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-4">
@@ -337,13 +696,20 @@ function MatchRow({ match, onPredict }: { match: Match; onPredict: () => void })
       </div>
       <div className="flex items-center justify-between">
         <TeamDisplay team={match.home} />
-        <button
-          onClick={onPredict}
-          className="px-5 py-2 rounded-full text-xs font-bold tracking-wider transition-opacity hover:opacity-80"
-          style={{ backgroundColor: "#FFCA61", color: "#00217E" }}
-        >
-          PREDECIR
-        </button>
+        <div className="flex flex-col items-center gap-1.5">
+          {prediction && (
+            <span className="text-xs font-bold" style={{ color: "#00217E" }}>
+              {prediction.homeScore} — {prediction.awayScore}
+            </span>
+          )}
+          <button
+            onClick={onPredict}
+            className="px-5 py-2 rounded-full text-xs font-bold tracking-wider transition-opacity hover:opacity-80"
+            style={{ backgroundColor: prediction ? "#e0e7ff" : "#FFCA61", color: "#00217E" }}
+          >
+            {prediction ? "EDITAR" : "PREDECIR"}
+          </button>
+        </div>
         <TeamDisplay team={match.away} />
       </div>
     </div>
@@ -471,17 +837,36 @@ function ScoreButton({ onClick, children }: { onClick: () => void; children: Rea
   );
 }
 
-function PredictionModal({ match, onClose }: { match: Match; onClose: () => void }) {
-  const [home, setHome] = useState<number | null>(null);
-  const [away, setAway] = useState<number | null>(null);
-
-  const bothFilled = home !== null && away !== null;
+function PredictionModal({ match, existing, onClose, onSaved }: {
+  match: Match;
+  existing?: Prediction;
+  onClose: () => void;
+  onSaved: (p: Prediction) => void;
+}) {
+  const [home, setHome] = useState<number>(existing?.homeScore ?? 0);
+  const [away, setAway] = useState<number>(existing?.awayScore ?? 0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Mock stats — replaced with real data when DB is connected
   const stats = { homeWin: 52, draw: 18, awayWin: 30, totalVotes: 34 };
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+    const res = await fetch("/api/predictions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ matchId: match.id, homeScore: home, awayScore: away }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Error al guardar");
+      return;
+    }
+    onSaved({ matchId: match.id, homeScore: home, awayScore: away });
     onClose();
   }
 
@@ -530,27 +915,27 @@ function PredictionModal({ match, onClose }: { match: Match; onClose: () => void
             {/* Score inputs */}
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-center gap-1.5">
-                <ScoreButton onClick={() => setHome((v) => Math.max(0, (v ?? 0) + 1))}>+</ScoreButton>
+                <ScoreButton onClick={() => setHome((v) => v + 1)}>+</ScoreButton>
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold border-2 transition-colors"
-                  style={{ borderColor: home !== null ? "#00217E" : "#e5e7eb", color: home !== null ? "#00217E" : "#d1d5db" }}
+                  style={{ borderColor: "#00217E", color: "#00217E" }}
                 >
-                  {home ?? 0}
+                  {home}
                 </div>
-                <ScoreButton onClick={() => setHome((v) => Math.max(0, (v ?? 0) - 1))}>−</ScoreButton>
+                <ScoreButton onClick={() => setHome((v) => Math.max(0, v - 1))}>−</ScoreButton>
               </div>
 
               <span className="text-xl font-bold text-gray-200 mb-0.5">—</span>
 
               <div className="flex flex-col items-center gap-1.5">
-                <ScoreButton onClick={() => setAway((v) => Math.max(0, (v ?? 0) + 1))}>+</ScoreButton>
+                <ScoreButton onClick={() => setAway((v) => v + 1)}>+</ScoreButton>
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold border-2 transition-colors"
-                  style={{ borderColor: away !== null ? "#00217E" : "#e5e7eb", color: away !== null ? "#00217E" : "#d1d5db" }}
+                  style={{ borderColor: "#00217E", color: "#00217E" }}
                 >
-                  {away ?? 0}
+                  {away}
                 </div>
-                <ScoreButton onClick={() => setAway((v) => Math.max(0, (v ?? 0) - 1))}>−</ScoreButton>
+                <ScoreButton onClick={() => setAway((v) => Math.max(0, v - 1))}>−</ScoreButton>
               </div>
             </div>
 
@@ -563,13 +948,14 @@ function PredictionModal({ match, onClose }: { match: Match; onClose: () => void
           </div>
 
           {/* Confirm button */}
+          {error && <p className="text-xs text-red-500 text-center">{error}</p>}
           <button
             type="submit"
-            onClick={() => { if (!bothFilled) { setHome(home ?? 0); setAway(away ?? 0); } }}
+            disabled={loading}
             className="w-full py-3.5 rounded-2xl text-sm font-bold text-white transition-all"
-            style={{ backgroundColor: "#00217E" }}
+            style={{ backgroundColor: "#00217E", opacity: loading ? 0.6 : 1 }}
           >
-            Confirmar predicción
+            {loading ? "Guardando..." : existing ? "Actualizar predicción" : "Confirmar predicción"}
           </button>
 
           {/* ── Stats ── */}
@@ -820,5 +1206,51 @@ function MatchInfoModal({ match, onClose }: { match: Match; onClose: () => void 
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Profile components ──
+function ProfileRow({ icon, label, value, onClick }: { icon: React.ReactNode; label: string; value?: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
+      <span style={{ color: "#00217E" }}>{icon}</span>
+      <span className="flex-1 text-sm font-semibold text-gray-800 text-left">{label}</span>
+      {value && <span className="text-sm text-gray-400 mr-1">{value}</span>}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+  );
+}
+
+function IconUser() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
+}
+
+function IconRules() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+    </svg>
+  );
+}
+
+function IconHelp() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  );
+}
+
+function IconTerms() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+    </svg>
   );
 }

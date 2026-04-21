@@ -1,20 +1,39 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const passwordMatch = confirm === "" || password === confirm;
   const canSubmit = name && email && password && confirm && passwordMatch;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // auth logic goes here
+    setError("");
+    setLoading(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Error al crear la cuenta");
+      setLoading(false);
+      return;
+    }
+    await signIn("credentials", { email, password, redirect: false });
+    router.push("/dashboard");
   }
 
   return (
@@ -147,17 +166,21 @@ export default function RegisterPage() {
               )}
             </div>
 
+            {error && (
+              <p className="text-xs text-red-500 text-center">{error}</p>
+            )}
+
             <button
               type="submit"
-              disabled={!canSubmit}
+              disabled={!canSubmit || loading}
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition-opacity mt-2"
               style={{
                 backgroundColor: "#00217E",
-                opacity: canSubmit ? 1 : 0.4,
-                cursor: canSubmit ? "pointer" : "not-allowed",
+                opacity: canSubmit && !loading ? 1 : 0.4,
+                cursor: canSubmit && !loading ? "pointer" : "not-allowed",
               }}
             >
-              Crear cuenta
+              {loading ? "Creando cuenta..." : "Crear cuenta"}
             </button>
           </form>
 
