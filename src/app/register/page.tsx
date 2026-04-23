@@ -77,6 +77,7 @@ export default function RegisterPage() {
           {/* Google */}
           <button
             type="button"
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-6"
           >
             <GoogleIcon />
