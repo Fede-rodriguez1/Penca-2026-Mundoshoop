@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
+import { calcPoints } from "@/lib/scoring";
 
 type Prediction = { matchId: string; homeScore: number; awayScore: number };
 type RankingEntry = { id: string; name: string; initials: string; points: number; exact: number; correct: number; predictions: number; pos: number };
@@ -75,6 +76,12 @@ export default function DashboardPage() {
 
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
+  const [profileView, setProfileView] = useState<"main" | "edit" | "history" | "rules" | "terms">("main");
+  const [editName, setEditName] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState(false);
+  const [userProvider, setUserProvider] = useState<string>("credentials");
 
   useEffect(() => {
     fetch("/api/predictions")
@@ -83,6 +90,9 @@ export default function DashboardPage() {
     fetch("/api/ranking")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setRanking(data); });
+    fetch("/api/users/me")
+      .then((r) => r.json())
+      .then((data) => { if (data?.provider) setUserProvider(data.provider); if (data?.name) setEditName(data.name); });
   }, []);
 
   function onPredictionSaved(p: Prediction) {
@@ -142,7 +152,7 @@ export default function DashboardPage() {
             return (
               <button
                 key={item.id}
-                onClick={() => setNav(item.id as NavItem)}
+                onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors text-left"
                 style={active ? { backgroundColor: "#00217E", color: "white" } : { color: "#6b7280" }}
               >
@@ -562,16 +572,12 @@ export default function DashboardPage() {
           )}
 
           {/* ── Perfil ── */}
-          {nav === "profile" && (
+          {nav === "profile" && profileView === "main" && (
             <div className="max-w-lg mx-auto space-y-6 pb-4">
-
               {/* Avatar + stats */}
               <div className="bg-white rounded-2xl shadow-sm px-5 py-6">
                 <div className="flex items-center gap-4 mb-6">
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
-                    style={{ backgroundColor: "#00217E" }}
-                  >
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
                     {userInitials}
                   </div>
                   <div>
@@ -597,11 +603,9 @@ export default function DashboardPage() {
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 mb-2">Cuenta</p>
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <ProfileRow
-                    icon={<IconUser />}
-                    label="Editar perfil"
-                    onClick={() => {}}
-                  />
+                  <ProfileRow icon={<IconUser />} label="Editar perfil" onClick={() => setProfileView("edit")} />
+                  <div className="h-px bg-gray-100 mx-4" />
+                  <ProfileRow icon={<IconRules />} label="Historial de predicciones" onClick={() => setProfileView("history")} />
                 </div>
               </div>
 
@@ -609,29 +613,176 @@ export default function DashboardPage() {
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 mb-2">Información</p>
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <ProfileRow icon={<IconRules />} label="Reglas del juego" onClick={() => {}} />
+                  <ProfileRow icon={<IconRules />} label="Reglas del juego" onClick={() => setProfileView("rules")} />
                   <div className="h-px bg-gray-100 mx-4" />
-                  <ProfileRow icon={<IconHelp />} label="Ayuda" onClick={() => {}} />
-                  <div className="h-px bg-gray-100 mx-4" />
-                  <ProfileRow icon={<IconTerms />} label="Términos y condiciones" onClick={() => {}} />
+                  <ProfileRow icon={<IconTerms />} label="Términos y condiciones" onClick={() => setProfileView("terms")} />
                 </div>
               </div>
 
               {/* Cerrar sesión */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <button
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-50 transition-colors"
-                >
+                <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-50 transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                   </svg>
                   <span className="text-sm font-bold text-red-500">Cerrar sesión</span>
                 </button>
               </div>
+            </div>
+          )}
 
+          {/* ── Editar perfil ── */}
+          {nav === "profile" && profileView === "edit" && (
+            <div className="max-w-lg mx-auto space-y-4 pb-4">
+              <button onClick={() => { setProfileView("main"); setEditError(""); setEditSuccess(false); }} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+              </button>
+              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-5">
+                {/* Avatar */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ backgroundColor: "#00217E" }}>
+                    {userInitials}
+                  </div>
+                </div>
+                {/* Nombre */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => { setEditName(e.target.value); setEditSuccess(false); }}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:border-transparent"
+                    style={{ "--tw-ring-color": "#00217E" } as React.CSSProperties}
+                  />
+                </div>
+                {/* Email (solo lectura) */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Email</label>
+                  <p className="text-sm text-gray-500 px-1">{userEmail}</p>
+                </div>
+                {/* Proveedor */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Ingresaste con</label>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: "#f3f4f6", color: "#374151" }}>
+                    {userProvider === "google" ? (
+                      <><svg width="12" height="12" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Google</>
+                    ) : (
+                      <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</>
+                    )}
+                  </span>
+                </div>
+                {editError && <p className="text-xs text-red-500">{editError}</p>}
+                {editSuccess && <p className="text-xs font-semibold" style={{ color: "#00217E" }}>Cambios guardados</p>}
+                <button
+                  disabled={editLoading || !editName.trim()}
+                  onClick={async () => {
+                    setEditLoading(true); setEditError(""); setEditSuccess(false);
+                    const res = await fetch("/api/users/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editName }) });
+                    setEditLoading(false);
+                    if (!res.ok) { const d = await res.json(); setEditError(d.error ?? "Error al guardar"); return; }
+                    setEditSuccess(true);
+                  }}
+                  className="w-full py-3 rounded-2xl text-sm font-bold text-white transition-opacity"
+                  style={{ backgroundColor: "#00217E", opacity: editLoading || !editName.trim() ? 0.5 : 1 }}
+                >
+                  {editLoading ? "Guardando..." : "Guardar cambios"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Historial ── */}
+          {nav === "profile" && profileView === "history" && (
+            <div className="max-w-lg mx-auto space-y-4 pb-4">
+              <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+              </button>
+              {predictions.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-sm px-5 py-10 text-center">
+                  <p className="text-gray-400 text-sm">Todavía no hiciste ninguna predicción.</p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  {predictions.map((pred, idx) => {
+                    const match = matches.find((m) => m.id === pred.matchId);
+                    if (!match) return null;
+                    const finished = match.status === "finished" && match.homeScore !== undefined && match.awayScore !== undefined;
+                    const pts = finished ? calcPoints(pred.homeScore, pred.awayScore, match.homeScore!, match.awayScore!) : null;
+                    return (
+                      <div key={pred.matchId}>
+                        {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                        <div className="px-4 py-4 flex items-center gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-400 mb-1">Grupo {match.group} — {match.home.shortName} vs {match.away.shortName}</p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-gray-700">Tu predicción: {pred.homeScore}–{pred.awayScore}</span>
+                              {finished && (
+                                <span className="text-xs text-gray-400">| Real: {match.homeScore}–{match.awayScore}</span>
+                              )}
+                            </div>
+                          </div>
+                          {pts !== null ? (
+                            <span className="text-sm font-black flex-shrink-0" style={{ color: pts >= 8 ? "#16a34a" : pts >= 5 ? "#00217E" : pts >= 3 ? "#d97706" : "#9ca3af" }}>
+                              +{pts} pts
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-300 flex-shrink-0">Pendiente</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Reglas ── */}
+          {nav === "profile" && profileView === "rules" && (
+            <div className="max-w-lg mx-auto space-y-4 pb-4">
+              <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+              </button>
+              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-4">
+                <h2 className="text-base font-bold" style={{ color: "#00217E" }}>Sistema de puntos</h2>
+                {[
+                  { pts: "+8", label: "Resultado exacto", desc: "Predijiste 2-1 y terminó 2-1.", color: "#16a34a" },
+                  { pts: "+5", label: "Ganador + diferencia correcta", desc: "Predijiste 3-1 y terminó 2-0. Ganador y diferencia de goles correctos.", color: "#00217E" },
+                  { pts: "+3", label: "Ganador o empate correcto", desc: "Predijiste 2-0 y terminó 1-0. Solo el ganador es correcto.", color: "#d97706" },
+                  { pts: "+0", label: "Predicción incorrecta", desc: "Predijiste 2-0 y terminó 0-1.", color: "#9ca3af" },
+                ].map((r) => (
+                  <div key={r.pts} className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0">
+                    <span className="text-sm font-black w-8 flex-shrink-0 mt-0.5" style={{ color: r.color }}>{r.pts}</span>
+                    <div>
+                      <p className="text-sm font-bold text-gray-800">{r.label}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{r.desc}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">Los puntos se calculan sobre el resultado al final de los 90 minutos. No se cuentan el tiempo extra ni los penales.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Términos ── */}
+          {nav === "profile" && profileView === "terms" && (
+            <div className="max-w-lg mx-auto space-y-4 pb-4">
+              <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+              </button>
+              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-3">
+                <h2 className="text-base font-bold" style={{ color: "#00217E" }}>Términos y condiciones</h2>
+                <p className="text-sm text-gray-500 leading-relaxed">Esta penca es organizada por Mundo Shop con fines recreativos para sus colaboradores y participantes invitados.</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Los datos ingresados (nombre y email) se usan únicamente para identificarte dentro de la penca y no serán compartidos con terceros.</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Los resultados y el ranking son definitivos una vez cargados por el administrador. No se aceptan reclamos sobre puntuaciones.</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Mundo Shop se reserva el derecho de modificar las reglas o cancelar la penca en cualquier momento.</p>
+              </div>
             </div>
           )}
 
@@ -644,7 +795,7 @@ export default function DashboardPage() {
             return (
               <button
                 key={item.id}
-                onClick={() => setNav(item.id as NavItem)}
+                onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
                 className="flex flex-col items-center gap-1 px-3 py-1"
               >
                 <item.Icon active={active} />
