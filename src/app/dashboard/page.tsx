@@ -845,17 +845,78 @@ export default function DashboardPage() {
 
           {/* ── Términos ── */}
           {nav === "profile" && profileView === "terms" && (
-            <div className="max-w-lg mx-auto space-y-4 pb-4">
-              <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                Volver
-              </button>
-              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-3">
-                <h2 className="text-base font-bold" style={{ color: "#00217E" }}>Términos y condiciones</h2>
-                <p className="text-sm text-gray-500 leading-relaxed">Esta penca es organizada por Mundo Shop con fines recreativos para sus colaboradores y participantes invitados.</p>
-                <p className="text-sm text-gray-500 leading-relaxed">Los datos ingresados (nombre y email) se usan únicamente para identificarte dentro de la penca y no serán compartidos con terceros.</p>
-                <p className="text-sm text-gray-500 leading-relaxed">Los resultados y el ranking son definitivos una vez cargados por el administrador. No se aceptan reclamos sobre puntuaciones.</p>
-                <p className="text-sm text-gray-500 leading-relaxed">Mundo Shop se reserva el derecho de modificar las reglas o cancelar la penca en cualquier momento.</p>
+            <div className="max-w-lg mx-auto pb-6">
+              {/* Header */}
+              <div className="flex items-center justify-between px-1 pt-1 mb-5">
+                <button onClick={() => setProfileView("main")} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: "#00217E" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Volver
+                </button>
+                <span className="text-sm font-bold text-gray-700">Términos y condiciones</span>
+                <span className="w-16" />
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-6">
+                <div>
+                  <h2 className="text-lg font-black text-gray-900 mb-1">Términos y Condiciones de Uso</h2>
+                  <p className="text-xs text-gray-400 mb-3">Última actualización: abril de 2026</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">Bienvenido a la Penca Mundial 2026 de Mundo Shop (en adelante, &quot;la Aplicación&quot;). Al registrarte y utilizar la Aplicación, aceptás estos Términos y Condiciones. Si no estás de acuerdo, no utilices la Aplicación.</p>
+                </div>
+
+                {[
+                  {
+                    num: "1", title: "Descripción del Servicio",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">La Penca Mundial 2026 es una aplicación gratuita de pronósticos deportivos con fines recreativos, organizada por Mundo Shop para sus colaboradores y participantes invitados. Los usuarios pueden realizar predicciones sobre resultados de partidos del Mundial 2026 y competir en el ranking general.</p>
+                  },
+                  {
+                    num: "2", title: "Registro y Cuenta",
+                    content: <ul className="space-y-1.5">{["Para participar debés registrarte con una cuenta válida (Google o correo electrónico).", "Sos responsable de mantener la confidencialidad de tu cuenta y contraseña.", "La información proporcionada debe ser veraz y actualizada.", "Mundo Shop se reserva el derecho de suspender cuentas que violen estos términos."].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
+                    ))}</ul>
+                  },
+                  {
+                    num: "3", title: "Uso Aceptable",
+                    content: <><p className="text-sm text-gray-500 leading-relaxed mb-2">Al utilizar la Aplicación, te comprometés a:</p><ul className="space-y-1.5">{["No utilizar la Aplicación con fines ilegales o no autorizados.", "No intentar acceder de forma no autorizada a los sistemas de la Aplicación.", "No utilizar bots, scripts u otros medios automatizados.", "Respetar a los demás participantes."].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
+                    ))}</ul></>
+                  },
+                  {
+                    num: "4", title: "Privacidad y Datos Personales",
+                    content: <><p className="text-sm text-gray-500 leading-relaxed mb-2">Recopilamos y procesamos los siguientes datos:</p><ul className="space-y-1.5">{["Información de registro (nombre y correo electrónico).", "Predicciones realizadas y puntos obtenidos."].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
+                    ))}</ul><p className="text-sm text-gray-500 leading-relaxed mt-2">Tus datos no serán compartidos con terceros salvo cuando sea necesario para el funcionamiento del servicio o cuando la ley lo requiera.</p></>
+                  },
+                  {
+                    num: "5", title: "Naturaleza del Juego",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">La Aplicación es un juego de entretenimiento sin apuestas monetarias. No se realizan transacciones económicas. Los puntos y el ranking son exclusivamente con fines recreativos y no tienen valor monetario.</p>
+                  },
+                  {
+                    num: "6", title: "Resultados y Puntuación",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Los resultados de los partidos son cargados por el administrador de la penca. Una vez publicados, el ranking y los puntos son definitivos. No se aceptan reclamos sobre puntuaciones.</p>
+                  },
+                  {
+                    num: "7", title: "Disponibilidad del Servicio",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Nos esforzamos por mantener la Aplicación disponible, pero no garantizamos un funcionamiento ininterrumpido. Mundo Shop puede modificar, suspender o discontinuar cualquier aspecto del servicio sin previo aviso.</p>
+                  },
+                  {
+                    num: "8", title: "Modificaciones",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entrarán en vigor al publicarse en la Aplicación. El uso continuado implica su aceptación.</p>
+                  },
+                  {
+                    num: "9", title: "Contacto",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Para consultas sobre estos términos podés contactarnos a través de Mundo Shop.</p>
+                  },
+                  {
+                    num: "10", title: "Ley Aplicable",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Estos términos se rigen por las leyes de la República Oriental del Uruguay. Cualquier disputa será sometida a los tribunales competentes de Montevideo, Uruguay.</p>
+                  },
+                ].map((section, i, arr) => (
+                  <div key={section.num}>
+                    {i > 0 && <div className="h-px bg-gray-100 -mx-5 mb-6" />}
+                    <h3 className="text-sm font-black text-gray-900 mb-2">{section.num}. {section.title}</h3>
+                    {section.content}
+                  </div>
+                ))}
               </div>
             </div>
           )}
