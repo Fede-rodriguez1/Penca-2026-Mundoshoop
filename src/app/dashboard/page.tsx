@@ -82,6 +82,8 @@ export default function DashboardPage() {
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState(false);
   const [userProvider, setUserProvider] = useState<string>("credentials");
+  const [avatarColor, setAvatarColor] = useState("#00217E");
+  const [editAvatarColor, setEditAvatarColor] = useState("#00217E");
 
   useEffect(() => {
     fetch("/api/predictions")
@@ -92,7 +94,11 @@ export default function DashboardPage() {
       .then((data) => { if (Array.isArray(data)) setRanking(data); });
     fetch("/api/users/me")
       .then((r) => r.json())
-      .then((data) => { if (data?.provider) setUserProvider(data.provider); if (data?.name) setEditName(data.name); });
+      .then((data) => {
+        if (data?.provider) setUserProvider(data.provider);
+        if (data?.name) setEditName(data.name);
+        if (data?.avatarColor) { setAvatarColor(data.avatarColor); setEditAvatarColor(data.avatarColor); }
+      });
   }, []);
 
   function onPredictionSaved(p: Prediction) {
@@ -577,8 +583,9 @@ export default function DashboardPage() {
               {/* Avatar + stats */}
               <div className="bg-white rounded-2xl shadow-sm px-5 py-6">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
-                    {userInitials}
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ backgroundColor: avatarColor }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/trophy.png" alt="avatar" className="w-10 h-10 object-contain drop-shadow" />
                   </div>
                   <div>
                     <p className="text-base font-bold text-gray-900">{userName}</p>
@@ -639,10 +646,25 @@ export default function DashboardPage() {
                 Volver
               </button>
               <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-5">
-                {/* Avatar */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ backgroundColor: "#00217E" }}>
-                    {userInitials}
+                {/* Avatar + color picker */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: editAvatarColor }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/trophy.png" alt="avatar" className="w-13 h-13 object-contain drop-shadow" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 text-center mb-2">Color de fondo</p>
+                    <div className="flex gap-2 flex-wrap justify-center">
+                      {["#00217E","#1d4ed8","#7c3aed","#be185d","#dc2626","#ea580c","#d97706","#16a34a","#0d9488","#374151"].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setEditAvatarColor(c)}
+                          className="w-7 h-7 rounded-full transition-transform hover:scale-110"
+                          style={{ backgroundColor: c, outline: editAvatarColor === c ? `3px solid ${c}` : "none", outlineOffset: "2px" }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
                 {/* Nombre */}
@@ -678,9 +700,10 @@ export default function DashboardPage() {
                   disabled={editLoading || !editName.trim()}
                   onClick={async () => {
                     setEditLoading(true); setEditError(""); setEditSuccess(false);
-                    const res = await fetch("/api/users/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editName }) });
+                    const res = await fetch("/api/users/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: editName, avatarColor: editAvatarColor }) });
                     setEditLoading(false);
                     if (!res.ok) { const d = await res.json(); setEditError(d.error ?? "Error al guardar"); return; }
+                    setAvatarColor(editAvatarColor);
                     setEditSuccess(true);
                   }}
                   className="w-full py-3 rounded-2xl text-sm font-bold text-white transition-opacity"

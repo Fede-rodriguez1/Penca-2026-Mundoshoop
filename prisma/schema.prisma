@@ -15,6 +15,7 @@ model User {
   password    String?
   avatar      String?
   provider    String       @default("credentials") // "credentials" | "google"
+  avatarColor String       @default("#00217E")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   predictions Prediction[]
