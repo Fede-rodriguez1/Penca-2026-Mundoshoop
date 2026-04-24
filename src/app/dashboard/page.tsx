@@ -741,29 +741,103 @@ export default function DashboardPage() {
 
           {/* ── Reglas ── */}
           {nav === "profile" && profileView === "rules" && (
-            <div className="max-w-lg mx-auto space-y-4 pb-4">
-              <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                Volver
-              </button>
-              <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-4">
-                <h2 className="text-base font-bold" style={{ color: "#00217E" }}>Sistema de puntos</h2>
+            <div className="max-w-lg mx-auto space-y-3 pb-6">
+              {/* Header */}
+              <div className="flex items-center justify-between px-1 pt-1">
+                <button onClick={() => setProfileView("main")} className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: "#00217E" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Volver
+                </button>
+                <span className="text-sm font-bold text-gray-700">Reglas del juego</span>
+                <span className="w-16" />
+              </div>
+              <p className="text-xs text-gray-400 text-center px-1">Aprendé cómo funciona la penca y cómo ganar puntos</p>
+
+              {/* Cómo jugar */}
+              <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#e0f2e9" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 mb-0.5">¿Cómo jugar?</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">Predecí el resultado de cada partido antes de que empiece. Entrá a la sección &quot;Partidos&quot; y tocá PREDECIR.</p>
+                </div>
+              </div>
+
+              {/* Sistema de puntos */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-4 flex items-center gap-3 border-b border-gray-100">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#fef9e7" }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFCA61"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <p className="text-sm font-bold text-gray-900">Sistema de puntos</p>
+                </div>
                 {[
-                  { pts: "+8", label: "Resultado exacto", desc: "Predijiste 2-1 y terminó 2-1.", color: "#16a34a" },
-                  { pts: "+5", label: "Ganador + diferencia correcta", desc: "Predijiste 3-1 y terminó 2-0. Ganador y diferencia de goles correctos.", color: "#00217E" },
-                  { pts: "+3", label: "Ganador o empate correcto", desc: "Predijiste 2-0 y terminó 1-0. Solo el ganador es correcto.", color: "#d97706" },
-                  { pts: "+0", label: "Predicción incorrecta", desc: "Predijiste 2-0 y terminó 0-1.", color: "#9ca3af" },
-                ].map((r) => (
-                  <div key={r.pts} className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0">
-                    <span className="text-sm font-black w-8 flex-shrink-0 mt-0.5" style={{ color: r.color }}>{r.pts}</span>
-                    <div>
-                      <p className="text-sm font-bold text-gray-800">{r.label}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{r.desc}</p>
+                  { pts: "+8", label: "Resultado exacto", desc: "Predijiste 2-1 y terminó 2-1. ¡Máximo de puntos!", bg: "#e0f2e9", color: "#16a34a",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
+                  { pts: "+5", label: "Ganador + diferencia correcta", desc: "Predijiste 3-1 y terminó 2-0. Ganador y diferencia de goles correctos.", bg: "#dbeafe", color: "#00217E",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00217E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
+                  { pts: "+3", label: "Ganador o empate correcto", desc: "Predijiste 2-0 y terminó 1-0. Solo el resultado es correcto.", bg: "#fef3c7", color: "#d97706",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
+                  { pts: "+0", label: "Predicción incorrecta", desc: "Predijiste 2-0 pero terminó 0-1. El resultado no coincidió.", bg: "#fee2e2", color: "#ef4444",
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> },
+                ].map((r, i, arr) => (
+                  <div key={r.pts}>
+                    {i > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                    <div className="p-4 flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: r.bg }}>
+                        <span className="text-sm font-black" style={{ color: r.color }}>{r.pts}</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          {r.icon}
+                          <p className="text-sm font-bold text-gray-800">{r.label}</p>
+                        </div>
+                        <p className="text-xs text-gray-400 leading-relaxed">{r.desc}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-xs text-gray-400">Los puntos se calculan sobre el resultado al final de los 90 minutos. No se cuentan el tiempo extra ni los penales.</p>
+              </div>
+
+              {/* Tiempo reglamentario */}
+              <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ccfbf1" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 mb-0.5">Tiempo reglamentario</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">Los puntos se calculan con el resultado al final de los 90 minutos. No se cuentan el tiempo extra ni los penales.</p>
+                </div>
+              </div>
+
+              {/* Fechas límite */}
+              <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ffedd5" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 mb-0.5">Fecha límite</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">Las predicciones cierran cuando empieza el partido. Asegurate de ingresar la tuya antes del inicio.</p>
+                </div>
+              </div>
+
+              {/* Ranking */}
+              <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ede9fe" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 mb-0.5">Ranking</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">El ranking se actualiza automáticamente después de cada partido. Podés ver tu posición global en la sección Ranking.</p>
                 </div>
               </div>
             </div>
