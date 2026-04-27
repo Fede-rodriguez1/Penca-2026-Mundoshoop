@@ -140,30 +140,35 @@ export default function DashboardPage() {
         <MatchInfoModal match={viewMatch} onClose={() => setViewMatch(null)} />
       )}
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex flex-col w-60 py-8 px-5 flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
+      <aside className="hidden lg:flex flex-col w-56 py-8 px-4 flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
         <div className="mb-10 px-1">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-8 w-auto object-contain" />
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain" />
           <p className="text-xs font-semibold mt-3" style={{ color: "rgba(255,255,255,0.5)" }}>
             Penca Mundial 2026
           </p>
         </div>
 
         <nav className="flex flex-col gap-1">
-          {navItems.map((item) => {
+          {navItems.map((item, idx) => {
             const active = nav === item.id;
+            const isProfile = item.id === "profile";
             return (
-              <button
-                key={item.id}
-                onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left"
-                style={active
-                  ? { backgroundColor: "rgba(255,202,97,0.15)", color: "#FFCA61" }
-                  : { color: "rgba(255,255,255,0.55)" }}
-              >
-                <item.Icon active={active} />
-                {item.label}
-              </button>
+              <div key={item.id}>
+                {isProfile && (
+                  <div className="my-3 mx-1" style={{ height: 1, backgroundColor: "rgba(255,255,255,0.12)" }} />
+                )}
+                <button
+                  onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left"
+                  style={active
+                    ? { backgroundColor: "rgba(255,202,97,0.15)", color: "#FFCA61" }
+                    : { color: "rgba(255,255,255,0.55)" }}
+                >
+                  <item.Icon active={active} />
+                  {item.label}
+                </button>
+              </div>
             );
           })}
         </nav>
@@ -172,15 +177,17 @@ export default function DashboardPage() {
       {/* ── Main ── */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-100 px-5 lg:px-8 h-16 flex items-center justify-between flex-shrink-0">
+        <header className="lg:bg-white lg:border-b lg:border-gray-100 px-5 lg:px-8 h-16 flex items-center justify-between flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
           <div className="flex items-center gap-3">
-            <img src="/wc2026.png" alt="FIFA World Cup 2026" className="h-10 w-auto object-contain" />
-            <div className="leading-tight">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain lg:hidden" />
+            <img src="/wc2026.png" alt="FIFA World Cup 2026" className="hidden lg:block h-10 w-auto object-contain" />
+            <div className="leading-tight hidden lg:block">
               <p className="text-sm font-bold text-gray-900">Mundial 2026</p>
               <p className="text-xs text-gray-400">FIFA WC 26</p>
             </div>
           </div>
-          <button className="lg:hidden p-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="lg:hidden p-2 rounded-lg transition-colors" style={{ color: "rgba(255,255,255,0.7)" }}>
             <IconMenu />
           </button>
         </header>
@@ -1136,7 +1143,7 @@ const navItems = [
 
 function IconMenu() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round">
       <line x1="3" y1="6" x2="21" y2="6" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="18" x2="21" y2="18" />
