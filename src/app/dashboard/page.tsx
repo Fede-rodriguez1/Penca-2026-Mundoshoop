@@ -266,31 +266,39 @@ export default function DashboardPage() {
               </section>
 
               {/* Tu posición */}
-              <section>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1 h-5 rounded-full bg-gray-300" />
-                  <h2 className="text-sm font-bold text-gray-800">Tu posición</h2>
-                </div>
-                <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-4">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                    style={{ backgroundColor: "#00217E" }}
-                  >
-                    —
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-gray-900">Tu nombre</p>
-                    <p className="text-xs text-gray-400 mt-0.5">0 puntos · Posición —</p>
-                  </div>
-                  <button
-                    onClick={() => setNav("ranking")}
-                    className="text-xs font-semibold hover:underline"
-                    style={{ color: "#00217E" }}
-                  >
-                    Ver ranking
-                  </button>
-                </div>
-              </section>
+              {(() => {
+                const me = ranking.find((u) => u.id === session?.user?.id);
+                return (
+                  <section>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-1 h-5 rounded-full bg-gray-300" />
+                      <h2 className="text-sm font-bold text-gray-800">Tu posición</h2>
+                    </div>
+                    <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-4">
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+                        style={{ backgroundColor: avatarColor }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-gray-900">{session?.user?.name ?? "—"}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {me ? `${me.points} pts · Posición ${me.pos}` : "0 pts · Sin posición aún"}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setNav("ranking")}
+                        className="text-xs font-semibold hover:underline"
+                        style={{ color: "#00217E" }}
+                      >
+                        Ver ranking
+                      </button>
+                    </div>
+                  </section>
+                );
+              })()}
 
             </div>
           )}

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import DevNav from "@/components/DevNav";
 import SessionProvider from "@/components/SessionProvider";
 
 const montserrat = Montserrat({
@@ -25,7 +24,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-[var(--font-montserrat)]">
         <SessionProvider>
           {children}
-          <DevNav />
         </SessionProvider>
       </body>
     </html>
