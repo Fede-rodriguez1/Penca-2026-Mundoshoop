@@ -551,6 +551,13 @@ export default function DashboardPage() {
 
               </div>
 
+              {/* Banner sin resultados aún */}
+              {ranking.every((u) => u.points === 0) && ranking.length > 0 && (
+                <div className="rounded-2xl px-5 py-4 text-center text-sm font-medium" style={{ backgroundColor: "#eff6ff", color: "#00217E" }}>
+                  🕐 Todavía no hay partidos terminados. El ranking se actualiza automáticamente cuando finalicen.
+                </div>
+              )}
+
               {/* Lista completa */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 {ranking.map((user, idx) => (
