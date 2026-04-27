@@ -1183,9 +1183,13 @@ function PredictionModal({ match, existing, onClose, onSaved }: {
   const [away, setAway] = useState<number>(existing?.awayScore ?? 0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [stats, setStats] = useState<{ homeWin: number; draw: number; awayWin: number; total: number } | null>(null);
 
-  // Mock stats — replaced with real data when DB is connected
-  const stats = { homeWin: 52, draw: 18, awayWin: 30, totalVotes: 34 };
+  useEffect(() => {
+    fetch(`/api/predictions/stats?matchId=${match.id}`)
+      .then((r) => r.json())
+      .then((data) => { if (data.total !== undefined) setStats(data); });
+  }, [match.id]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -1298,9 +1302,13 @@ function PredictionModal({ match, existing, onClose, onSaved }: {
           <div className="bg-gray-50 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Predicciones</p>
-              <span className="text-xs text-gray-400">{stats.totalVotes} votos</span>
+              <span className="text-xs text-gray-400">{stats ? `${stats.total} votos` : "—"}</span>
             </div>
 
+            {stats && stats.total === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-2">Nadie predijo este partido todavía.</p>
+            ) : stats ? (
+              <>
             {/* Bar */}
             <div className="flex rounded-full overflow-hidden h-2.5 mb-3 gap-0.5">
               <div style={{ width: `${stats.homeWin}%`, backgroundColor: "#00217E" }} />
@@ -1332,6 +1340,10 @@ function PredictionModal({ match, existing, onClose, onSaved }: {
                 <span className="text-gray-400">{stats.awayWin}%</span>
               </div>
             </div>
+            </>
+            ) : (
+              <div className="h-2.5 bg-gray-200 rounded-full animate-pulse mb-3" />
+            )}
           </div>
 
           {/* ── Match info ── */}
