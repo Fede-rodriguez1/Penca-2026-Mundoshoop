@@ -626,6 +626,18 @@ export default function DashboardPage() {
                 </div>
               </div>
 
+              {/* Panel admin — solo visible para el admin */}
+              {userEmail === "fede16rodriguez@gmail.com" && (
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  <button onClick={() => window.location.href = "/admin"} className="w-full flex items-center gap-4 px-5 py-4 hover:bg-blue-50 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00217E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                    <span className="text-sm font-bold" style={{ color: "#00217E" }}>Panel de admin</span>
+                  </button>
+                </div>
+              )}
+
               {/* Cerrar sesión */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-4 px-5 py-4 hover:bg-red-50 transition-colors">

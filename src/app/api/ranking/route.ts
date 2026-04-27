@@ -4,9 +4,17 @@ import { matches } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
 export async function GET() {
-  const finishedMatches = matches.filter(
-    (m) => m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined
-  );
+  const dbResults = await prisma.matchResult.findMany();
+  const dbResultMap = new Map(dbResults.map((r) => [r.matchId, r]));
+
+  const finishedMatches = matches
+    .map((m) => {
+      const dbResult = dbResultMap.get(m.id);
+      if (dbResult) return { ...m, homeScore: dbResult.homeScore, awayScore: dbResult.awayScore, status: "finished" as const };
+      if (m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined) return m;
+      return null;
+    })
+    .filter(Boolean) as typeof matches;
 
   const users = await prisma.user.findMany({
     include: { predictions: true },
@@ -23,8 +31,8 @@ export async function GET() {
         if (!pred) continue;
         const pts = calcPoints(pred.homeScore, pred.awayScore, match.homeScore!, match.awayScore!);
         points += pts;
-        if (pts === 3) exact++;
-        if (pts >= 1) correct++;
+        if (pts === 8) exact++;
+        if (pts >= 3) correct++;
       }
 
       const initials = user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
