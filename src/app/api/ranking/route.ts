@@ -4,6 +4,7 @@ import { matches } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
 export async function GET() {
+  try {
   const dbResults = await prisma.matchResult.findMany();
   const dbResultMap = new Map(dbResults.map((r) => [r.matchId, r]));
 
@@ -50,4 +51,8 @@ export async function GET() {
     .map((u, i) => ({ ...u, pos: i + 1 }));
 
   return NextResponse.json(ranking);
+  } catch (e) {
+    console.error("[ranking] error:", e);
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
 }

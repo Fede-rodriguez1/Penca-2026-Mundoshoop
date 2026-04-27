@@ -90,7 +90,7 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setPredictions(data); });
     fetch("/api/ranking")
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) return []; return r.json(); })
       .then((data) => { if (Array.isArray(data)) setRanking(data); });
     fetch("/api/users/me")
       .then((r) => r.json())
@@ -140,16 +140,13 @@ export default function DashboardPage() {
         <MatchInfoModal match={viewMatch} onClose={() => setViewMatch(null)} />
       )}
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex flex-col w-60 bg-white border-r border-gray-100 py-8 px-5 flex-shrink-0">
+      <aside className="hidden lg:flex flex-col w-60 py-8 px-5 flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
         <div className="mb-10 px-1">
-          <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#FFCA61" }}>
-            Mundo Shop
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-8 w-auto object-contain" />
+          <p className="text-xs font-semibold mt-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+            Penca Mundial 2026
           </p>
-          <h1 className="text-xl font-bold leading-tight mt-1" style={{ color: "#00217E" }}>
-            Penca Mundial
-            <br />
-            <span>2026</span>
-          </h1>
         </div>
 
         <nav className="flex flex-col gap-1">
@@ -159,8 +156,10 @@ export default function DashboardPage() {
               <button
                 key={item.id}
                 onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors text-left"
-                style={active ? { backgroundColor: "#00217E", color: "white" } : { color: "#6b7280" }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left"
+                style={active
+                  ? { backgroundColor: "rgba(255,202,97,0.15)", color: "#FFCA61" }
+                  : { color: "rgba(255,255,255,0.55)" }}
               >
                 <item.Icon active={active} />
                 {item.label}
@@ -959,19 +958,20 @@ export default function DashboardPage() {
         </main>
 
         {/* ── Mobile Bottom Nav ── */}
-        <nav className="lg:hidden bg-white border-t border-gray-100 px-2 py-2 flex justify-around flex-shrink-0">
+        <nav className="lg:hidden px-2 py-2 flex justify-around flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
           {navItems.map((item) => {
             const active = nav === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => { setNav(item.id as NavItem); setProfileView("main"); }}
-                className="flex flex-col items-center gap-1 px-3 py-1"
+                className="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all"
+                style={active ? { backgroundColor: "rgba(255,202,97,0.15)" } : {}}
               >
                 <item.Icon active={active} />
                 <span
                   className="text-[10px] font-semibold"
-                  style={{ color: active ? "#00217E" : "#9ca3af" }}
+                  style={{ color: active ? "#FFCA61" : "rgba(255,255,255,0.55)" }}
                 >
                   {item.label}
                 </span>
@@ -1078,7 +1078,7 @@ function FinishedRow({ match }: { match: Match }) {
 }
 
 // ── Icons ──
-const iconStroke = (active: boolean) => (active ? "#00217E" : "#9ca3af");
+const iconStroke = (active: boolean) => (active ? "#FFCA61" : "rgba(255,255,255,0.55)");
 
 const navItems = [
   {
