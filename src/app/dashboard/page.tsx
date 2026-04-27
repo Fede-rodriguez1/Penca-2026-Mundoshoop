@@ -176,13 +176,18 @@ export default function DashboardPage() {
 
       {/* ── Main ── */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Header */}
-        <header className="lg:bg-white lg:border-b lg:border-gray-100 px-5 lg:px-8 h-16 flex items-center justify-between flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
+        {/* Header mobile — azul con logo MundoShop */}
+        <header className="lg:hidden px-5 h-16 flex items-center flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain" />
+        </header>
+
+        {/* Header desktop — blanco con logo FIFA */}
+        <header className="hidden lg:flex bg-white border-b border-gray-100 px-8 h-16 items-center flex-shrink-0">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain lg:hidden" />
-            <img src="/wc2026.png" alt="FIFA World Cup 2026" className="hidden lg:block h-10 w-auto object-contain" />
-            <div className="leading-tight hidden lg:block">
+            <img src="/wc2026.png" alt="FIFA World Cup 2026" className="h-10 w-auto object-contain" />
+            <div className="leading-tight">
               <p className="text-sm font-bold text-gray-900">Mundial 2026</p>
               <p className="text-xs text-gray-400">FIFA WC 26</p>
             </div>
