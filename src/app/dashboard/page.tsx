@@ -187,9 +187,6 @@ export default function DashboardPage() {
               <p className="text-xs text-gray-400">FIFA WC 26</p>
             </div>
           </div>
-          <button className="lg:hidden p-2 rounded-lg transition-colors" style={{ color: "rgba(255,255,255,0.7)" }}>
-            <IconMenu />
-          </button>
         </header>
 
         {/* Tabs — solo en Partidos */}
