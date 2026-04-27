@@ -1409,8 +1409,14 @@ function PredictionModal({ match, existing, onClose, onSaved }: {
 
 // ── Match Info Modal (live / finished — read only) ──
 function MatchInfoModal({ match, onClose }: { match: Match; onClose: () => void }) {
-  const stats = { homeWin: 52, draw: 18, awayWin: 30, totalVotes: 34 };
+  const [stats, setStats] = useState<{ homeWin: number; draw: number; awayWin: number; total: number } | null>(null);
   const isLive = match.status === "live";
+
+  useEffect(() => {
+    fetch(`/api/predictions/stats?matchId=${match.id}`)
+      .then((r) => r.json())
+      .then((data) => { if (data.total !== undefined) setStats(data); });
+  }, [match.id]);
 
   const statusLabel: Record<string, string> = {
     upcoming: "Próximo",
@@ -1495,36 +1501,44 @@ function MatchInfoModal({ match, onClose }: { match: Match; onClose: () => void 
           <div className="bg-gray-50 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Predicciones</p>
-              <span className="text-xs text-gray-400">{stats.totalVotes} votos</span>
+              <span className="text-xs text-gray-400">{stats ? `${stats.total} votos` : "—"}</span>
             </div>
-            <div className="flex rounded-full overflow-hidden h-2.5 mb-3 gap-0.5">
-              <div style={{ width: `${stats.homeWin}%`, backgroundColor: "#00217E" }} />
-              <div style={{ width: `${stats.draw}%`, backgroundColor: "#FFCA61" }} />
-              <div style={{ width: `${stats.awayWin}%`, backgroundColor: "#e5e7eb" }} />
-            </div>
-            <div className="flex justify-between text-xs font-semibold">
-              <div className="flex flex-col items-start gap-0.5">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#00217E" }} />
-                  <span className="text-gray-500">Local</span>
+            {!stats ? (
+              <div className="h-2.5 bg-gray-200 rounded-full animate-pulse mb-3" />
+            ) : stats.total === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-2">Nadie predijo este partido.</p>
+            ) : (
+              <>
+                <div className="flex rounded-full overflow-hidden h-2.5 mb-3 gap-0.5">
+                  <div style={{ width: `${stats.homeWin}%`, backgroundColor: "#00217E" }} />
+                  <div style={{ width: `${stats.draw}%`, backgroundColor: "#FFCA61" }} />
+                  <div style={{ width: `${stats.awayWin}%`, backgroundColor: "#e5e7eb" }} />
                 </div>
-                <span style={{ color: "#00217E" }}>{stats.homeWin}%</span>
-              </div>
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#FFCA61" }} />
-                  <span className="text-gray-500">Empate</span>
+                <div className="flex justify-between text-xs font-semibold">
+                  <div className="flex flex-col items-start gap-0.5">
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#00217E" }} />
+                      <span className="text-gray-500">Local</span>
+                    </div>
+                    <span style={{ color: "#00217E" }}>{stats.homeWin}%</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#FFCA61" }} />
+                      <span className="text-gray-500">Empate</span>
+                    </div>
+                    <span style={{ color: "#b8942a" }}>{stats.draw}%</span>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-gray-300" />
+                      <span className="text-gray-500">Visitante</span>
+                    </div>
+                    <span className="text-gray-400">{stats.awayWin}%</span>
+                  </div>
                 </div>
-                <span style={{ color: "#b8942a" }}>{stats.draw}%</span>
-              </div>
-              <div className="flex flex-col items-end gap-0.5">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-gray-300" />
-                  <span className="text-gray-500">Visitante</span>
-                </div>
-                <span className="text-gray-400">{stats.awayWin}%</span>
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
           {/* Match info */}
