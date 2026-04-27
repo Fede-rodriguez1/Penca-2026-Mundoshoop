@@ -44,9 +44,8 @@ export default function RegisterPage() {
         style={{ backgroundColor: "#00217E" }}
       >
         <div>
-          <span className="text-sm font-semibold tracking-widest uppercase" style={{ color: "#FFCA61" }}>
-            Mundo Shop
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-8 w-auto object-contain" />
         </div>
         <div>
           <h1 className="text-white text-5xl font-bold leading-tight mb-4">
@@ -63,11 +62,10 @@ export default function RegisterPage() {
       {/* Right panel — form */}
       <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-16 lg:px-20 py-12">
         {/* Mobile logo */}
-        <div className="lg:hidden mb-10">
-          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#00217E" }}>
-            Mundo Shop
-          </span>
-          <h2 className="text-2xl font-bold mt-1" style={{ color: "#00217E" }}>Penca Mundial 2026</h2>
+        <div className="lg:hidden -mx-8 sm:-mx-16 -mt-12 px-8 sm:px-16 py-6 mb-8" style={{ backgroundColor: "#00217E" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain mb-2" />
+          <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>Penca Mundial 2026</p>
         </div>
 
         <div className="max-w-sm w-full mx-auto">

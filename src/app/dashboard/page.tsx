@@ -6,7 +6,7 @@ import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
 type Prediction = { matchId: string; homeScore: number; awayScore: number };
-type RankingEntry = { id: string; name: string; initials: string; points: number; exact: number; correct: number; predictions: number; pos: number };
+type RankingEntry = { id: string; name: string; initials: string; avatarColor: string; points: number; exact: number; correct: number; predictions: number; pos: number };
 
 type Tab = "upcoming" | "finished" | "ranking";
 type NavItem = "home" | "matches" | "groups" | "ranking" | "profile";
@@ -505,9 +505,10 @@ export default function DashboardPage() {
 
                 {/* 2° — plata */}
                 <div className="flex flex-col items-center gap-2 flex-1">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white ring-2 ring-slate-300"
-                    style={{ background: "linear-gradient(135deg, #94a3b8, #cbd5e1)" }}>
-                    {ranking[1]?.initials ?? "—"}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center ring-2 ring-slate-300 overflow-hidden"
+                    style={{ backgroundColor: ranking[1]?.avatarColor ?? "#00217E" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[1]?.name ?? "—"}</p>
                   <p className="text-xs font-semibold text-slate-400">{ranking[1]?.points ?? 0} pts</p>
@@ -520,9 +521,10 @@ export default function DashboardPage() {
                 {/* 1° — oro */}
                 <div className="flex flex-col items-center gap-2 flex-1">
                   <span className="text-3xl trophy-float">🏆</span>
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-base font-bold text-white ring-4 ring-yellow-200"
-                    style={{ background: "linear-gradient(135deg, #00217E, #1a3a9e)" }}>
-                    {ranking[0]?.initials ?? "—"}
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center ring-4 ring-yellow-200 overflow-hidden"
+                    style={{ backgroundColor: ranking[0]?.avatarColor ?? "#00217E" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/trophy.png" alt="avatar" className="w-10 h-10 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[0]?.name ?? "—"}</p>
                   <p className="text-xs font-bold" style={{ color: "#FFCA61" }}>{ranking[0]?.points ?? 0} pts</p>
@@ -534,9 +536,10 @@ export default function DashboardPage() {
 
                 {/* 3° — bronce */}
                 <div className="flex flex-col items-center gap-2 flex-1">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white ring-2 ring-amber-600"
-                    style={{ background: "linear-gradient(135deg, #b87333, #cd9b4a)" }}>
-                    {ranking[2]?.initials ?? "—"}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center ring-2 ring-amber-600 overflow-hidden"
+                    style={{ backgroundColor: ranking[2]?.avatarColor ?? "#00217E" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[2]?.name ?? "—"}</p>
                   <p className="text-xs font-semibold" style={{ color: "#b87333" }}>{ranking[2]?.points ?? 0} pts</p>
@@ -564,10 +567,11 @@ export default function DashboardPage() {
                         {user.pos}
                       </span>
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                        style={{ backgroundColor: user.id === session?.user?.id ? "#FFCA61" : "#00217E", color: user.id === session?.user?.id ? "#00217E" : "white" }}
+                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+                        style={{ backgroundColor: user.avatarColor ?? "#00217E" }}
                       >
-                        {user.initials}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/trophy.png" alt="avatar" className="w-6 h-6 object-contain" />
                       </div>
                       <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
                       <span className="text-sm font-bold" style={{ color: "#00217E" }}>{user.points} pts</span>

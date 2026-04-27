@@ -41,6 +41,7 @@ export async function GET() {
         id: user.id,
         name: user.name,
         initials,
+        avatarColor: user.avatarColor,
         points,
         exact,
         correct,
