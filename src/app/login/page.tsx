@@ -121,13 +121,13 @@ export default function LoginPage() {
                 >
                   Contraseña
                 </label>
-                <button
-                  type="button"
+                <Link
+                  href="/forgot-password"
                   className="text-xs font-medium hover:underline"
                   style={{ color: "#00217E" }}
                 >
                   ¿Olvidaste tu contraseña?
-                </button>
+                </Link>
               </div>
               <input
                 id="password"

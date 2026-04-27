@@ -30,6 +30,14 @@ model MatchResult {
   updatedAt DateTime @updatedAt
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model Prediction {
   id        String   @id @default(cuid())
   userId    String
