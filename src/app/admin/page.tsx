@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { matches, groupByDate, formatDate } from "@/data/fixture";
+import { QRCodeCanvas } from "qrcode.react";
 
 type MatchResult = { matchId: string; homeScore: number; awayScore: number };
 type Penca = { id: string; name: string; code: string; isDefault: boolean; _count: { users: number } };
@@ -80,6 +81,16 @@ export default function AdminPage() {
 
   const registerUrl = (code: string) =>
     `${typeof window !== "undefined" ? window.location.origin : ""}/register?code=${code}`;
+
+  function downloadQR(code: string, name: string) {
+    const canvas = document.getElementById(`qr-${code}`) as HTMLCanvasElement;
+    if (!canvas) return;
+    const url = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `qr-penca-${name.toLowerCase().replace(/\s+/g, "-")}.png`;
+    a.click();
+  }
 
   const upcoming = matches.filter((m) => m.status === "upcoming" || m.status === "live");
   const byDate = groupByDate(upcoming);
@@ -221,34 +232,63 @@ export default function AdminPage() {
 
             {/* Lista de pencas */}
             {pencas.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                {pencas.map((penca, idx) => (
-                  <div key={penca.id}>
-                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                    <div className="px-5 py-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-gray-900">{penca.name}</p>
-                            {penca.isDefault && (
-                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#fef9c3", color: "#854d0e" }}>Default</span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-400 mt-0.5">{penca._count.users} participante{penca._count.users !== 1 ? "s" : ""}</p>
+              <div className="space-y-3">
+                {pencas.map((penca) => (
+                  <div key={penca.id} className="bg-white rounded-2xl shadow-sm p-5">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-gray-900">{penca.name}</p>
+                          {penca.isDefault && (
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#fef9c3", color: "#854d0e" }}>Default</span>
+                          )}
                         </div>
-                        <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg" style={{ backgroundColor: "#f3f4f6", color: "#00217E" }}>{penca.code}</span>
+                        <p className="text-xs text-gray-400 mt-0.5">{penca._count.users} participante{penca._count.users !== 1 ? "s" : ""}</p>
                       </div>
-                      {/* Link de registro */}
-                      <div className="flex items-center gap-2 mt-3 p-2.5 rounded-xl" style={{ backgroundColor: "#f9fafb" }}>
-                        <p className="text-xs text-gray-400 flex-1 truncate">{registerUrl(penca.code)}</p>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(registerUrl(penca.code))}
-                          className="text-xs font-semibold flex-shrink-0 hover:opacity-70 transition-opacity"
-                          style={{ color: "#00217E" }}
-                        >
-                          Copiar
-                        </button>
-                      </div>
+                      <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg" style={{ backgroundColor: "#f3f4f6", color: "#00217E" }}>{penca.code}</span>
+                    </div>
+
+                    {/* QR */}
+                    <div className="flex flex-col items-center gap-3 py-4 rounded-xl mb-4" style={{ backgroundColor: "#f9fafb" }}>
+                      <QRCodeCanvas
+                        id={`qr-${penca.code}`}
+                        value={registerUrl(penca.code)}
+                        size={180}
+                        bgColor="#ffffff"
+                        fgColor="#00217E"
+                        level="M"
+                        imageSettings={{
+                          src: "/mundoshop-logo.png",
+                          x: undefined,
+                          y: undefined,
+                          height: 36,
+                          width: 72,
+                          excavate: true,
+                        }}
+                      />
+                      <button
+                        onClick={() => downloadQR(penca.code, penca.name)}
+                        className="flex items-center gap-1.5 text-xs font-semibold hover:opacity-70 transition-opacity"
+                        style={{ color: "#00217E" }}
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Descargar QR
+                      </button>
+                    </div>
+
+                    {/* Link de registro */}
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl" style={{ backgroundColor: "#f3f4f6" }}>
+                      <p className="text-xs text-gray-400 flex-1 truncate">{registerUrl(penca.code)}</p>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(registerUrl(penca.code))}
+                        className="text-xs font-semibold flex-shrink-0 hover:opacity-70 transition-opacity"
+                        style={{ color: "#00217E" }}
+                      >
+                        Copiar link
+                      </button>
                     </div>
                   </div>
                 ))}
