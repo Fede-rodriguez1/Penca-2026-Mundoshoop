@@ -72,6 +72,11 @@ const t: Record<string, Team> = {
   PAN: { name: "Panamá",           shortName: "Panamá",       flag: "🇵🇦", shield: `${BASE}/panama.png` },
 };
 
+// Equipos placeholder para fase de eliminación directa
+function ph(label: string): Team {
+  return { name: label, shortName: label, flag: "❓", shield: "" };
+}
+
 export const matches: Match[] = [
   // GRUPO A
   { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "live", homeScore: 1, awayScore: 0 },
@@ -157,6 +162,48 @@ export const matches: Match[] = [
   { id: "L4", date: "2026-06-23", time: "22:00", group: "L", matchday: 2, home: t.PAN, away: t.CRO, venue: "Dallas", status: "upcoming" },
   { id: "L5", date: "2026-06-27", time: "20:00", group: "L", matchday: 3, home: t.PAN, away: t.ENG, venue: "Seattle", status: "upcoming" },
   { id: "L6", date: "2026-06-27", time: "20:00", group: "L", matchday: 3, home: t.CRO, away: t.GHA, venue: "Kansas City", status: "upcoming" },
+
+  // ── 16VOS DE FINAL ────────────────────────────────────────────────
+  { id: "P73",  date: "2026-06-28", time: "--:--", group: "16vos", matchday: 1,  home: ph("2° A"),           away: ph("2° B"),           venue: "Los Ángeles",   status: "upcoming" },
+  { id: "P74",  date: "2026-06-29", time: "--:--", group: "16vos", matchday: 2,  home: ph("1° E"),           away: ph("3° A/B/C/D/F"),   venue: "Boston",        status: "upcoming" },
+  { id: "P75",  date: "2026-06-29", time: "--:--", group: "16vos", matchday: 3,  home: ph("1° F"),           away: ph("2° C"),           venue: "Monterrey",     status: "upcoming" },
+  { id: "P76",  date: "2026-06-29", time: "--:--", group: "16vos", matchday: 4,  home: ph("1° C"),           away: ph("2° F"),           venue: "Houston",       status: "upcoming" },
+  { id: "P77",  date: "2026-06-30", time: "--:--", group: "16vos", matchday: 5,  home: ph("1° I"),           away: ph("3° C/D/F/G/H"),   venue: "Nueva Jersey",  status: "upcoming" },
+  { id: "P78",  date: "2026-06-30", time: "--:--", group: "16vos", matchday: 6,  home: ph("2° E"),           away: ph("2° I"),           venue: "Dallas",        status: "upcoming" },
+  { id: "P79",  date: "2026-06-30", time: "--:--", group: "16vos", matchday: 7,  home: ph("1° A"),           away: ph("3° C/E/F/H/I"),   venue: "Ciudad de México", status: "upcoming" },
+  { id: "P80",  date: "2026-07-01", time: "--:--", group: "16vos", matchday: 8,  home: ph("1° L"),           away: ph("3° E/H/I/J/K"),   venue: "Atlanta",       status: "upcoming" },
+  { id: "P81",  date: "2026-07-01", time: "--:--", group: "16vos", matchday: 9,  home: ph("1° D"),           away: ph("3° B/E/F/I/J"),   venue: "San Francisco", status: "upcoming" },
+  { id: "P82",  date: "2026-07-01", time: "--:--", group: "16vos", matchday: 10, home: ph("1° G"),           away: ph("3° A/E/H/I/J"),   venue: "Seattle",       status: "upcoming" },
+  { id: "P83",  date: "2026-07-02", time: "--:--", group: "16vos", matchday: 11, home: ph("2° K"),           away: ph("2° L"),           venue: "Toronto",       status: "upcoming" },
+  { id: "P84",  date: "2026-07-02", time: "--:--", group: "16vos", matchday: 12, home: ph("1° H"),           away: ph("2° J"),           venue: "Los Ángeles",   status: "upcoming" },
+  { id: "P85",  date: "2026-07-02", time: "--:--", group: "16vos", matchday: 13, home: ph("1° B"),           away: ph("3° E/F/G/I/J"),   venue: "Vancouver",     status: "upcoming" },
+  { id: "P86",  date: "2026-07-03", time: "--:--", group: "16vos", matchday: 14, home: ph("1° J"),           away: ph("2° H"),           venue: "Miami",         status: "upcoming" },
+  { id: "P87",  date: "2026-07-03", time: "--:--", group: "16vos", matchday: 15, home: ph("1° K"),           away: ph("3° D/E/I/J/L"),   venue: "Kansas City",   status: "upcoming" },
+  { id: "P88",  date: "2026-07-03", time: "--:--", group: "16vos", matchday: 16, home: ph("2° D"),           away: ph("2° G"),           venue: "Dallas",        status: "upcoming" },
+
+  // ── OCTAVOS DE FINAL ─────────────────────────────────────────────
+  { id: "P89",  date: "2026-07-04", time: "--:--", group: "8vos",    matchday: 1, home: ph("Gan. P74"), away: ph("Gan. P77"), venue: "Philadelphia",  status: "upcoming" },
+  { id: "P90",  date: "2026-07-04", time: "--:--", group: "8vos",    matchday: 2, home: ph("Gan. P73"), away: ph("Gan. P75"), venue: "Houston",       status: "upcoming" },
+  { id: "P91",  date: "2026-07-05", time: "--:--", group: "8vos",    matchday: 3, home: ph("Gan. P76"), away: ph("Gan. P78"), venue: "Nueva Jersey",  status: "upcoming" },
+  { id: "P92",  date: "2026-07-05", time: "--:--", group: "8vos",    matchday: 4, home: ph("Gan. P79"), away: ph("Gan. P80"), venue: "Ciudad de México", status: "upcoming" },
+  { id: "P93",  date: "2026-07-06", time: "--:--", group: "8vos",    matchday: 5, home: ph("Gan. P83"), away: ph("Gan. P84"), venue: "Dallas",        status: "upcoming" },
+  { id: "P94",  date: "2026-07-06", time: "--:--", group: "8vos",    matchday: 6, home: ph("Gan. P81"), away: ph("Gan. P82"), venue: "Seattle",       status: "upcoming" },
+  { id: "P95",  date: "2026-07-07", time: "--:--", group: "8vos",    matchday: 7, home: ph("Gan. P86"), away: ph("Gan. P88"), venue: "Atlanta",       status: "upcoming" },
+  { id: "P96",  date: "2026-07-07", time: "--:--", group: "8vos",    matchday: 8, home: ph("Gan. P85"), away: ph("Gan. P87"), venue: "Vancouver",     status: "upcoming" },
+
+  // ── CUARTOS DE FINAL ─────────────────────────────────────────────
+  { id: "P97",  date: "2026-07-09", time: "--:--", group: "Cuartos", matchday: 1, home: ph("Gan. P89"), away: ph("Gan. P90"), venue: "Boston",        status: "upcoming" },
+  { id: "P98",  date: "2026-07-10", time: "--:--", group: "Cuartos", matchday: 2, home: ph("Gan. P93"), away: ph("Gan. P94"), venue: "Los Ángeles",   status: "upcoming" },
+  { id: "P99",  date: "2026-07-11", time: "--:--", group: "Cuartos", matchday: 3, home: ph("Gan. P91"), away: ph("Gan. P92"), venue: "Miami",         status: "upcoming" },
+  { id: "P100", date: "2026-07-11", time: "--:--", group: "Cuartos", matchday: 4, home: ph("Gan. P95"), away: ph("Gan. P96"), venue: "Kansas City",   status: "upcoming" },
+
+  // ── SEMIFINALES ───────────────────────────────────────────────────
+  { id: "P101", date: "2026-07-14", time: "--:--", group: "Semis",   matchday: 1, home: ph("Gan. P97"),  away: ph("Gan. P98"),  venue: "Dallas",        status: "upcoming" },
+  { id: "P102", date: "2026-07-15", time: "--:--", group: "Semis",   matchday: 2, home: ph("Gan. P99"),  away: ph("Gan. P100"), venue: "Atlanta",       status: "upcoming" },
+
+  // ── TERCER PUESTO Y FINAL ─────────────────────────────────────────
+  { id: "P103", date: "2026-07-18", time: "--:--", group: "3° Puesto", matchday: 1, home: ph("Perd. P101"), away: ph("Perd. P102"), venue: "Miami",       status: "upcoming" },
+  { id: "P104", date: "2026-07-19", time: "--:--", group: "Final",     matchday: 1, home: ph("Gan. P101"),  away: ph("Gan. P102"),  venue: "Nueva Jersey", status: "upcoming" },
 ];
 
 export function groupByDate(list: Match[]): Record<string, Match[]> {

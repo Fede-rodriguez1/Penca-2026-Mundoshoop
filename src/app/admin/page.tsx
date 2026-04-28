@@ -101,12 +101,13 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f3f4f6" }}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-5 h-16 flex items-center justify-between">
-        <div>
-          <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#FFCA61" }}>Mundo Shop</p>
-          <h1 className="text-base font-bold" style={{ color: "#00217E" }}>Panel de Admin</h1>
+      <header className="px-5 h-16 flex items-center justify-between" style={{ backgroundColor: "#00217E" }}>
+        <div className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-7 w-auto object-contain" />
+          <span className="text-sm font-bold text-white opacity-60">Panel de Admin</span>
         </div>
-        <button onClick={() => router.push("/dashboard")} className="text-sm font-semibold" style={{ color: "#00217E" }}>
+        <button onClick={() => router.push("/dashboard")} className="text-sm font-semibold text-white opacity-80 hover:opacity-100 transition-opacity">
           Volver al dashboard
         </button>
       </header>
@@ -259,11 +260,11 @@ export default function AdminPage() {
                         fgColor="#00217E"
                         level="M"
                         imageSettings={{
-                          src: "/mundoshop-logo.png",
+                          src: "/mundoshop-logo-dark.png",
                           x: undefined,
                           y: undefined,
-                          height: 36,
-                          width: 72,
+                          height: 30,
+                          width: 90,
                           excavate: true,
                         }}
                       />
