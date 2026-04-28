@@ -84,6 +84,7 @@ export default function DashboardPage() {
   const [userProvider, setUserProvider] = useState<string>("credentials");
   const [avatarColor, setAvatarColor] = useState("#00217E");
   const [editAvatarColor, setEditAvatarColor] = useState("#00217E");
+  const [pencaName, setPencaName] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/predictions")
@@ -98,6 +99,7 @@ export default function DashboardPage() {
         if (data?.provider) setUserProvider(data.provider);
         if (data?.name) setEditName(data.name);
         if (data?.avatarColor) { setAvatarColor(data.avatarColor); setEditAvatarColor(data.avatarColor); }
+        if (data?.penca?.name) setPencaName(data.penca.name);
       });
   }, []);
 
@@ -617,6 +619,11 @@ export default function DashboardPage() {
                   <div>
                     <p className="text-base font-bold text-gray-900">{userName}</p>
                     <p className="text-sm text-gray-400">{userEmail}</p>
+                    {pencaName && (
+                      <span className="inline-block mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#eff6ff", color: "#00217E" }}>
+                        {pencaName}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3">

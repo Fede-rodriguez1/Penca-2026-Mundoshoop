@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { matches } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
   const dbResults = await prisma.matchResult.findMany();
   const dbResultMap = new Map(dbResults.map((r) => [r.matchId, r]));
@@ -17,7 +19,16 @@ export async function GET() {
     })
     .filter(Boolean) as typeof matches;
 
+  // Filtrar por penca del usuario logueado
+  const session = await getServerSession(authOptions);
+  let pencaId: string | null = null;
+  if (session?.user?.id) {
+    const me = await prisma.user.findUnique({ where: { id: session.user.id }, select: { pencaId: true } });
+    pencaId = me?.pencaId ?? null;
+  }
+
   const users = await prisma.user.findMany({
+    where: pencaId ? { pencaId } : {},
     include: { predictions: true },
   });
 
