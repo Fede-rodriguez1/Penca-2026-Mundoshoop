@@ -6,7 +6,9 @@ import { prisma } from "@/lib/prisma";
 // Por ahora tiene partidos de prueba para testear el flujo.
 const FIXTURE_MAP: Record<number, string> = {
   // apiFootballId: matchId local
-  // Ejemplo: 1527581: "gA_MEX_RSA", (se completa cuando llegue el 2026)
+  // ⚠️ TEST ONLY — mapeo temporal para probar el flujo. Borrar antes del Mundial 2026.
+  1515817: "A1", // FK Liepaja vs Grobina → mapeado a México vs Sudáfrica para test
+  // Cuando llegue el 2026, acá van los IDs reales de cada partido del Mundial
 };
 
 // Cuando haya partidos del Mundial 2026, activar este ID de liga:
