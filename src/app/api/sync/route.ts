@@ -50,7 +50,6 @@ function isFinishedOrLive(status: string) {
 }
 
 export async function POST(req: NextRequest) {
-  // Verificar secret para que solo Railway/cron pueda llamar este endpoint
   const secret = req.headers.get("x-sync-secret");
   if (secret !== process.env.SYNC_SECRET) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -60,15 +59,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "API_FOOTBALL_KEY no configurada" }, { status: 500 });
   }
 
-  const apiIds = Object.keys(FIXTURE_MAP).map(Number);
-
-  if (apiIds.length === 0) {
+  if (Object.keys(FIXTURE_MAP).length === 0) {
     return NextResponse.json({ message: "Sin partidos mapeados todavía", synced: 0 });
   }
 
-  const fixtures = await fetchLiveFixtures(apiIds);
-  let synced = 0;
+  // Plan gratis solo soporta ?live=all — traemos todos y filtramos por FIXTURE_MAP
+  const res = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
+    headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY },
+    next: { revalidate: 0 },
+  });
+  const data = await res.json();
+  const fixtures: ApiFixture[] = data.response ?? [];
 
+  let synced = 0;
   for (const f of fixtures) {
     const matchId = FIXTURE_MAP[f.fixture.id];
     if (!matchId) continue;
