@@ -42,8 +42,14 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google") {
         const existing = await prisma.user.findUnique({ where: { email: user.email! } });
         if (!existing) {
+          const defaultPenca = await prisma.penca.findFirst({ where: { isDefault: true } });
           const created = await prisma.user.create({
-            data: { email: user.email!, name: user.name ?? "Usuario", provider: "google" },
+            data: {
+              email: user.email!,
+              name: user.name ?? "Usuario",
+              provider: "google",
+              pencaId: defaultPenca?.id ?? null,
+            },
           });
           user.id = created.id;
         } else {

@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pencaCode = searchParams.get("code")?.toUpperCase() ?? "";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pencaName, setPencaName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!pencaCode) return;
+    fetch(`/api/pencas/validate?code=${pencaCode}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.name) setPencaName(d.name); else setError("Código de penca inválido"); });
+  }, [pencaCode]);
 
   const passwordMatch = confirm === "" || password === confirm;
   const canSubmit = name && email && password && confirm && passwordMatch;
@@ -24,7 +35,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, pencaCode: pencaCode || undefined }),
     });
     if (!res.ok) {
       const data = await res.json();
@@ -70,7 +81,15 @@ export default function RegisterPage() {
 
         <div className="max-w-sm w-full mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">Crear cuenta</h2>
-          <p className="text-sm text-gray-500 mb-8">Completá tus datos para unirte a la penca</p>
+          <p className="text-sm text-gray-500 mb-4">Completá tus datos para unirte a la penca</p>
+
+          {/* Badge penca */}
+          {pencaName && (
+            <div className="flex items-center gap-2 mb-6 px-3 py-2 rounded-xl text-sm font-semibold" style={{ backgroundColor: "#eff6ff", color: "#00217E" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00217E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Te unís a: {pencaName}
+            </div>
+          )}
 
           {/* Google */}
           <button
@@ -192,6 +211,14 @@ export default function RegisterPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }
 
