@@ -8,6 +8,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Penca {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique // código de acceso, ej: "EMPLEADOS2026"
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
 model User {
   id          String       @id @default(cuid())
   email       String       @unique
@@ -16,8 +26,10 @@ model User {
   avatar      String?
   provider    String       @default("credentials") // "credentials" | "google"
   avatarColor String       @default("#00217E")
+  pencaId     String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  penca       Penca?       @relation(fields: [pencaId], references: [id])
   predictions Prediction[]
 }
 
