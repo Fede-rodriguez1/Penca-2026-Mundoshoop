@@ -513,12 +513,8 @@ export default function DashboardPage() {
                   0%, 100% { transform: translateY(0); }
                   50%       { transform: translateY(-8px); }
                 }
-                @keyframes trophy-spin {
-                  0%   { transform: rotateY(0deg); }
-                  100% { transform: rotateY(360deg); }
-                }
                 .podium-bar { transform-origin: bottom; animation: podium-up 0.5s ease-out forwards; }
-                .trophy-float { animation: trophy-float 2s ease-in-out infinite, trophy-spin 4s linear infinite; transform-style: preserve-3d; }
+                .trophy-float { animation: trophy-float 2s ease-in-out infinite; }
               `}</style>
               <div className="flex items-end justify-center gap-3 pt-4 pb-2">
 
