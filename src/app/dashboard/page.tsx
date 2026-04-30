@@ -287,7 +287,7 @@ export default function DashboardPage() {
                         style={{ backgroundColor: avatarColor }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
+                        <img src="/ball.png" alt="avatar" className="w-8 h-8 object-contain" />
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-bold text-gray-900">{session?.user?.name ?? "—"}</p>
@@ -523,7 +523,7 @@ export default function DashboardPage() {
                   <div className="w-12 h-12 rounded-full flex items-center justify-center ring-2 ring-slate-300 overflow-hidden"
                     style={{ backgroundColor: ranking[1]?.avatarColor ?? "#00217E" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
+                    <img src="/ball.png" alt="avatar" className="w-8 h-8 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[1]?.name ?? "—"}</p>
                   <p className="text-xs font-semibold text-slate-400">{ranking[1]?.points ?? 0} pts</p>
@@ -542,7 +542,7 @@ export default function DashboardPage() {
                   <div className="w-14 h-14 rounded-full flex items-center justify-center ring-4 ring-yellow-200 overflow-hidden"
                     style={{ backgroundColor: ranking[0]?.avatarColor ?? "#00217E" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/trophy.png" alt="avatar" className="w-10 h-10 object-contain" />
+                    <img src="/ball.png" alt="avatar" className="w-10 h-10 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[0]?.name ?? "—"}</p>
                   <p className="text-xs font-bold" style={{ color: "#FFCA61" }}>{ranking[0]?.points ?? 0} pts</p>
@@ -557,7 +557,7 @@ export default function DashboardPage() {
                   <div className="w-12 h-12 rounded-full flex items-center justify-center ring-2 ring-amber-600 overflow-hidden"
                     style={{ backgroundColor: ranking[2]?.avatarColor ?? "#00217E" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/trophy.png" alt="avatar" className="w-8 h-8 object-contain" />
+                    <img src="/ball.png" alt="avatar" className="w-8 h-8 object-contain" />
                   </div>
                   <p className="text-xs font-bold text-gray-700 text-center">{ranking[2]?.name ?? "—"}</p>
                   <p className="text-xs font-semibold" style={{ color: "#b87333" }}>{ranking[2]?.points ?? 0} pts</p>
@@ -596,7 +596,7 @@ export default function DashboardPage() {
                         style={{ backgroundColor: user.avatarColor ?? "#00217E" }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/trophy.png" alt="avatar" className="w-6 h-6 object-contain" />
+                        <img src="/ball.png" alt="avatar" className="w-6 h-6 object-contain" />
                       </div>
                       <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
                       <span className="text-sm font-bold" style={{ color: "#00217E" }}>{user.points} pts</span>
@@ -617,7 +617,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ backgroundColor: avatarColor }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/trophy.png" alt="avatar" className="w-10 h-10 object-contain drop-shadow" />
+                    <img src="/ball.png" alt="avatar" className="w-10 h-10 object-contain drop-shadow" />
                   </div>
                   <div>
                     <p className="text-base font-bold text-gray-900">{userName}</p>
@@ -699,7 +699,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: editAvatarColor }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/trophy.png" alt="avatar" className="w-13 h-13 object-contain drop-shadow" />
+                    <img src="/ball.png" alt="avatar" className="w-13 h-13 object-contain drop-shadow" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 text-center mb-2">Color de fondo</p>
