@@ -993,7 +993,7 @@ export default function DashboardPage() {
         </main>
 
         {/* ── Mobile Bottom Nav ── */}
-        <nav className="lg:hidden px-2 py-2 flex justify-around flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
+        <nav className="lg:hidden px-2 pt-2 flex justify-around flex-shrink-0" style={{ backgroundColor: "#00217E", paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}>
           {navItems.map((item) => {
             const active = nav === item.id;
             return (

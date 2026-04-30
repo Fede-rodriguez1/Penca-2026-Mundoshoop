@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
@@ -12,6 +12,12 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Penca Mundial 2026 | Mundo Shop",
   description: "La penca del Mundial 2026 de Mundo Shop",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
