@@ -1040,7 +1040,32 @@ function TeamDisplay({ team }: { team: Match["home"] }) {
   );
 }
 
+function useCountdown(match: Match): string | null {
+  const [countdown, setCountdown] = useState<string | null>(null);
+  useEffect(() => {
+    function compute() {
+      if (match.status !== "upcoming" || match.time === "--:--") { setCountdown(null); return; }
+      const todayAR = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" });
+      if (match.date !== todayAR) { setCountdown(null); return; }
+      const matchDateTime = new Date(`${match.date}T${match.time}:00-03:00`);
+      const diff = matchDateTime.getTime() - Date.now();
+      if (diff <= 0) { setCountdown(null); return; }
+      const totalMin = Math.floor(diff / 60000);
+      const hours = Math.floor(totalMin / 60);
+      const mins = totalMin % 60;
+      if (totalMin < 10) setCountdown(`¡Comienza en ${totalMin}min!`);
+      else if (hours > 0) setCountdown(`Faltan ${hours}h${mins > 0 ? ` ${mins}min` : ""}`);
+      else setCountdown(`Faltan ${totalMin}min`);
+    }
+    compute();
+    const id = setInterval(compute, 60000);
+    return () => clearInterval(id);
+  }, [match]);
+  return countdown;
+}
+
 function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: () => void; prediction?: Prediction }) {
+  const countdown = useCountdown(match);
   return (
     <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-4">
@@ -1050,6 +1075,18 @@ function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: (
         </span>
         <span className="text-xs font-semibold text-gray-500">{match.time}</span>
       </div>
+      {countdown && (
+        <div className="mb-3 flex justify-center">
+          <span
+            className="text-xs font-bold px-3 py-1 rounded-full"
+            style={countdown.startsWith("¡")
+              ? { backgroundColor: "#fef2f2", color: "#ef4444" }
+              : { backgroundColor: "#eff6ff", color: "#00217E" }}
+          >
+            {countdown}
+          </span>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <TeamDisplay team={match.home} />
         <div className="flex flex-col items-center gap-1.5">
