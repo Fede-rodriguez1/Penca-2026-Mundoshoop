@@ -85,6 +85,7 @@ export default function DashboardPage() {
   const [avatarColor, setAvatarColor] = useState("#00217E");
   const [editAvatarColor, setEditAvatarColor] = useState("#00217E");
   const [pencaName, setPencaName] = useState<string | null>(null);
+  const [pencaCode, setPencaCode] = useState<string | null>(null);
   const [showPrizePopup, setShowPrizePopup] = useState(false);
 
   useEffect(() => {
@@ -101,6 +102,7 @@ export default function DashboardPage() {
         if (data?.name) setEditName(data.name);
         if (data?.avatarColor) { setAvatarColor(data.avatarColor); setEditAvatarColor(data.avatarColor); }
         if (data?.penca?.name) setPencaName(data.penca.name);
+        if (data?.penca?.code) setPencaCode(data.penca.code);
         if (data?.penca?.code === "GENERAL2026") {
           const seen = sessionStorage.getItem("prize-popup-seen");
           if (!seen) setShowPrizePopup(true);
@@ -960,63 +962,86 @@ export default function DashboardPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                   Volver
                 </button>
-                <span className="text-sm font-bold text-gray-700">Términos y condiciones</span>
+                <span className="text-sm font-bold text-gray-700">Bases y condiciones</span>
                 <span className="w-16" />
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm px-5 py-6 space-y-6">
                 <div>
-                  <h2 className="text-lg font-black text-gray-900 mb-1">Términos y Condiciones de Uso</h2>
-                  <p className="text-xs text-gray-400 mb-3">Última actualización: abril de 2026</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">Bienvenido a la Penca Mundial 2026 de Mundo Shop (en adelante, &quot;la Aplicación&quot;). Al registrarte y utilizar la Aplicación, aceptás estos Términos y Condiciones. Si no estás de acuerdo, no utilices la Aplicación.</p>
+                  <h2 className="text-lg font-black text-gray-900 mb-1">Bases y Condiciones</h2>
+                  <p className="text-xs text-gray-400 mb-3">Última actualización: mayo de 2026</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">Bienvenido a la Penca Mundial 2026 de Mundo Shop (en adelante, &quot;la Aplicación&quot;). Al registrarte y utilizar la Aplicación, aceptás estas Bases y Condiciones. Si no estás de acuerdo, no utilices la Aplicación.</p>
                 </div>
 
                 {[
                   {
-                    num: "1", title: "Descripción del Servicio",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">La Penca Mundial 2026 es una aplicación gratuita de pronósticos deportivos con fines recreativos, organizada por Mundo Shop para sus colaboradores y participantes invitados. Los usuarios pueden realizar predicciones sobre resultados de partidos del Mundial 2026 y competir en el ranking general.</p>
+                    num: "1", title: "Organización",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">La Penca Mundial 2026 es organizada por <span className="font-semibold text-gray-700">Mundo Shop</span>, con sede en la República Oriental del Uruguay. La participación es gratuita y tiene fines exclusivamente recreativos.</p>
                   },
                   {
-                    num: "2", title: "Registro y Cuenta",
-                    content: <ul className="space-y-1.5">{["Para participar debés registrarte con una cuenta válida (Google o correo electrónico).", "Sos responsable de mantener la confidencialidad de tu cuenta y contraseña.", "La información proporcionada debe ser veraz y actualizada.", "Mundo Shop se reserva el derecho de suspender cuentas que violen estos términos."].map((item, i) => (
+                    num: "2", title: "Participación y Registro",
+                    content: <ul className="space-y-1.5">{[
+                      "Para participar debés registrarte con una cuenta válida (Google o correo electrónico) usando el código o QR de tu penca.",
+                      "El registro estará habilitado hasta el inicio del primer partido del Mundial 2026 (11 de junio de 2026). Luego de esa fecha no se aceptarán nuevos participantes.",
+                      "La información proporcionada debe ser veraz y actualizada.",
+                      "Mundo Shop se reserva el derecho de suspender cuentas que violen estas bases.",
+                    ].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
                     ))}</ul>
                   },
                   {
-                    num: "3", title: "Uso Aceptable",
-                    content: <><p className="text-sm text-gray-500 leading-relaxed mb-2">Al utilizar la Aplicación, te comprometés a:</p><ul className="space-y-1.5">{["No utilizar la Aplicación con fines ilegales o no autorizados.", "No intentar acceder de forma no autorizada a los sistemas de la Aplicación.", "No utilizar bots, scripts u otros medios automatizados.", "Respetar a los demás participantes."].map((item, i) => (
+                    num: "3", title: "Predicciones",
+                    content: <ul className="space-y-1.5">{[
+                      "Los participantes podrán realizar predicciones de resultado (goles) para cada partido del Mundial 2026.",
+                      "El plazo para predecir cada partido cierra en el momento en que comienza dicho partido. No se aceptan predicciones posteriores.",
+                      "Una vez cerrado el plazo, las predicciones no podrán ser modificadas.",
+                    ].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
-                    ))}</ul></>
+                    ))}</ul>
                   },
                   {
-                    num: "4", title: "Privacidad y Datos Personales",
+                    num: "4", title: "Sistema de Puntuación",
+                    content: <ul className="space-y-1.5">{[
+                      "Resultado exacto (marcador correcto): 3 puntos.",
+                      "Resultado correcto (ganador o empate, sin el marcador exacto): 1 punto.",
+                      "Resultado incorrecto: 0 puntos.",
+                      "Los resultados son cargados por el administrador. Una vez publicados, el ranking y los puntos son definitivos.",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
+                    ))}</ul>
+                  },
+                  ...(pencaCode === "GENERAL2026" ? [{
+                    num: "5", title: "Premio",
+                    content: <ul className="space-y-1.5">{[
+                      "El ganador de la Penca General recibirá un viaje para dos personas a Río de Janeiro, Brasil, con vuelo y estadía cubiertos por 5 días.",
+                      "El premio es exclusivo para residentes de la República Oriental del Uruguay.",
+                      "La fecha del viaje se coordinará con la agencia de viajes en temporada baja, según disponibilidad.",
+                      "En caso de empate en puntos al finalizar el torneo, el ganador se determinará por la mayor cantidad de resultados exactos acertados.",
+                      "Si el empate persiste, se realizará un sorteo entre los participantes empatados.",
+                      "El premio es personal e intransferible. No tiene valor en efectivo ni puede ser canjeado por dinero.",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFCA61" }} />{item}</li>
+                    ))}</ul>
+                  }] : []),
+                  {
+                    num: pencaCode === "GENERAL2026" ? "6" : "5", title: "Privacidad y Datos Personales",
                     content: <><p className="text-sm text-gray-500 leading-relaxed mb-2">Recopilamos y procesamos los siguientes datos:</p><ul className="space-y-1.5">{["Información de registro (nombre y correo electrónico).", "Predicciones realizadas y puntos obtenidos."].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
                     ))}</ul><p className="text-sm text-gray-500 leading-relaxed mt-2">Tus datos no serán compartidos con terceros salvo cuando sea necesario para el funcionamiento del servicio o cuando la ley lo requiera.</p></>
                   },
                   {
-                    num: "5", title: "Naturaleza del Juego",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">La Aplicación es un juego de entretenimiento sin apuestas monetarias. No se realizan transacciones económicas. Los puntos y el ranking son exclusivamente con fines recreativos y no tienen valor monetario.</p>
+                    num: pencaCode === "GENERAL2026" ? "7" : "6", title: "Uso Aceptable",
+                    content: <ul className="space-y-1.5">{["No utilizar la Aplicación con fines ilegales o no autorizados.", "No intentar acceder de forma no autorizada a los sistemas de la Aplicación.", "No utilizar bots, scripts u otros medios automatizados.", "Respetar a los demás participantes."].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
+                    ))}</ul>
                   },
                   {
-                    num: "6", title: "Resultados y Puntuación",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">Los resultados de los partidos son cargados por el administrador de la penca. Una vez publicados, el ranking y los puntos son definitivos. No se aceptan reclamos sobre puntuaciones.</p>
+                    num: pencaCode === "GENERAL2026" ? "8" : "7", title: "Disponibilidad del Servicio",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Mundo Shop se esfuerza por mantener la Aplicación disponible, pero no garantiza un funcionamiento ininterrumpido. Puede modificar, suspender o discontinuar cualquier aspecto del servicio sin previo aviso.</p>
                   },
                   {
-                    num: "7", title: "Disponibilidad del Servicio",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">Nos esforzamos por mantener la Aplicación disponible, pero no garantizamos un funcionamiento ininterrumpido. Mundo Shop puede modificar, suspender o discontinuar cualquier aspecto del servicio sin previo aviso.</p>
-                  },
-                  {
-                    num: "8", title: "Modificaciones",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entrarán en vigor al publicarse en la Aplicación. El uso continuado implica su aceptación.</p>
-                  },
-                  {
-                    num: "9", title: "Contacto",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">Para consultas sobre estos términos podés contactarnos a través de Mundo Shop.</p>
-                  },
-                  {
-                    num: "10", title: "Ley Aplicable",
-                    content: <p className="text-sm text-gray-500 leading-relaxed">Estos términos se rigen por las leyes de la República Oriental del Uruguay. Cualquier disputa será sometida a los tribunales competentes de Montevideo, Uruguay.</p>
+                    num: pencaCode === "GENERAL2026" ? "9" : "8", title: "Ley Aplicable",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Estas bases se rigen por las leyes de la República Oriental del Uruguay. Cualquier disputa será sometida a los tribunales competentes de Montevideo, Uruguay.</p>
                   },
                 ].map((section, i, arr) => (
                   <div key={section.num}>
