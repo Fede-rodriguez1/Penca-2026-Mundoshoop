@@ -1002,8 +1002,9 @@ export default function DashboardPage() {
                   {
                     num: "4", title: "Sistema de Puntuación",
                     content: <ul className="space-y-1.5">{[
-                      "Resultado exacto (marcador correcto): 3 puntos.",
-                      "Resultado correcto (ganador o empate, sin el marcador exacto): 1 punto.",
+                      "Resultado exacto (marcador correcto): 8 puntos.",
+                      "Ganador correcto + diferencia de goles correcta (ej: predijiste 2-0 y salió 3-1): 5 puntos.",
+                      "Ganador correcto o empate (sin acertar la diferencia): 3 puntos.",
                       "Resultado incorrecto: 0 puntos.",
                       "Los resultados son cargados por el administrador. Una vez publicados, el ranking y los puntos son definitivos.",
                     ].map((item, i) => (
