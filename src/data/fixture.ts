@@ -79,7 +79,7 @@ function ph(label: string): Team {
 
 export const matches: Match[] = [
   // GRUPO A
-  { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "upcoming" },
+  { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "live" },
   { id: "A2", date: "2026-06-11", time: "23:00", group: "A", matchday: 1, home: t.KOR, away: t.CZE, venue: "Los Ángeles", status: "upcoming" },
   { id: "A3", date: "2026-06-18", time: "15:00", group: "A", matchday: 2, home: t.CZE, away: t.RSA, venue: "Dallas", status: "upcoming" },
   { id: "A4", date: "2026-06-18", time: "00:00", group: "A", matchday: 2, home: t.MEX, away: t.KOR, venue: "Guadalajara", status: "upcoming" },
