@@ -553,6 +553,28 @@ export default function DashboardPage() {
                 }
                 .podium-bar { transform-origin: bottom; animation: podium-up 0.5s ease-out forwards; }
                 .trophy-float { animation: trophy-float 2s ease-in-out infinite; }
+                @keyframes shimmer {
+                  0%   { background-position: -200% center; }
+                  100% { background-position: 200% center; }
+                }
+                @media (hover: hover) {
+                  .btn-predict { position: relative; overflow: hidden; }
+                  .btn-predict::after {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.55) 50%, transparent 60%);
+                    background-size: 200% 100%;
+                    background-position: -200% center;
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                  }
+                  .btn-predict:hover::after {
+                    opacity: 1;
+                    animation: shimmer 0.7s ease forwards;
+                  }
+                  .btn-predict:hover { transform: scale(1.04); transition: transform 0.15s ease; }
+                }
               `}</style>
               <div className="flex items-end justify-center gap-3 pt-4 pb-2">
 
@@ -1162,7 +1184,7 @@ function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: (
           )}
           <button
             onClick={onPredict}
-            className="px-5 py-2 rounded-full text-xs font-bold tracking-wider transition-opacity hover:opacity-80"
+            className={`px-5 py-2 rounded-full text-xs font-bold tracking-wider transition-opacity hover:opacity-80${!prediction ? " btn-predict" : ""}`}
             style={{ backgroundColor: prediction ? "#e0e7ff" : "#FFCA61", color: "#00217E" }}
           >
             {prediction ? "EDITAR" : "PREDECIR"}
