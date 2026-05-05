@@ -351,6 +351,14 @@ export default function DashboardPage() {
           {/* ── Partidos ── */}
           {nav === "matches" && tab === "upcoming" && (
             <div className="max-w-2xl mx-auto space-y-6">
+              {/* ⚠️ TEST BANNER — borrar antes del Mundial 2026 */}
+              <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "#fef9c3" }}>
+                <span className="text-lg">🧪</span>
+                <div>
+                  <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">El partido <span className="font-semibold">México vs Sudáfrica</span> está siendo usado para testear el sync en vivo con el partido real de <span className="font-semibold">Arsenal vs Atlético Madrid</span> (Champions League).</p>
+                </div>
+              </div>
               {upcomingDates.map((date) => (
                 <section key={date}>
                   <div className="flex items-center gap-2 mb-3">

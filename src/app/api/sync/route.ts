@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 const FIXTURE_MAP: Record<number, string> = {
   // apiFootballId: matchId local
   // ⚠️ TEST ONLY — mapeo temporal para probar el flujo. Borrar antes del Mundial 2026.
-  1515817: "A1", // FK Liepaja vs Grobina → mapeado a México vs Sudáfrica para test
+  1540843: "A1", // Arsenal vs Atlético Madrid (Champions 05/05) → mapeado a México vs Sudáfrica para test
   // Cuando llegue el 2026, acá van los IDs reales de cada partido del Mundial
 };
 
