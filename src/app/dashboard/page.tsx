@@ -85,6 +85,7 @@ export default function DashboardPage() {
   const [avatarColor, setAvatarColor] = useState("#00217E");
   const [editAvatarColor, setEditAvatarColor] = useState("#00217E");
   const [pencaName, setPencaName] = useState<string | null>(null);
+  const [showPrizePopup, setShowPrizePopup] = useState(false);
 
   useEffect(() => {
     fetch("/api/predictions")
@@ -100,6 +101,10 @@ export default function DashboardPage() {
         if (data?.name) setEditName(data.name);
         if (data?.avatarColor) { setAvatarColor(data.avatarColor); setEditAvatarColor(data.avatarColor); }
         if (data?.penca?.name) setPencaName(data.penca.name);
+        if (data?.penca?.code === "GENERAL2026") {
+          const seen = sessionStorage.getItem("prize-popup-seen");
+          if (!seen) setShowPrizePopup(true);
+        }
       });
   }, []);
 
@@ -130,6 +135,37 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#f3f4f6" }}>
+      {/* ── Premio popup ── */}
+      {showPrizePopup && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
+          <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            {/* Imagen Río */}
+            <div className="relative h-56">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/rio.avif" alt="Río de Janeiro" className="w-full h-full object-cover" />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)" }} />
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="text-white text-xl font-black leading-tight">¡El ganador viaja a<br />Río de Janeiro! 🇧🇷</p>
+              </div>
+            </div>
+            {/* Contenido */}
+            <div className="bg-white px-5 py-5">
+              <p className="text-sm text-gray-600 mb-1">
+                El ganador de la penca se lleva un <span className="font-bold text-gray-900">viaje para 2 personas a Río de Janeiro</span> — vuelo y estadía cubiertos por 5 días.
+              </p>
+              <p className="text-xs text-gray-400 mt-2 mb-4">Fecha a coordinar con la agencia en temporada baja.</p>
+              <button
+                onClick={() => { sessionStorage.setItem("prize-popup-seen", "1"); setShowPrizePopup(false); }}
+                className="w-full py-3 rounded-2xl text-sm font-bold text-white"
+                style={{ backgroundColor: "#00217E" }}
+              >
+                ¡Vamos a ganar!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {selectedMatch && (
         <PredictionModal
           match={selectedMatch}
