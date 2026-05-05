@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
 
     await prisma.matchResult.upsert({
       where: { matchId },
-      update: { homeScore: f.goals.home, awayScore: f.goals.away },
-      create: { matchId, homeScore: f.goals.home, awayScore: f.goals.away },
+      update: { homeScore: f.goals.home, awayScore: f.goals.away, elapsed: f.fixture.status.elapsed },
+      create: { matchId, homeScore: f.goals.home, awayScore: f.goals.away, elapsed: f.fixture.status.elapsed },
     });
     synced++;
   }

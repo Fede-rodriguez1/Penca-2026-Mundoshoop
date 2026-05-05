@@ -6,6 +6,7 @@ import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
 type Prediction = { matchId: string; homeScore: number; awayScore: number };
+type MatchResult = { matchId: string; homeScore: number; awayScore: number; elapsed: number | null };
 type RankingEntry = { id: string; name: string; initials: string; avatarColor: string; points: number; exact: number; correct: number; predictions: number; pos: number };
 
 type Tab = "upcoming" | "finished" | "ranking";
@@ -75,6 +76,7 @@ export default function DashboardPage() {
   const [selectedGroup, setSelectedGroup] = useState("A");
 
   const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [results, setResults] = useState<MatchResult[]>([]);
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [profileView, setProfileView] = useState<"main" | "edit" | "history" | "rules" | "terms">("main");
   const [editName, setEditName] = useState("");
@@ -92,6 +94,9 @@ export default function DashboardPage() {
     fetch("/api/predictions")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setPredictions(data); });
+    fetch("/api/results")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setResults(data); });
     fetch("/api/ranking")
       .then((r) => { if (!r.ok) return []; return r.json(); })
       .then((data) => { if (Array.isArray(data)) setRanking(data); });
@@ -134,6 +139,12 @@ export default function DashboardPage() {
   const finishedByDate = groupByDate(finished);
   const upcomingDates = Object.keys(upcomingByDate).sort();
   const finishedDates = Object.keys(finishedByDate).sort().reverse();
+
+  function withResult(match: Match): Match & { elapsed?: number | null } {
+    const r = results.find((r) => r.matchId === match.id);
+    if (!r) return match;
+    return { ...match, homeScore: r.homeScore, awayScore: r.awayScore, elapsed: r.elapsed };
+  }
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "#f3f4f6" }}>
@@ -277,7 +288,7 @@ export default function DashboardPage() {
                       <div key={match.id}>
                         {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
                         <button className="w-full text-left" onClick={() => setViewMatch(match)}>
-                          <FinishedRow match={match} />
+                          <FinishedRow match={withResult(match)} />
                         </button>
                       </div>
                     ))}
@@ -1204,7 +1215,7 @@ function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: (
   );
 }
 
-function FinishedRow({ match }: { match: Match }) {
+function FinishedRow({ match }: { match: Match & { elapsed?: number | null } }) {
   const isLive = match.status === "live";
   return (
     <div className="px-4 py-4">
@@ -1235,7 +1246,9 @@ function FinishedRow({ match }: { match: Match }) {
             <span className="text-3xl font-bold text-gray-900">{match.awayScore ?? 0}</span>
           </div>
           {isLive && (
-            <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">En curso</span>
+            <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+              {match.elapsed != null ? `${match.elapsed}'` : "En curso"}
+            </span>
           )}
         </div>
         <TeamDisplay team={match.away} />
