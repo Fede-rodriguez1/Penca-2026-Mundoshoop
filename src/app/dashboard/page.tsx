@@ -6,7 +6,7 @@ import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
 type Prediction = { matchId: string; homeScore: number; awayScore: number };
-type MatchResult = { matchId: string; homeScore: number; awayScore: number; elapsed: number | null };
+type MatchResult = { matchId: string; homeScore: number; awayScore: number; elapsed: number | null; status: string };
 type RankingEntry = { id: string; name: string; initials: string; avatarColor: string; points: number; exact: number; correct: number; predictions: number; pos: number };
 
 type Tab = "upcoming" | "finished" | "ranking";
@@ -90,16 +90,24 @@ export default function DashboardPage() {
   const [pencaCode, setPencaCode] = useState<string | null>(null);
   const [showPrizePopup, setShowPrizePopup] = useState(false);
 
+  function fetchResults() {
+    fetch("/api/results")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setResults(data); });
+  }
+
+  function fetchRanking() {
+    fetch("/api/ranking")
+      .then((r) => { if (!r.ok) return []; return r.json(); })
+      .then((data) => { if (Array.isArray(data)) setRanking(data); });
+  }
+
   useEffect(() => {
     fetch("/api/predictions")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setPredictions(data); });
-    fetch("/api/results")
-      .then((r) => r.json())
-      .then((data) => { if (Array.isArray(data)) setResults(data); });
-    fetch("/api/ranking")
-      .then((r) => { if (!r.ok) return []; return r.json(); })
-      .then((data) => { if (Array.isArray(data)) setRanking(data); });
+    fetchResults();
+    fetchRanking();
     fetch("/api/users/me")
       .then((r) => r.json())
       .then((data) => {
@@ -113,6 +121,13 @@ export default function DashboardPage() {
           if (!seen) setShowPrizePopup(true);
         }
       });
+
+    // Poll results + ranking every 60s for live match updates
+    const interval = setInterval(() => {
+      fetchResults();
+      fetchRanking();
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   function onPredictionSaved(p: Prediction) {
@@ -132,10 +147,17 @@ export default function DashboardPage() {
   const myPos = myRank?.pos ?? "—";
   const myPredictions = predictions.length;
 
-  const upcoming = matches.filter((m) => m.status === "upcoming");
-  const finished = matches.filter((m) => m.status === "finished");
+  // Use DB status when available, falling back to fixture.ts
+  function effectiveStatus(m: Match): string {
+    const r = results.find((r) => r.matchId === m.id);
+    return r?.status ?? m.status;
+  }
 
-  const upcomingByDate = groupByDate(upcoming);
+  const live = matches.filter((m) => effectiveStatus(m) === "live");
+  const upcoming = matches.filter((m) => effectiveStatus(m) === "upcoming");
+  const finished = matches.filter((m) => effectiveStatus(m) === "finished");
+
+  const upcomingByDate = groupByDate([...live, ...upcoming]);
   const finishedByDate = groupByDate(finished);
   const upcomingDates = Object.keys(upcomingByDate).sort();
   const finishedDates = Object.keys(finishedByDate).sort().reverse();
@@ -143,7 +165,13 @@ export default function DashboardPage() {
   function withResult(match: Match): Match & { elapsed?: number | null } {
     const r = results.find((r) => r.matchId === match.id);
     if (!r) return match;
-    return { ...match, homeScore: r.homeScore, awayScore: r.awayScore, elapsed: r.elapsed };
+    return {
+      ...match,
+      homeScore: r.homeScore,
+      awayScore: r.awayScore,
+      elapsed: r.elapsed,
+      status: (r.status as Match["status"]) ?? match.status,
+    };
   }
 
   return (
@@ -278,16 +306,16 @@ export default function DashboardPage() {
                   </span>
                   <h2 className="text-sm font-bold text-gray-800">En vivo</h2>
                 </div>
-                {matches.filter(m => m.status === "live").length === 0 ? (
+                {live.length === 0 ? (
                   <div className="bg-white rounded-2xl shadow-sm px-5 py-6 text-center">
                     <p className="text-gray-400 text-sm">No hay partidos en curso ahora</p>
                   </div>
                 ) : (
                   <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    {matches.filter(m => m.status === "live").map((match, idx) => (
+                    {live.map((match, idx) => (
                       <div key={match.id}>
                         {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                        <button className="w-full text-left" onClick={() => setViewMatch(match)}>
+                        <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
                           <FinishedRow match={withResult(match)} />
                         </button>
                       </div>
@@ -377,12 +405,21 @@ export default function DashboardPage() {
                     <h2 className="text-sm font-bold text-gray-800">{formatDate(date)}</h2>
                   </div>
                   <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    {upcomingByDate[date].map((match, idx) => (
-                      <div key={match.id}>
-                        {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
-                      </div>
-                    ))}
+                    {upcomingByDate[date].map((match, idx) => {
+                      const eff = effectiveStatus(match);
+                      return (
+                        <div key={match.id}>
+                          {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                          {eff === "live" ? (
+                            <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
+                              <FinishedRow match={withResult(match)} />
+                            </button>
+                          ) : (
+                            <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </section>
               ))}
@@ -410,7 +447,7 @@ export default function DashboardPage() {
                         {finishedByDate[date].map((match, idx) => (
                           <div key={match.id}>
                             {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                            <FinishedRow match={match} />
+                            <FinishedRow match={withResult(match)} />
                           </div>
                         ))}
                       </div>
@@ -508,20 +545,23 @@ export default function DashboardPage() {
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h2 className="text-sm font-bold text-gray-900">Partidos</h2>
                 </div>
-                {matches.filter((m) => m.group === selectedGroup).map((match, idx, arr) => (
-                  <div key={match.id}>
-                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                    {match.status === "finished" ? (
-                      <FinishedRow match={match} />
-                    ) : match.status === "live" ? (
-                      <button className="w-full text-left" onClick={() => setViewMatch(match)}>
-                        <FinishedRow match={match} />
-                      </button>
-                    ) : (
-                      <MatchRow match={match} onPredict={() => setSelectedMatch(match)} />
-                    )}
-                  </div>
-                ))}
+                {matches.filter((m) => m.group === selectedGroup).map((match, idx) => {
+                  const eff = effectiveStatus(match);
+                  return (
+                    <div key={match.id}>
+                      {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                      {eff === "finished" ? (
+                        <FinishedRow match={withResult(match)} />
+                      ) : eff === "live" ? (
+                        <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
+                          <FinishedRow match={withResult(match)} />
+                        </button>
+                      ) : (
+                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
