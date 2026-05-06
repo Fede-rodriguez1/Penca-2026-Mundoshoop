@@ -70,7 +70,7 @@ const sampleRanking = [
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [tab, setTab] = useState<Tab>("upcoming");
-  const [nav, setNav] = useState<NavItem>("matches");
+  const [nav, setNav] = useState<NavItem>("home");
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [viewMatch, setViewMatch] = useState<Match | null>(null);
   const [selectedGroup, setSelectedGroup] = useState("A");
