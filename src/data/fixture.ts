@@ -79,13 +79,25 @@ function ph(label: string): Team {
 
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026
 const testTeams = {
-  BAY: { name: "Bayern München", shortName: "Bayern", flag: "🇩🇪", shield: "https://media.api-sports.io/football/teams/157.png" },
-  PSG: { name: "Paris Saint-Germain", shortName: "PSG", flag: "🇫🇷", shield: "https://media.api-sports.io/football/teams/85.png" },
+  BAY: { name: "Bayern München",        shortName: "Bayern",      flag: "🇩🇪", shield: "https://media.api-sports.io/football/teams/157.png" },
+  PSG: { name: "Paris Saint-Germain",   shortName: "PSG",         flag: "🇫🇷", shield: "https://media.api-sports.io/football/teams/85.png" },
+  CSC: { name: "Cusco FC",              shortName: "Cusco",       flag: "🇵🇪", shield: "https://media.api-sports.io/football/teams/10013.png" },
+  EST: { name: "Estudiantes L.P.",      shortName: "Estudiantes", flag: "🇦🇷", shield: "https://media.api-sports.io/football/teams/450.png" },
+  IND: { name: "Ind. Rivadavia",        shortName: "Ind. Riv.",   flag: "🇦🇷", shield: "https://media.api-sports.io/football/teams/473.png" },
+  FLU: { name: "Fluminense",            shortName: "Fluminense",  flag: "🇧🇷", shield: "https://media.api-sports.io/football/teams/124.png" },
+  SFE: { name: "Ind. Santa Fe",         shortName: "Santa Fe",    flag: "🇨🇴", shield: "https://media.api-sports.io/football/teams/1139.png" },
+  COR: { name: "Corinthians",           shortName: "Corinthians", flag: "🇧🇷", shield: "https://media.api-sports.io/football/teams/131.png" },
+  TOL: { name: "Deportes Tolima",       shortName: "Tolima",      flag: "🇨🇴", shield: "https://media.api-sports.io/football/teams/1142.png" },
+  NAC: { name: "Club Nacional",         shortName: "Nacional",    flag: "🇺🇾", shield: "https://media.api-sports.io/football/teams/2356.png" },
 };
 
 export const matches: Match[] = [
-  // ⚠️ TEST — Champions League 06/05/2026 (borrar antes del Mundial)
-  { id: "TEST1", date: "2026-05-06", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAY, away: testTeams.PSG, venue: "Allianz Arena", status: "upcoming" },
+  // ⚠️ TEST — borrar antes del Mundial 2026
+  { id: "TEST1", date: "2026-05-06", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAY, away: testTeams.PSG, venue: "Allianz Arena",        status: "upcoming" },
+  { id: "TEST2", date: "2026-05-06", time: "19:00", group: "TEST", matchday: 1, home: testTeams.CSC, away: testTeams.EST, venue: "Estadio Inca Garcilaso", status: "upcoming" },
+  { id: "TEST3", date: "2026-05-07", time: "21:30", group: "TEST", matchday: 1, home: testTeams.IND, away: testTeams.FLU, venue: "Mendoza",               status: "upcoming" },
+  { id: "TEST4", date: "2026-05-07", time: "21:30", group: "TEST", matchday: 1, home: testTeams.SFE, away: testTeams.COR, venue: "Bogotá",                status: "upcoming" },
+  { id: "TEST5", date: "2026-05-07", time: "23:00", group: "TEST", matchday: 1, home: testTeams.TOL, away: testTeams.NAC, venue: "Ibagué",                status: "upcoming" },
 
   // GRUPO A
   { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "upcoming" },
