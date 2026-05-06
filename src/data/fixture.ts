@@ -95,9 +95,9 @@ export const matches: Match[] = [
   // ⚠️ TEST — borrar antes del Mundial 2026
   { id: "TEST1", date: "2026-05-06", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAY, away: testTeams.PSG, venue: "Allianz Arena",        status: "upcoming" },
   { id: "TEST2", date: "2026-05-06", time: "19:00", group: "TEST", matchday: 1, home: testTeams.CSC, away: testTeams.EST, venue: "Estadio Inca Garcilaso", status: "upcoming" },
-  { id: "TEST3", date: "2026-05-07", time: "21:30", group: "TEST", matchday: 1, home: testTeams.IND, away: testTeams.FLU, venue: "Mendoza",               status: "upcoming" },
-  { id: "TEST4", date: "2026-05-07", time: "21:30", group: "TEST", matchday: 1, home: testTeams.SFE, away: testTeams.COR, venue: "Bogotá",                status: "upcoming" },
-  { id: "TEST5", date: "2026-05-07", time: "23:00", group: "TEST", matchday: 1, home: testTeams.TOL, away: testTeams.NAC, venue: "Ibagué",                status: "upcoming" },
+  { id: "TEST3", date: "2026-05-06", time: "21:30", group: "TEST", matchday: 1, home: testTeams.IND, away: testTeams.FLU, venue: "Mendoza",               status: "upcoming" },
+  { id: "TEST4", date: "2026-05-06", time: "21:30", group: "TEST", matchday: 1, home: testTeams.SFE, away: testTeams.COR, venue: "Bogotá",                status: "upcoming" },
+  { id: "TEST5", date: "2026-05-06", time: "23:00", group: "TEST", matchday: 1, home: testTeams.TOL, away: testTeams.NAC, venue: "Ibagué",                status: "upcoming" },
 
   // GRUPO A
   { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "upcoming" },
