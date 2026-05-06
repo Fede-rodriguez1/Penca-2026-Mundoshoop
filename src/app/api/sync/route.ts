@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { calcPoints } from "@/lib/scoring";
 
 // IDs de la API-Football que mapean a los matchIds del fixture local
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
@@ -56,6 +57,8 @@ export async function POST(req: NextRequest) {
   const fixtures = await fetchFixturesByIds(mappedIds);
 
   let synced = 0;
+  let pointsCalculated = 0;
+
   for (const f of fixtures) {
     const matchId = FIXTURE_MAP[f.fixture.id];
     if (!matchId) continue;
@@ -63,6 +66,9 @@ export async function POST(req: NextRequest) {
     const matchStatus = getMatchStatus(f.fixture.status.short);
     if (!matchStatus) continue; // partido no empezó o cancelado
     if (f.goals.home === null || f.goals.away === null) continue;
+
+    // Verificar si ya estaba finished antes de upsert
+    const existing = await prisma.matchResult.findUnique({ where: { matchId } });
 
     await prisma.matchResult.upsert({
       where: { matchId },
@@ -81,9 +87,25 @@ export async function POST(req: NextRequest) {
       },
     });
     synced++;
+
+    // Calcular puntos solo cuando el partido pasa a finished por primera vez
+    if (matchStatus === "finished" && existing?.status !== "finished") {
+      const predictions = await prisma.prediction.findMany({ where: { matchId } });
+      await Promise.all(
+        predictions.map((p) =>
+          prisma.prediction.update({
+            where: { id: p.id },
+            data: {
+              points: calcPoints(p.homeScore, p.awayScore, f.goals.home!, f.goals.away!),
+            },
+          })
+        )
+      );
+      pointsCalculated += predictions.length;
+    }
   }
 
-  return NextResponse.json({ message: "ok", synced });
+  return NextResponse.json({ message: "ok", synced, pointsCalculated });
 }
 
 // GET para explorar partidos desde el admin
