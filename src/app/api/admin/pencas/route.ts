@@ -12,7 +12,10 @@ export async function GET() {
 
   const pencas = await prisma.penca.findMany({
     orderBy: { createdAt: "asc" },
-    include: { _count: { select: { users: true } } },
+    include: {
+      _count: { select: { users: true } },
+      users: { select: { id: true, name: true, email: true, createdAt: true }, orderBy: { createdAt: "asc" } },
+    },
   });
 
   return NextResponse.json(pencas);

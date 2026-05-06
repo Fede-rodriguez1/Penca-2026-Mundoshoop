@@ -7,7 +7,8 @@ import { matches, groupByDate, formatDate } from "@/data/fixture";
 import { QRCodeCanvas } from "qrcode.react";
 
 type MatchResult = { matchId: string; homeScore: number; awayScore: number };
-type Penca = { id: string; name: string; code: string; isDefault: boolean; _count: { users: number } };
+type PencaUser = { id: string; name: string; email: string; createdAt: string };
+type Penca = { id: string; name: string; code: string; isDefault: boolean; _count: { users: number }; users: PencaUser[] };
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -29,6 +30,7 @@ export default function AdminPage() {
   const [resetDone, setResetDone] = useState<string | null>(null);
   const [myPencaId, setMyPencaId] = useState<string | null>(null);
   const [switchingPenca, setSwitchingPenca] = useState(false);
+  const [expandedPenca, setExpandedPenca] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") { router.replace("/login"); return; }
@@ -352,7 +354,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Link de registro */}
-                    <div className="flex items-center gap-2 p-2.5 rounded-xl" style={{ backgroundColor: "#f3f4f6" }}>
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl mb-3" style={{ backgroundColor: "#f3f4f6" }}>
                       <p className="text-xs text-gray-400 flex-1 truncate">{registerUrl(penca.code)}</p>
                       <button
                         onClick={() => navigator.clipboard.writeText(registerUrl(penca.code))}
@@ -362,6 +364,40 @@ export default function AdminPage() {
                         Copiar link
                       </button>
                     </div>
+
+                    {/* Inscriptos */}
+                    <button
+                      onClick={() => setExpandedPenca(expandedPenca === penca.id ? null : penca.id)}
+                      className="w-full flex items-center justify-between px-1 py-1"
+                    >
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                        Inscriptos ({penca._count.users})
+                      </span>
+                      <span className="text-gray-400 text-xs">{expandedPenca === penca.id ? "▲" : "▼"}</span>
+                    </button>
+
+                    {expandedPenca === penca.id && (
+                      <div className="mt-2 rounded-xl overflow-hidden border border-gray-100">
+                        {penca.users.length === 0 ? (
+                          <p className="text-xs text-gray-400 px-4 py-3">Nadie inscripto todavía</p>
+                        ) : (
+                          penca.users.map((user, idx) => (
+                            <div key={user.id}>
+                              {idx > 0 && <div className="h-px bg-gray-50" />}
+                              <div className="flex items-center justify-between px-4 py-2.5">
+                                <div>
+                                  <p className="text-xs font-semibold text-gray-800">{user.name}</p>
+                                  <p className="text-xs text-gray-400">{user.email}</p>
+                                </div>
+                                <p className="text-xs text-gray-300">
+                                  {new Date(user.createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit" })}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
