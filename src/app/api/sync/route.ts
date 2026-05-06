@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
 const FIXTURE_MAP: Record<number, string> = {
   // apiFootballId: matchId local
-  1540843: "A1", // Arsenal vs Atlético Madrid (Champions 05/05) → test
+  1540844: "A1", // Bayern München vs PSG (Champions 06/05) → test
   // Cuando llegue el 2026, acá van los IDs reales de cada partido del Mundial
 };
 
