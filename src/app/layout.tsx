@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     description: "La penca del Mundial 2026 de Mundo Shop. ¡Predecí los resultados y ganá!",
     images: [
       {
-        url: "https://penca-2026-mundoshoop-production.up.railway.app/mundoshop-logo-dark.png",
-        width: 800,
-        height: 400,
+        url: "https://penca-2026-mundoshoop-production.up.railway.app/og-image.png",
+        width: 1200,
+        height: 630,
         alt: "Penca Mundial 2026 - Mundo Shop",
       },
     ],
