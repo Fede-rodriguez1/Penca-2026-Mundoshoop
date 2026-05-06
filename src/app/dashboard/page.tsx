@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
@@ -67,8 +68,10 @@ const sampleRanking = [
   { pos: 8, name: "Laura B.", pts: 17, initials: "LB" },
 ];
 
-export default function DashboardPage() {
+function DashboardPageInner() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("upcoming");
   const [nav, setNav] = useState<NavItem>("home");
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -90,6 +93,27 @@ export default function DashboardPage() {
   const [pencaName, setPencaName] = useState<string | null>(null);
   const [pencaCode, setPencaCode] = useState<string | null>(null);
   const [showPrizePopup, setShowPrizePopup] = useState(false);
+
+  // Si viene de Google con ?pencaCode=, actualizar la penca y limpiar la URL
+  useEffect(() => {
+    const code = searchParams.get("pencaCode");
+    if (!code || !session?.user?.id) return;
+    fetch(`/api/pencas/validate?code=${code}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.id) {
+          fetch("/api/users/me", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pencaId: data.id }),
+          }).then(() => {
+            setPencaCode(code);
+            setPencaName(data.name);
+            router.replace("/dashboard");
+          });
+        }
+      });
+  }, [searchParams, session?.user?.id]);
 
   function fetchResults() {
     fetch("/api/results")
@@ -1203,6 +1227,14 @@ export default function DashboardPage() {
         </nav>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardPageInner />
+    </Suspense>
   );
 }
 
