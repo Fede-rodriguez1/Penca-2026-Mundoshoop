@@ -395,7 +395,7 @@ export default function DashboardPage() {
                 <span className="text-lg">🧪</span>
                 <div>
                   <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
-                  <p className="text-xs text-yellow-700 mt-0.5">El partido <span className="font-semibold">México vs Sudáfrica</span> está siendo usado para testear el sync en vivo con el partido real de <span className="font-semibold">Bayern München vs PSG</span> (Champions League, hoy 16:00 UY).</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">El partido de <span className="font-semibold">Bayern München vs PSG</span> de hoy (Champions League, 16:00 UY) es un test real del sistema de sync en vivo.</p>
                 </div>
               </div>
               {upcomingDates.map((date) => (

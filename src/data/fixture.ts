@@ -77,7 +77,16 @@ function ph(label: string): Team {
   return { name: label, shortName: label, flag: "❓", shield: "" };
 }
 
+// ⚠️ TEST ONLY — borrar antes del Mundial 2026
+const testTeams = {
+  BAY: { name: "Bayern München", shortName: "Bayern", flag: "🇩🇪", shield: "https://media.api-sports.io/football/teams/157.png" },
+  PSG: { name: "Paris Saint-Germain", shortName: "PSG", flag: "🇫🇷", shield: "https://media.api-sports.io/football/teams/85.png" },
+};
+
 export const matches: Match[] = [
+  // ⚠️ TEST — Champions League 06/05/2026 (borrar antes del Mundial)
+  { id: "TEST1", date: "2026-05-06", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAY, away: testTeams.PSG, venue: "Allianz Arena", status: "upcoming" },
+
   // GRUPO A
   { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "upcoming" },
   { id: "A2", date: "2026-06-11", time: "23:00", group: "A", matchday: 1, home: t.KOR, away: t.CZE, venue: "Los Ángeles", status: "upcoming" },
