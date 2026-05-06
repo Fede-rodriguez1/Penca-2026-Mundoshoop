@@ -328,18 +328,19 @@ export default function AdminPage() {
                       <QRCodeCanvas
                         id={`qr-${penca.code}`}
                         value={registerUrl(penca.code)}
-                        size={180}
+                        size={400}
                         bgColor="#ffffff"
                         fgColor="#00217E"
-                        level="M"
+                        level="H"
                         imageSettings={{
                           src: "/mundoshop-logo-dark.png",
                           x: undefined,
                           y: undefined,
-                          height: 30,
-                          width: 90,
+                          height: 40,
+                          width: 120,
                           excavate: true,
                         }}
+                        style={{ width: 180, height: 180 }}
                       />
                       <button
                         onClick={() => downloadQR(penca.code, penca.name)}
