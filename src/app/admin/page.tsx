@@ -24,7 +24,9 @@ export default function AdminPage() {
   const [newPencaCode, setNewPencaCode] = useState("");
   const [pencaError, setPencaError] = useState("");
   const [pencaSaving, setPencaSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"matches" | "pencas">("matches");
+  const [activeTab, setActiveTab] = useState<"matches" | "pencas" | "reset">("matches");
+  const [resetting, setResetting] = useState<string | null>(null);
+  const [resetDone, setResetDone] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") { router.replace("/login"); return; }
@@ -79,6 +81,23 @@ export default function AdminPage() {
     setNewPencaCode("");
   }
 
+  async function doReset(scope: "results" | "predictions" | "all") {
+    setResetting(scope);
+    setResetDone(null);
+    await fetch("/api/admin/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scope }),
+    });
+    if (scope === "results" || scope === "all") {
+      setResults([]);
+      setScores({});
+    }
+    setResetting(null);
+    setResetDone(scope);
+    setTimeout(() => setResetDone(null), 3000);
+  }
+
   const registerUrl = (code: string) =>
     `${typeof window !== "undefined" ? window.location.origin : ""}/register?code=${code}`;
 
@@ -115,14 +134,18 @@ export default function AdminPage() {
       {/* Tabs */}
       <div className="bg-white border-b border-gray-100 px-5">
         <div className="flex gap-1 py-2">
-          {(["matches", "pencas"] as const).map((t) => (
+          {(["matches", "pencas", "reset"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-              style={activeTab === t ? { backgroundColor: "#00217E", color: "white" } : { color: "#6b7280" }}
+              style={
+                activeTab === t
+                  ? { backgroundColor: t === "reset" ? "#dc2626" : "#00217E", color: "white" }
+                  : { color: t === "reset" ? "#dc2626" : "#6b7280" }
+              }
             >
-              {t === "matches" ? "Resultados" : "Pencas"}
+              {t === "matches" ? "Resultados" : t === "pencas" ? "Pencas" : "Reset"}
             </button>
           ))}
         </div>
@@ -296,6 +319,72 @@ export default function AdminPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* ── Tab Reset ── */}
+        {activeTab === "reset" && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl shadow-sm p-5 border-2 border-red-100">
+              <h2 className="text-sm font-bold text-red-600 mb-1">Zona de pruebas</h2>
+              <p className="text-xs text-gray-400 mb-5">Usá estos botones entre tests para limpiar datos y empezar de cero. Los usuarios registrados no se borran.</p>
+
+              {resetDone && (
+                <div className="mb-4 px-4 py-3 rounded-xl text-sm font-semibold text-green-700" style={{ backgroundColor: "#dcfce7" }}>
+                  ✓ Reset completado
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {/* Resultados */}
+                <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50">
+                  <div>
+                    <p className="text-sm font-bold text-gray-800">Resultados</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Borra los scores y status de todos los partidos. Los partidos vuelven a verse como "próximos".</p>
+                  </div>
+                  <button
+                    onClick={() => { if (confirm("¿Borrar todos los resultados?")) doReset("results"); }}
+                    disabled={resetting !== null}
+                    className="ml-4 flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity"
+                    style={{ backgroundColor: "#f97316", opacity: resetting !== null ? 0.5 : 1 }}
+                  >
+                    {resetting === "results" ? "Borrando..." : "Limpiar"}
+                  </button>
+                </div>
+
+                {/* Predicciones */}
+                <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50">
+                  <div>
+                    <p className="text-sm font-bold text-gray-800">Predicciones</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Borra todas las predicciones de todos los usuarios. El ranking vuelve a cero.</p>
+                  </div>
+                  <button
+                    onClick={() => { if (confirm("¿Borrar todas las predicciones?")) doReset("predictions"); }}
+                    disabled={resetting !== null}
+                    className="ml-4 flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity"
+                    style={{ backgroundColor: "#f97316", opacity: resetting !== null ? 0.5 : 1 }}
+                  >
+                    {resetting === "predictions" ? "Borrando..." : "Limpiar"}
+                  </button>
+                </div>
+
+                {/* Todo */}
+                <div className="flex items-center justify-between p-4 rounded-xl border-2 border-red-200 bg-red-50">
+                  <div>
+                    <p className="text-sm font-bold text-red-700">Reset completo</p>
+                    <p className="text-xs text-red-400 mt-0.5">Borra resultados + predicciones. Reset total para el siguiente test.</p>
+                  </div>
+                  <button
+                    onClick={() => { if (confirm("¿Reset completo? Se borran resultados y todas las predicciones.")) doReset("all"); }}
+                    disabled={resetting !== null}
+                    className="ml-4 flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity"
+                    style={{ backgroundColor: "#dc2626", opacity: resetting !== null ? 0.5 : 1 }}
+                  >
+                    {resetting === "all" ? "Borrando..." : "Reset todo"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
       </main>
