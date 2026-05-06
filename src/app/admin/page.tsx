@@ -27,6 +27,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"matches" | "pencas" | "reset">("matches");
   const [resetting, setResetting] = useState<string | null>(null);
   const [resetDone, setResetDone] = useState<string | null>(null);
+  const [myPencaId, setMyPencaId] = useState<string | null>(null);
+  const [switchingPenca, setSwitchingPenca] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") { router.replace("/login"); return; }
@@ -45,6 +47,9 @@ export default function AdminPage() {
     fetch("/api/admin/pencas")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setPencas(data); });
+    fetch("/api/users/me")
+      .then((r) => r.json())
+      .then((data) => { if (data?.penca?.id) setMyPencaId(data.penca.id); });
   }, [status, router]);
 
   async function saveResult(matchId: string) {
@@ -79,6 +84,17 @@ export default function AdminPage() {
     setPencas((prev) => [...prev, { ...data, _count: { users: 0 } }]);
     setNewPencaName("");
     setNewPencaCode("");
+  }
+
+  async function switchPenca(pencaId: string) {
+    setSwitchingPenca(true);
+    await fetch("/api/users/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pencaId }),
+    });
+    setMyPencaId(pencaId);
+    setSwitchingPenca(false);
   }
 
   async function doReset(scope: "results" | "predictions" | "all") {
@@ -216,6 +232,38 @@ export default function AdminPage() {
         {/* ── Tab Pencas ── */}
         {activeTab === "pencas" && (
           <>
+            {/* Mi penca activa */}
+            {pencas.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-5">
+                <h2 className="text-sm font-bold mb-3" style={{ color: "#00217E" }}>Mi penca activa</h2>
+                <p className="text-xs text-gray-400 mb-3">Cambiá de penca para ver el ranking y las predicciones desde esa perspectiva.</p>
+                <div className="flex flex-col gap-2">
+                  {pencas.map((penca) => (
+                    <button
+                      key={penca.id}
+                      onClick={() => switchPenca(penca.id)}
+                      disabled={switchingPenca || myPencaId === penca.id}
+                      className="flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-left"
+                      style={
+                        myPencaId === penca.id
+                          ? { borderColor: "#00217E", backgroundColor: "#eff6ff" }
+                          : { borderColor: "#e5e7eb", backgroundColor: "white" }
+                      }
+                    >
+                      <div>
+                        <p className="text-sm font-bold text-gray-800">{penca.name}</p>
+                        <p className="text-xs text-gray-400">{penca.code} · {penca._count.users} usuarios</p>
+                      </div>
+                      {myPencaId === penca.id && (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ backgroundColor: "#00217E", color: "white" }}>Activa</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {switchingPenca && <p className="text-xs text-gray-400 mt-2 text-center">Cambiando...</p>}
+              </div>
+            )}
+
             {/* Crear penca */}
             <div className="bg-white rounded-2xl shadow-sm p-5">
               <h2 className="text-sm font-bold mb-4" style={{ color: "#00217E" }}>Nueva penca</h2>
