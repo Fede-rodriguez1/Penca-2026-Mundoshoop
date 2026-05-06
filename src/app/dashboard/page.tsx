@@ -302,6 +302,22 @@ export default function DashboardPage() {
           {nav === "home" && (
             <div className="max-w-2xl mx-auto space-y-6">
 
+              {/* ⚠️ TEST BANNER — borrar antes del Mundial 2026 */}
+              <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "#fef9c3" }}>
+                <span className="text-lg">🧪</span>
+                <div>
+                  <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">
+                    Partidos de test de hoy:{" "}
+                    <span className="font-semibold">Bayern vs PSG</span> (16:00),{" "}
+                    <span className="font-semibold">Cusco vs Estudiantes</span> (19:00),{" "}
+                    <span className="font-semibold">Ind. Rivadavia vs Fluminense</span> (21:30),{" "}
+                    <span className="font-semibold">Santa Fe vs Corinthians</span> (21:30) y{" "}
+                    <span className="font-semibold">Tolima vs Nacional</span> (23:00).
+                  </p>
+                </div>
+              </div>
+
               {/* En vivo */}
               <section>
                 <div className="flex items-center gap-2 mb-3">
