@@ -2,41 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // IDs de la API-Football que mapean a los matchIds del fixture local
-// Para el Mundial 2026, acá van los IDs reales de cada partido.
-// Por ahora tiene partidos de prueba para testear el flujo.
+// ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
 const FIXTURE_MAP: Record<number, string> = {
   // apiFootballId: matchId local
-  // ⚠️ TEST ONLY — mapeo temporal para probar el flujo. Borrar antes del Mundial 2026.
-  1540843: "A1", // Arsenal vs Atlético Madrid (Champions 05/05) → mapeado a México vs Sudáfrica para test
+  1540843: "A1", // Arsenal vs Atlético Madrid (Champions 05/05) → test
   // Cuando llegue el 2026, acá van los IDs reales de cada partido del Mundial
 };
-
-// Cuando haya partidos del Mundial 2026, activar este ID de liga:
-// const WORLD_CUP_LEAGUE_ID = 1; // FIFA World Cup en API-Football
-
-// Para test: ID de liga = null significa que sincronizamos por IDs específicos del mapa
-async function fetchLiveFixtures(fixtureIds: number[]): Promise<ApiFixture[]> {
-  if (fixtureIds.length === 0) return [];
-  const ids = fixtureIds.join("-");
-  const res = await fetch(`https://v3.football.api-sports.io/fixtures?ids=${ids}`, {
-    headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY! },
-    next: { revalidate: 0 },
-  });
-  const data = await res.json();
-  return data.response ?? [];
-}
-
-async function fetchLiveByLeague(leagueId: number, season: number): Promise<ApiFixture[]> {
-  const res = await fetch(
-    `https://v3.football.api-sports.io/fixtures?league=${leagueId}&season=${season}&live=all`,
-    {
-      headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY! },
-      next: { revalidate: 0 },
-    }
-  );
-  const data = await res.json();
-  return data.response ?? [];
-}
 
 type ApiFixture = {
   fixture: { id: number; status: { short: string; elapsed: number | null } };
@@ -44,9 +15,23 @@ type ApiFixture = {
   goals: { home: number | null; away: number | null };
 };
 
-function isFinishedOrLive(status: string) {
-  // FT = full time, AET = after extra time, PEN = penalties, 1H/2H = in play, HT = half time
-  return ["FT", "AET", "PEN", "1H", "2H", "HT", "ET", "BT", "P"].includes(status);
+function getMatchStatus(apiStatus: string): "live" | "finished" | null {
+  if (["1H", "2H", "HT", "ET", "BT", "P"].includes(apiStatus)) return "live";
+  if (["FT", "AET", "PEN"].includes(apiStatus)) return "finished";
+  return null; // NS, TBD, PST, CANC, etc — ignorar
+}
+
+async function fetchFixturesByIds(ids: number[]): Promise<ApiFixture[]> {
+  if (ids.length === 0) return [];
+  const res = await fetch(
+    `https://v3.football.api-sports.io/fixtures?ids=${ids.join("-")}`,
+    {
+      headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY! },
+      next: { revalidate: 0 },
+    }
+  );
+  const data = await res.json();
+  return data.response ?? [];
 }
 
 export async function POST(req: NextRequest) {
@@ -59,29 +44,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "API_FOOTBALL_KEY no configurada" }, { status: 500 });
   }
 
-  if (Object.keys(FIXTURE_MAP).length === 0) {
+  const mappedIds = Object.keys(FIXTURE_MAP).map(Number);
+  if (mappedIds.length === 0) {
     return NextResponse.json({ message: "Sin partidos mapeados todavía", synced: 0 });
   }
 
-  // Plan gratis solo soporta ?live=all — traemos todos y filtramos por FIXTURE_MAP
-  const res = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
-    headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY },
-    next: { revalidate: 0 },
-  });
-  const data = await res.json();
-  const fixtures: ApiFixture[] = data.response ?? [];
+  const fixtures = await fetchFixturesByIds(mappedIds);
 
   let synced = 0;
   for (const f of fixtures) {
     const matchId = FIXTURE_MAP[f.fixture.id];
     if (!matchId) continue;
-    if (!isFinishedOrLive(f.fixture.status.short)) continue;
+
+    const matchStatus = getMatchStatus(f.fixture.status.short);
+    if (!matchStatus) continue; // partido no empezó o cancelado
     if (f.goals.home === null || f.goals.away === null) continue;
 
     await prisma.matchResult.upsert({
       where: { matchId },
-      update: { homeScore: f.goals.home, awayScore: f.goals.away, elapsed: f.fixture.status.elapsed },
-      create: { matchId, homeScore: f.goals.home, awayScore: f.goals.away, elapsed: f.fixture.status.elapsed },
+      update: {
+        homeScore: f.goals.home,
+        awayScore: f.goals.away,
+        elapsed: f.fixture.status.elapsed,
+        status: matchStatus,
+      },
+      create: {
+        matchId,
+        homeScore: f.goals.home,
+        awayScore: f.goals.away,
+        elapsed: f.fixture.status.elapsed,
+        status: matchStatus,
+      },
     });
     synced++;
   }
@@ -89,7 +82,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ message: "ok", synced });
 }
 
-// GET para test manual desde el admin — muestra partidos en vivo de cualquier liga
+// GET para explorar partidos desde el admin
 export async function GET(req: NextRequest) {
   const secret = req.headers.get("x-sync-secret");
   if (secret !== process.env.SYNC_SECRET) {
@@ -100,18 +93,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "API_FOOTBALL_KEY no configurada" }, { status: 500 });
   }
 
+  const fixtureId = req.nextUrl.searchParams.get("fixture");
   const leagueId = req.nextUrl.searchParams.get("league");
   const season = req.nextUrl.searchParams.get("season");
-  const fixtureId = req.nextUrl.searchParams.get("fixture");
 
   let fixtures: ApiFixture[] = [];
 
   if (fixtureId) {
-    fixtures = await fetchLiveFixtures([Number(fixtureId)]);
+    fixtures = await fetchFixturesByIds([Number(fixtureId)]);
   } else if (leagueId && season) {
-    fixtures = await fetchLiveByLeague(Number(leagueId), Number(season));
+    const res = await fetch(
+      `https://v3.football.api-sports.io/fixtures?league=${leagueId}&season=${season}&live=all`,
+      { headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY }, next: { revalidate: 0 } }
+    );
+    const data = await res.json();
+    fixtures = data.response ?? [];
   } else {
-    // Sin params: devuelve todos los partidos en vivo ahora
     const res = await fetch("https://v3.football.api-sports.io/fixtures?live=all", {
       headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY },
     });

@@ -39,6 +39,7 @@ model MatchResult {
   homeScore Int
   awayScore Int
   elapsed   Int?
+  status    String   @default("finished") // "live" | "finished"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
