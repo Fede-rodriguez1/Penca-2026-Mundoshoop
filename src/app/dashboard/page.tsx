@@ -1195,13 +1195,13 @@ function TeamDisplay({ team }: { team: Match["home"] }) {
     <div className="flex flex-col items-center gap-1.5 w-24">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={team.shield}
+        src={team.shield || "/trophy.png"}
         alt={team.name}
         width={52}
         height={52}
         className="object-contain"
         onError={(e) => {
-          (e.currentTarget as HTMLImageElement).style.display = "none";
+          (e.currentTarget as HTMLImageElement).src = "/trophy.png";
         }}
       />
       <span className="text-xs font-semibold text-gray-700 text-center leading-tight">
