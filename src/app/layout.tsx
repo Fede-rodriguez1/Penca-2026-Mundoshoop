@@ -11,7 +11,20 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Penca Mundial 2026 | Mundo Shop",
-  description: "La penca del Mundial 2026 de Mundo Shop",
+  description: "La penca del Mundial 2026 de Mundo Shop. ¡Predecí los resultados y ganá!",
+  openGraph: {
+    title: "Penca Mundial 2026 | Mundo Shop",
+    description: "La penca del Mundial 2026 de Mundo Shop. ¡Predecí los resultados y ganá!",
+    images: [
+      {
+        url: "https://penca-2026-mundoshoop-production.up.railway.app/mundoshop-logo-dark.png",
+        width: 800,
+        height: 400,
+        alt: "Penca Mundial 2026 - Mundo Shop",
+      },
+    ],
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
