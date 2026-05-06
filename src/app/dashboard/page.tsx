@@ -78,6 +78,7 @@ export default function DashboardPage() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [results, setResults] = useState<MatchResult[]>([]);
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
+  const [rankingHasLive, setRankingHasLive] = useState(false);
   const [profileView, setProfileView] = useState<"main" | "edit" | "history" | "rules" | "terms">("main");
   const [editName, setEditName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -98,8 +99,12 @@ export default function DashboardPage() {
 
   function fetchRanking() {
     fetch("/api/ranking")
-      .then((r) => { if (!r.ok) return []; return r.json(); })
-      .then((data) => { if (Array.isArray(data)) setRanking(data); });
+      .then((r) => { if (!r.ok) return null; return r.json(); })
+      .then((data) => {
+        if (!data) return;
+        if (Array.isArray(data)) { setRanking(data); return; } // backward compat
+        if (Array.isArray(data.ranking)) { setRanking(data.ranking); setRankingHasLive(data.hasLive ?? false); }
+      });
   }
 
   useEffect(() => {
@@ -568,7 +573,16 @@ export default function DashboardPage() {
 
           {/* ── Ranking ── */}
           {nav === "matches" && tab === "ranking" && (
-            <div className="max-w-lg mx-auto">
+            <div className="max-w-lg mx-auto space-y-3">
+              {rankingHasLive && (
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl" style={{ backgroundColor: "#fef2f2" }}>
+                  <span className="relative flex h-2 w-2 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                  </span>
+                  <p className="text-xs font-semibold text-red-600">En vivo · ranking provisional — puede cambiar con el resultado final</p>
+                </div>
+              )}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 {ranking.map((user, idx) => (
                   <div key={user.id}>
@@ -688,8 +702,19 @@ export default function DashboardPage() {
 
               </div>
 
+              {/* Banner provisional si hay partidos en vivo */}
+              {rankingHasLive && (
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl" style={{ backgroundColor: "#fef2f2" }}>
+                  <span className="relative flex h-2 w-2 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                  </span>
+                  <p className="text-xs font-semibold text-red-600">En vivo · ranking provisional — puede cambiar con el resultado final</p>
+                </div>
+              )}
+
               {/* Banner sin resultados aún */}
-              {ranking.every((u) => u.points === 0) && ranking.length > 0 && (
+              {!rankingHasLive && ranking.every((u) => u.points === 0) && ranking.length > 0 && (
                 <div className="rounded-2xl px-5 py-4 text-center text-sm font-medium" style={{ backgroundColor: "#eff6ff", color: "#00217E" }}>
                   🕐 Todavía no hay partidos terminados. El ranking se actualiza automáticamente cuando finalicen.
                 </div>
