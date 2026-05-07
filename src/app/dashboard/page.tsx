@@ -964,8 +964,13 @@ function DashboardPageInner() {
                   {predictions.map((pred, idx) => {
                     const match = matches.find((m) => m.id === pred.matchId);
                     if (!match) return null;
-                    const finished = match.status === "finished" && match.homeScore !== undefined && match.awayScore !== undefined;
-                    const pts = finished ? calcPoints(pred.homeScore, pred.awayScore, match.homeScore!, match.awayScore!) : null;
+                    const result = results.find((r) => r.matchId === match.id);
+                    const isFinished = effectiveStatus(match) === "finished";
+                    const actualHome = result?.homeScore ?? match.homeScore;
+                    const actualAway = result?.awayScore ?? match.awayScore;
+                    const pts = isFinished && actualHome !== undefined && actualAway !== undefined
+                      ? calcPoints(pred.homeScore, pred.awayScore, actualHome, actualAway)
+                      : null;
                     return (
                       <div key={pred.matchId}>
                         {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
@@ -974,8 +979,8 @@ function DashboardPageInner() {
                             <p className="text-xs text-gray-400 mb-1">Grupo {match.group} — {match.home.shortName} vs {match.away.shortName}</p>
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-bold text-gray-700">Tu predicción: {pred.homeScore}–{pred.awayScore}</span>
-                              {finished && (
-                                <span className="text-xs text-gray-400">| Real: {match.homeScore}–{match.awayScore}</span>
+                              {isFinished && actualHome !== undefined && actualAway !== undefined && (
+                                <span className="text-xs text-gray-400">| Real: {actualHome}–{actualAway}</span>
                               )}
                             </div>
                           </div>
