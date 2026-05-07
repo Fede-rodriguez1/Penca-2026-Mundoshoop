@@ -1279,9 +1279,8 @@ function TeamDisplay({ team }: { team: Match["home"] }) {
       <img
         src={team.shield || "/trophy.png"}
         alt={team.name}
-        width={52}
-        height={52}
         className="object-contain"
+        style={{ width: 52, height: 52 }}
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).src = "/trophy.png";
         }}
