@@ -6,11 +6,14 @@ import { calcPoints } from "@/lib/scoring";
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
 const FIXTURE_MAP: Record<number, string> = {
   // apiFootballId: matchId local
-  1540844: "TEST1", // Bayern München vs PSG       — Champions  06/05 16:00 UY
-  1535285: "TEST2", // Cusco vs Estudiantes        — Libertadores 06/05 19:00 UY
-  1535288: "TEST3", // Ind. Rivadavia vs Fluminense — Libertadores 07/05 21:30 UY
-  1535294: "TEST4", // Santa Fe vs Corinthians      — Libertadores 07/05 21:30 UY
-  1535286: "TEST5", // Deportes Tolima vs Nacional  — Libertadores 07/05 23:00 UY
+  1379323: "TEST1", // Liverpool vs Chelsea          — Premier League 09/05 08:30 UY
+  1379326: "TEST2", // Sunderland vs Manchester Utd  — Premier League 09/05 11:00 UY
+  1391168: "TEST3", // Sevilla vs Espanyol           — La Liga        09/05 11:15 UY
+  1379324: "TEST4", // Manchester City vs Brentford  — Premier League 09/05 13:30 UY
+  1391160: "TEST5", // Atlético Madrid vs Celta Vigo — La Liga        09/05 13:30 UY
+  1391166: "TEST6", // Real Sociedad vs Real Betis   — La Liga        09/05 16:00 UY
+  1379328: "TEST7", // West Ham vs Arsenal           — Premier League 10/05 12:30 UY
+  1391161: "TEST8", // Barcelona vs Real Madrid      — La Liga        10/05 16:00 UY
   // Cuando llegue el 2026, acá van los IDs reales de cada partido del Mundial
 };
 

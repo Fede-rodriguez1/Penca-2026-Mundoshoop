@@ -334,12 +334,8 @@ function DashboardPageInner() {
                 <div>
                   <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
                   <p className="text-xs text-yellow-700 mt-0.5">
-                    Partidos de test de hoy:{" "}
-                    <span className="font-semibold">Bayern vs PSG</span> (16:00),{" "}
-                    <span className="font-semibold">Cusco vs Estudiantes</span> (19:00),{" "}
-                    <span className="font-semibold">Ind. Rivadavia vs Fluminense</span> (21:30),{" "}
-                    <span className="font-semibold">Santa Fe vs Corinthians</span> (21:30) y{" "}
-                    <span className="font-semibold">Tolima vs Nacional</span> (23:00).
+                    Sáb 9/5: <span className="font-semibold">Liverpool vs Chelsea</span> (08:30), <span className="font-semibold">Sunderland vs Man. Utd</span> (11:00), <span className="font-semibold">Sevilla vs Espanyol</span> (11:15), <span className="font-semibold">Man. City vs Brentford</span> (13:30), <span className="font-semibold">Atlético vs Celta</span> (13:30), <span className="font-semibold">R. Sociedad vs Betis</span> (16:00).
+                    {" "}Dom 10/5: <span className="font-semibold">West Ham vs Arsenal</span> (12:30), <span className="font-semibold">Barcelona vs Real Madrid</span> (16:00).
                   </p>
                 </div>
               </div>
@@ -442,7 +438,10 @@ function DashboardPageInner() {
                 <span className="text-lg">🧪</span>
                 <div>
                   <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
-                  <p className="text-xs text-yellow-700 mt-0.5">El partido de <span className="font-semibold">Bayern München vs PSG</span> de hoy (Champions League, 16:00 UY) es un test real del sistema de sync en vivo.</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">
+                    Sáb 9/5: <span className="font-semibold">Liverpool vs Chelsea</span> (08:30), <span className="font-semibold">Sunderland vs Man. Utd</span> (11:00), <span className="font-semibold">Sevilla vs Espanyol</span> (11:15), <span className="font-semibold">Man. City vs Brentford</span> (13:30), <span className="font-semibold">Atlético vs Celta</span> (13:30), <span className="font-semibold">R. Sociedad vs Betis</span> (16:00).
+                    {" "}Dom 10/5: <span className="font-semibold">West Ham vs Arsenal</span> (12:30), <span className="font-semibold">Barcelona vs Real Madrid</span> (16:00).
+                  </p>
                 </div>
               </div>
               {upcomingDates.map((date) => (

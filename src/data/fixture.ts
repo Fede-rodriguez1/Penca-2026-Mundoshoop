@@ -79,25 +79,34 @@ function ph(label: string): Team {
 
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026
 const testTeams = {
-  BAY: { name: "Bayern München",        shortName: "Bayern",      flag: "🇩🇪", shield: "https://media.api-sports.io/football/teams/157.png" },
-  PSG: { name: "Paris Saint-Germain",   shortName: "PSG",         flag: "🇫🇷", shield: "https://media.api-sports.io/football/teams/85.png" },
-  CSC: { name: "Cusco FC",              shortName: "Cusco",       flag: "🇵🇪", shield: "https://media.api-sports.io/football/teams/10013.png" },
-  EST: { name: "Estudiantes L.P.",      shortName: "Estudiantes", flag: "🇦🇷", shield: "https://media.api-sports.io/football/teams/450.png" },
-  IND: { name: "Ind. Rivadavia",        shortName: "Ind. Riv.",   flag: "🇦🇷", shield: "https://media.api-sports.io/football/teams/473.png" },
-  FLU: { name: "Fluminense",            shortName: "Fluminense",  flag: "🇧🇷", shield: "https://media.api-sports.io/football/teams/124.png" },
-  SFE: { name: "Ind. Santa Fe",         shortName: "Santa Fe",    flag: "🇨🇴", shield: "https://media.api-sports.io/football/teams/1139.png" },
-  COR: { name: "Corinthians",           shortName: "Corinthians", flag: "🇧🇷", shield: "https://media.api-sports.io/football/teams/131.png" },
-  TOL: { name: "Deportes Tolima",       shortName: "Tolima",      flag: "🇨🇴", shield: "https://media.api-sports.io/football/teams/1142.png" },
-  NAC: { name: "Club Nacional",         shortName: "Nacional",    flag: "🇺🇾", shield: "https://media.api-sports.io/football/teams/2356.png" },
+  LIV: { name: "Liverpool",           shortName: "Liverpool",  flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/40.png" },
+  CHE: { name: "Chelsea",             shortName: "Chelsea",    flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/49.png" },
+  SUN: { name: "Sunderland",          shortName: "Sunderland", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/746.png" },
+  MUN: { name: "Manchester United",   shortName: "Man. Utd",   flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/33.png" },
+  SEV: { name: "Sevilla",             shortName: "Sevilla",    flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/536.png" },
+  ESP: { name: "Espanyol",            shortName: "Espanyol",   flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/540.png" },
+  MCI: { name: "Manchester City",     shortName: "Man. City",  flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/50.png" },
+  BRE: { name: "Brentford",           shortName: "Brentford",  flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/55.png" },
+  ATM: { name: "Atlético Madrid",     shortName: "Atlético",   flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/530.png" },
+  CEL: { name: "Celta de Vigo",       shortName: "Celta",      flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/538.png" },
+  RSO: { name: "Real Sociedad",       shortName: "R. Sociedad",flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/548.png" },
+  BET: { name: "Real Betis",          shortName: "R. Betis",   flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/543.png" },
+  WHU: { name: "West Ham",            shortName: "West Ham",   flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/48.png" },
+  ARS: { name: "Arsenal",             shortName: "Arsenal",    flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", shield: "https://media.api-sports.io/football/teams/42.png" },
+  BAR: { name: "FC Barcelona",        shortName: "Barcelona",  flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/529.png" },
+  RMA: { name: "Real Madrid",         shortName: "Real Madrid",flag: "🇪🇸", shield: "https://media.api-sports.io/football/teams/541.png" },
 };
 
 export const matches: Match[] = [
   // ⚠️ TEST — borrar antes del Mundial 2026
-  { id: "TEST1", date: "2026-05-06", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAY, away: testTeams.PSG, venue: "Allianz Arena",        status: "upcoming" },
-  { id: "TEST2", date: "2026-05-06", time: "19:00", group: "TEST", matchday: 1, home: testTeams.CSC, away: testTeams.EST, venue: "Estadio Inca Garcilaso", status: "upcoming" },
-  { id: "TEST3", date: "2026-05-06", time: "21:30", group: "TEST", matchday: 1, home: testTeams.IND, away: testTeams.FLU, venue: "Mendoza",               status: "upcoming" },
-  { id: "TEST4", date: "2026-05-06", time: "21:30", group: "TEST", matchday: 1, home: testTeams.SFE, away: testTeams.COR, venue: "Bogotá",                status: "upcoming" },
-  { id: "TEST5", date: "2026-05-06", time: "23:00", group: "TEST", matchday: 1, home: testTeams.TOL, away: testTeams.NAC, venue: "Ibagué",                status: "upcoming" },
+  { id: "TEST1", date: "2026-05-09", time: "08:30", group: "TEST", matchday: 1, home: testTeams.LIV, away: testTeams.CHE, venue: "Anfield",           status: "upcoming" },
+  { id: "TEST2", date: "2026-05-09", time: "11:00", group: "TEST", matchday: 1, home: testTeams.SUN, away: testTeams.MUN, venue: "Stadium of Light",  status: "upcoming" },
+  { id: "TEST3", date: "2026-05-09", time: "11:15", group: "TEST", matchday: 1, home: testTeams.SEV, away: testTeams.ESP, venue: "Ramón Sánchez-Pizjuán", status: "upcoming" },
+  { id: "TEST4", date: "2026-05-09", time: "13:30", group: "TEST", matchday: 1, home: testTeams.MCI, away: testTeams.BRE, venue: "Etihad Stadium",    status: "upcoming" },
+  { id: "TEST5", date: "2026-05-09", time: "13:30", group: "TEST", matchday: 1, home: testTeams.ATM, away: testTeams.CEL, venue: "Metropolitano",     status: "upcoming" },
+  { id: "TEST6", date: "2026-05-09", time: "16:00", group: "TEST", matchday: 1, home: testTeams.RSO, away: testTeams.BET, venue: "Reale Arena",        status: "upcoming" },
+  { id: "TEST7", date: "2026-05-10", time: "12:30", group: "TEST", matchday: 1, home: testTeams.WHU, away: testTeams.ARS, venue: "London Stadium",    status: "upcoming" },
+  { id: "TEST8", date: "2026-05-10", time: "16:00", group: "TEST", matchday: 1, home: testTeams.BAR, away: testTeams.RMA, venue: "Camp Nou",           status: "upcoming" },
 
   // GRUPO A
   { id: "A1", date: "2026-06-11", time: "18:00", group: "A", matchday: 1, home: t.MEX, away: t.RSA, venue: "Ciudad de México", status: "upcoming" },
