@@ -247,7 +247,7 @@ function DashboardPageInner() {
         />
       )}
       {viewMatch && (
-        <MatchInfoModal match={viewMatch} onClose={() => setViewMatch(null)} />
+        <MatchInfoModal match={viewMatch} onClose={() => setViewMatch(null)} prediction={predictions.find((p) => p.matchId === viewMatch.id)} />
       )}
       {/* ── Desktop Sidebar ── */}
       <aside className="hidden lg:flex flex-col w-56 py-8 px-4 flex-shrink-0" style={{ backgroundColor: "#00217E" }}>
@@ -1708,7 +1708,7 @@ function PredictionModal({ match, existing, onClose, onSaved }: {
 }
 
 // ── Match Info Modal (live / finished — read only) ──
-function MatchInfoModal({ match, onClose }: { match: Match; onClose: () => void }) {
+function MatchInfoModal({ match, onClose, prediction }: { match: Match; onClose: () => void; prediction?: Prediction }) {
   const [stats, setStats] = useState<{ homeWin: number; draw: number; awayWin: number; total: number } | null>(null);
   const isLive = match.status === "live";
 
@@ -1772,6 +1772,11 @@ function MatchInfoModal({ match, onClose }: { match: Match; onClose: () => void 
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
                   </span>
                   En vivo
+                </span>
+              )}
+              {prediction && (
+                <span className="text-[11px] text-gray-400 mt-0.5">
+                  Tu predicción: {prediction.homeScore}–{prediction.awayScore}
                 </span>
               )}
             </div>
