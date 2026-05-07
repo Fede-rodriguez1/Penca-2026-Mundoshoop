@@ -82,6 +82,7 @@ function DashboardPageInner() {
   const [results, setResults] = useState<MatchResult[]>([]);
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [rankingHasLive, setRankingHasLive] = useState(false);
+  const [rankingLoading, setRankingLoading] = useState(true);
   const [profileView, setProfileView] = useState<"main" | "edit" | "history" | "rules" | "terms">("main");
   const [editName, setEditName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -126,8 +127,9 @@ function DashboardPageInner() {
       .then((r) => { if (!r.ok) return null; return r.json(); })
       .then((data) => {
         if (!data) return;
-        if (Array.isArray(data)) { setRanking(data); return; } // backward compat
-        if (Array.isArray(data.ranking)) { setRanking(data.ranking); setRankingHasLive(data.hasLive ?? false); }
+        if (Array.isArray(data)) { setRanking(data); } // backward compat
+        else if (Array.isArray(data.ranking)) { setRanking(data.ranking); setRankingHasLive(data.hasLive ?? false); }
+        setRankingLoading(false);
       });
   }
 
@@ -624,29 +626,43 @@ function DashboardPageInner() {
                 </div>
               )}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                {ranking.map((user, idx) => (
-                  <div key={user.id}>
-                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                    <div className="flex items-center gap-4 px-5 py-4">
-                      <span
-                        className="text-sm font-bold w-5 text-center"
-                        style={{ color: user.pos === 1 ? "#FFCA61" : "#9ca3af" }}
-                      >
-                        {user.pos}
-                      </span>
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                        style={{ backgroundColor: user.id === session?.user?.id ? "#FFCA61" : "#00217E", color: user.id === session?.user?.id ? "#00217E" : "white" }}
-                      >
-                        {user.initials}
+                {rankingLoading ? (
+                  [0,1,2,3].map((i) => (
+                    <div key={i}>
+                      {i > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                      <div className="flex items-center gap-4 px-5 py-4 animate-pulse">
+                        <div className="w-5 h-3 rounded-full bg-gray-100" />
+                        <div className="w-9 h-9 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(0,33,126,0.08)" }} />
+                        <div className="flex-1 h-3 rounded-full bg-gray-100" />
+                        <div className="w-12 h-3 rounded-full" style={{ backgroundColor: "rgba(0,33,126,0.08)" }} />
                       </div>
-                      <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
-                      <span className="text-sm font-bold" style={{ color: "#00217E" }}>
-                        {user.points} pts
-                      </span>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  ranking.map((user, idx) => (
+                    <div key={user.id}>
+                      {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                      <div className="flex items-center gap-4 px-5 py-4">
+                        <span
+                          className="text-sm font-bold w-5 text-center"
+                          style={{ color: user.pos === 1 ? "#FFCA61" : "#9ca3af" }}
+                        >
+                          {user.pos}
+                        </span>
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                          style={{ backgroundColor: user.id === session?.user?.id ? "#FFCA61" : "#00217E", color: user.id === session?.user?.id ? "#00217E" : "white" }}
+                        >
+                          {user.initials}
+                        </div>
+                        <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
+                        <span className="text-sm font-bold" style={{ color: "#00217E" }}>
+                          {user.points} pts
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -762,34 +778,48 @@ function DashboardPageInner() {
 
               {/* Lista completa */}
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                {ranking.map((user, idx) => (
-                  <div key={user.id}>
-                    {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                    <div
-                      className="flex items-center gap-4 px-5 py-4"
-                      style={user.id === session?.user?.id ? { backgroundColor: "#eff6ff" } : idx === 0 ? { backgroundColor: "#fffbeb" } : {}}
-                    >
-                      <span
-                        className="text-sm font-bold w-5 text-center flex-shrink-0"
-                        style={{ color: idx === 0 ? "#FFCA61" : idx === 1 ? "#9ca3af" : idx === 2 ? "#b45309" : "#d1d5db" }}
-                      >
-                        {user.pos}
-                      </span>
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
-                        style={{ backgroundColor: user.avatarColor ?? "#00217E" }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/ball.png" alt="avatar" className="w-6 h-6 object-contain" />
+                {rankingLoading ? (
+                  [0,1,2,3].map((i) => (
+                    <div key={i}>
+                      {i > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                      <div className="flex items-center gap-4 px-5 py-4 animate-pulse">
+                        <div className="w-5 h-3 rounded-full bg-gray-100" />
+                        <div className="w-9 h-9 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(0,33,126,0.08)" }} />
+                        <div className="flex-1 h-3 rounded-full bg-gray-100" />
+                        <div className="w-12 h-3 rounded-full" style={{ backgroundColor: "rgba(0,33,126,0.08)" }} />
                       </div>
-                      <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
-                      <span className="text-sm font-bold" style={{ color: "#00217E" }}>{user.points} pts</span>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  ranking.map((user, idx) => (
+                    <div key={user.id}>
+                      {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                      <div
+                        className="flex items-center gap-4 px-5 py-4"
+                        style={user.id === session?.user?.id ? { backgroundColor: "#eff6ff" } : idx === 0 ? { backgroundColor: "#fffbeb" } : {}}
+                      >
+                        <span
+                          className="text-sm font-bold w-5 text-center flex-shrink-0"
+                          style={{ color: idx === 0 ? "#FFCA61" : idx === 1 ? "#9ca3af" : idx === 2 ? "#b45309" : "#d1d5db" }}
+                        >
+                          {user.pos}
+                        </span>
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+                          style={{ backgroundColor: user.avatarColor ?? "#00217E" }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/ball.png" alt="avatar" className="w-6 h-6 object-contain" />
+                        </div>
+                        <span className="flex-1 text-sm font-semibold text-gray-900">{user.name}</span>
+                        <span className="text-sm font-bold" style={{ color: "#00217E" }}>{user.points} pts</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
-              <p className="text-center text-xs text-gray-400">{ranking.length} participantes</p>
+              <p className="text-center text-xs text-gray-400">{rankingLoading ? "" : `${ranking.length} participantes`}</p>
             </div>
           )}
 
