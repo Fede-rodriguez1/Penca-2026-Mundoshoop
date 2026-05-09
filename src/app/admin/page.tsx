@@ -117,7 +117,7 @@ export default function AdminPage() {
   }
 
   const registerUrl = (code: string) =>
-    `${typeof window !== "undefined" ? window.location.origin : ""}/register?code=${code}`;
+    `${typeof window !== "undefined" ? window.location.origin : ""}/login?code=${code}`;
 
   function downloadQR(code: string, name: string) {
     const canvas = document.getElementById(`qr-${code}`) as HTMLCanvasElement;
