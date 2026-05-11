@@ -328,18 +328,6 @@ function DashboardPageInner() {
           {nav === "home" && (
             <div className="max-w-2xl mx-auto space-y-6">
 
-              {/* ⚠️ TEST BANNER — borrar antes del Mundial 2026 */}
-              <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "#fef9c3" }}>
-                <span className="text-lg">🧪</span>
-                <div>
-                  <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
-                  <p className="text-xs text-yellow-700 mt-0.5">
-                    Sáb 9/5: <span className="font-semibold">Liverpool vs Chelsea</span> (08:30), <span className="font-semibold">Sunderland vs Man. Utd</span> (11:00), <span className="font-semibold">Sevilla vs Espanyol</span> (11:15), <span className="font-semibold">Man. City vs Brentford</span> (13:30), <span className="font-semibold">Atlético vs Celta</span> (13:30), <span className="font-semibold">R. Sociedad vs Betis</span> (16:00).
-                    {" "}Dom 10/5: <span className="font-semibold">West Ham vs Arsenal</span> (12:30), <span className="font-semibold">Barcelona vs Real Madrid</span> (16:00).
-                  </p>
-                </div>
-              </div>
-
               {/* En vivo */}
               <section>
                 <div className="flex items-center gap-2 mb-3">
@@ -383,7 +371,7 @@ function DashboardPageInner() {
                   </button>
                 </div>
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  {upcoming.slice(0, 8).map((match, idx) => (
+                  {upcoming.slice(0, 6).map((match, idx) => (
                     <div key={match.id}>
                       {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
                       <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
@@ -433,17 +421,6 @@ function DashboardPageInner() {
           {/* ── Partidos ── */}
           {nav === "matches" && tab === "upcoming" && (
             <div className="max-w-2xl mx-auto space-y-6">
-              {/* ⚠️ TEST BANNER — borrar antes del Mundial 2026 */}
-              <div className="rounded-2xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "#fef9c3" }}>
-                <span className="text-lg">🧪</span>
-                <div>
-                  <p className="text-xs font-bold text-yellow-800">Modo de prueba activo</p>
-                  <p className="text-xs text-yellow-700 mt-0.5">
-                    Sáb 9/5: <span className="font-semibold">Liverpool vs Chelsea</span> (08:30), <span className="font-semibold">Sunderland vs Man. Utd</span> (11:00), <span className="font-semibold">Sevilla vs Espanyol</span> (11:15), <span className="font-semibold">Man. City vs Brentford</span> (13:30), <span className="font-semibold">Atlético vs Celta</span> (13:30), <span className="font-semibold">R. Sociedad vs Betis</span> (16:00).
-                    {" "}Dom 10/5: <span className="font-semibold">West Ham vs Arsenal</span> (12:30), <span className="font-semibold">Barcelona vs Real Madrid</span> (16:00).
-                  </p>
-                </div>
-              </div>
               {upcomingDates.map((date) => (
                 <section key={date}>
                   <div className="flex items-center gap-2 mb-3">
