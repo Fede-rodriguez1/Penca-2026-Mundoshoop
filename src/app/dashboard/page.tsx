@@ -222,10 +222,22 @@ function DashboardPageInner() {
             </div>
             {/* Contenido */}
             <div className="bg-white px-5 py-5">
-              <p className="text-sm text-gray-600 mb-1">
-                El ganador de la penca se lleva un <span className="font-bold text-gray-900">viaje para 2 personas a Río de Janeiro</span> — vuelo y estadía cubiertos por 5 días.
-              </p>
-              <p className="text-xs text-gray-400 mt-2 mb-4">Fecha a coordinar con la agencia en temporada baja.</p>
+              <p className="text-sm font-bold text-gray-900 mb-2">Viaje para 2 personas a Río de Janeiro</p>
+              <ul className="space-y-1 mb-3">
+                {[
+                  "Pasaje aéreo con tasas e impuestos",
+                  "Equipaje de mano (carry on) y bolso de mano",
+                  "Traslado compartido aeropuerto / hotel / aeropuerto",
+                  "7 noches de alojamiento",
+                  "Asistencia al viajero plan AC 60",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-1.5 text-xs text-gray-500">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFCA61" }} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-gray-400 mb-4">Fecha a coordinar en temporada baja. Premio financiado por Mundo Shop.</p>
               <button
                 onClick={() => { sessionStorage.setItem("prize-popup-seen", "1"); setShowPrizePopup(false); }}
                 className="w-full py-3 rounded-2xl text-sm font-bold text-white"
@@ -1139,6 +1151,7 @@ function DashboardPageInner() {
                     num: "2", title: "Participación y Registro",
                     content: <ul className="space-y-1.5">{[
                       "Para participar debés registrarte con una cuenta válida (Google o correo electrónico) usando el código o QR de tu penca.",
+                      "Es requisito ser mayor de edad (18 años o más) para participar.",
                       "El registro estará habilitado hasta el inicio del primer partido del Mundial 2026 (11 de junio de 2026). Luego de esa fecha no se aceptarán nuevos participantes.",
                       "La información proporcionada debe ser veraz y actualizada.",
                       "Mundo Shop se reserva el derecho de suspender cuentas que violen estas bases.",
@@ -1171,12 +1184,14 @@ function DashboardPageInner() {
                   ...(pencaCode === "GENERAL2026" ? [{
                     num: "5", title: "Premio",
                     content: <ul className="space-y-1.5">{[
-                      "El ganador de la Penca General recibirá un viaje para dos personas a Río de Janeiro, Brasil, con vuelo y estadía cubiertos por 5 días.",
-                      "El premio es exclusivo para residentes de la República Oriental del Uruguay.",
-                      "La fecha del viaje se coordinará con la agencia de viajes en temporada baja, según disponibilidad.",
-                      "En caso de empate en puntos al finalizar el torneo, el ganador se determinará por la mayor cantidad de resultados exactos acertados.",
+                      "El ganador de la Penca General recibirá un viaje para dos personas a Río de Janeiro, Brasil, financiado por Mundo Shop.",
+                      "El premio incluye: pasaje aéreo con tasas e impuestos, bolso de mano, equipaje de mano (carry on en cabina), traslado compartido aeropuerto/hotel/aeropuerto, 7 noches de alojamiento y asistencia al viajero plan AC 60.",
+                      "Para ser elegible, el participante debe ser mayor de edad (18 años o más) y cliente de Mundo Shop. Los empleados de Mundo Shop no participan de este premio.",
+                      "La fecha del viaje será elegida por el ganador en coordinación con Mundo Shop, debiendo realizarse en temporada baja.",
+                      "En caso de empate en puntos al finalizar el torneo, el ganador se determinará por la mayor cantidad de resultados exactos acertados (marcador exacto).",
                       "Si el empate persiste, se realizará un sorteo entre los participantes empatados.",
-                      "El premio es personal e intransferible. No tiene valor en efectivo ni puede ser canjeado por dinero.",
+                      "El premio es personal e intransferible y no tiene valor en efectivo ni puede ser canjeado por dinero.",
+                      "Mundo Shop se reserva el derecho de modificar o cancelar el premio por causas de fuerza mayor, notificando a los participantes con la debida anticipación.",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFCA61" }} />{item}</li>
                     ))}</ul>
