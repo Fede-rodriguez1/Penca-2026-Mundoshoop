@@ -5,7 +5,91 @@ import { calcPoints } from "@/lib/scoring";
 // IDs de la API-Football que mapean a los matchIds del fixture local
 // ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
 const FIXTURE_MAP: Record<number, string> = {
-  // Acá van los IDs reales de cada partido del Mundial 2026
+  // GRUPO A
+  1489369: "A1",  // Mexico vs South Africa        (11/06)
+  1538999: "A2",  // South Korea vs Czech Republic  (12/06)
+  1539004: "A3",  // Czech Republic vs South Africa (18/06)
+  1489388: "A4",  // Mexico vs South Korea          (19/06)
+  1539010: "A5",  // Czech Republic vs Mexico       (25/06)
+  1489407: "A6",  // South Africa vs South Korea    (25/06)
+  // GRUPO B
+  1539000: "B1",  // Canada vs Bosnia & Herzegovina (12/06)
+  1489373: "B2",  // Qatar vs Switzerland           (13/06)
+  1539005: "B3",  // Switzerland vs Bosnia          (18/06)
+  1489387: "B4",  // Canada vs Qatar                (18/06)
+  1489408: "B5",  // Switzerland vs Canada          (24/06)
+  1539009: "B6",  // Bosnia vs Qatar                (24/06)
+  // GRUPO C
+  1489371: "C1",  // Brazil vs Morocco              (13/06)
+  1489372: "C2",  // Haiti vs Scotland              (14/06)
+  1489390: "C3",  // Scotland vs Morocco            (19/06)
+  1489389: "C4",  // Brazil vs Haiti                (20/06)
+  1489406: "C5",  // Scotland vs Brazil             (24/06)
+  1489405: "C6",  // Morocco vs Haiti               (24/06)
+  // GRUPO D
+  1489370: "D1",  // USA vs Paraguay                (13/06)
+  1539001: "D2",  // Australia vs Türkiye           (14/06)
+  1539006: "D3",  // Türkiye vs Paraguay            (20/06)
+  1489391: "D4",  // USA vs Australia               (19/06)
+  1539012: "D5",  // Türkiye vs USA                 (26/06)
+  1489411: "D6",  // Paraguay vs Australia          (26/06)
+  // GRUPO E
+  1489374: "E1",  // Germany vs Curaçao             (14/06)
+  1489375: "E2",  // Ivory Coast vs Ecuador         (14/06)
+  1489393: "E3",  // Germany vs Ivory Coast         (20/06)
+  1489392: "E4",  // Ecuador vs Curaçao             (21/06)
+  1489410: "E5",  // Ecuador vs Germany             (25/06)
+  1489409: "E6",  // Curaçao vs Ivory Coast         (25/06)
+  // GRUPO F
+  1489376: "F1",  // Netherlands vs Japan           (14/06)
+  1539002: "F2",  // Sweden vs Tunisia              (15/06)
+  1539007: "F3",  // Netherlands vs Sweden          (20/06)
+  1489394: "F4",  // Tunisia vs Japan               (21/06)
+  1539011: "F5",  // Japan vs Sweden                (25/06)
+  1489412: "F6",  // Tunisia vs Netherlands         (25/06)
+  // GRUPO G
+  1489377: "G1",  // Belgium vs Egypt               (15/06)
+  1489378: "G2",  // Iran vs New Zealand            (16/06)
+  1489395: "G3",  // Belgium vs Iran                (21/06)
+  1489396: "G4",  // New Zealand vs Egypt           (22/06)
+  1489415: "G5",  // New Zealand vs Belgium         (27/06)
+  1489414: "G6",  // Egypt vs Iran                  (27/06)
+  // GRUPO H
+  1489380: "H1",  // Spain vs Cape Verde Islands    (15/06)
+  1489379: "H2",  // Saudi Arabia vs Uruguay        (15/06)
+  1489397: "H3",  // Spain vs Saudi Arabia          (21/06)
+  1489398: "H4",  // Uruguay vs Cape Verde Islands  (21/06)
+  1489417: "H5",  // Uruguay vs Spain               (27/06)
+  1489413: "H6",  // Cape Verde Islands vs Saudi Arabia (27/06)
+  // GRUPO I
+  1489383: "I1",  // France vs Senegal              (16/06)
+  1539016: "I2",  // Iraq vs Norway                 (16/06)
+  1539017: "I3",  // France vs Iraq                 (22/06)
+  1489401: "I4",  // Norway vs Senegal              (23/06)
+  1489416: "I5",  // Norway vs France               (26/06)
+  1539074: "I6",  // Senegal vs Iraq                (26/06)
+  // GRUPO J
+  1489381: "J1",  // Argentina vs Algeria           (17/06)
+  1489382: "J2",  // Austria vs Jordan              (17/06)
+  1489399: "J3",  // Argentina vs Austria           (22/06)
+  1489400: "J4",  // Jordan vs Algeria              (23/06)
+  1489421: "J5",  // Jordan vs Argentina            (28/06)
+  1489418: "J6",  // Algeria vs Austria             (28/06)
+  // GRUPO K
+  1539003: "K1",  // Portugal vs Congo DR           (17/06)
+  1489386: "K2",  // Uzbekistan vs Colombia         (18/06)
+  1489404: "K3",  // Portugal vs Uzbekistan         (23/06)
+  1539008: "K4",  // Colombia vs Congo DR           (24/06)
+  1489419: "K5",  // Colombia vs Portugal           (27/06)
+  1539013: "K6",  // Congo DR vs Uzbekistan         (27/06)
+  // GRUPO L
+  1489384: "L1",  // England vs Croatia             (17/06)
+  1489385: "L2",  // Ghana vs Panama                (17/06)
+  1489402: "L3",  // England vs Ghana               (23/06)
+  1489403: "L4",  // Panama vs Croatia              (23/06)
+  1489422: "L5",  // Panama vs England              (27/06)
+  1489420: "L6",  // Croatia vs Ghana               (27/06)
+  // ELIMINATORIAS — se agregan cuando API-Football publique los IDs
 };
 
 type ApiFixture = {
