@@ -64,7 +64,7 @@ function RegisterForm() {
             <span style={{ color: "#FFCA61" }}>2026</span>
           </h1>
           <p className="text-blue-200 text-base max-w-xs">
-            Predecí los resultados, sumá puntos y competí con tus compañeros.
+            Predecí los resultados, sumá puntos y participá por un gran premio.
           </p>
         </div>
         <p className="text-blue-300 text-xs">© 2026 Mundo Shop. Todos los derechos reservados.</p>
