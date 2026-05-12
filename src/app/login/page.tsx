@@ -40,14 +40,15 @@ function LoginForm() {
     <main className="min-h-screen flex">
       {/* Left panel — branding */}
       <div
-        className="hidden lg:flex flex-col justify-between w-1/2 p-12"
+        className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden"
         style={{ backgroundColor: "#00217E" }}
       >
-        <div>
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/login-bg.jpg')", opacity: 0.35 }} />
+        <div className="relative z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/mundoshop-logo.png" alt="Mundo Shop" className="h-8 w-auto object-contain" />
         </div>
-        <div>
+        <div className="relative z-10">
           <h1 className="text-white text-5xl font-bold leading-tight mb-4">
             Penca<br />Mundial<br />
             <span style={{ color: "#FFCA61" }}>2026</span>
@@ -56,7 +57,7 @@ function LoginForm() {
             Predecí los resultados, sumá puntos y participá por un gran premio.
           </p>
         </div>
-        <p className="text-blue-300 text-xs">© 2026 Mundo Shop. Todos los derechos reservados.</p>
+        <p className="relative z-10 text-blue-300 text-xs">© 2026 Mundo Shop. Todos los derechos reservados.</p>
       </div>
 
       {/* Right panel — form */}
