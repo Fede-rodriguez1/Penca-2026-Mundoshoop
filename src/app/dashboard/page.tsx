@@ -1181,39 +1181,67 @@ function DashboardPageInner() {
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
                     ))}</ul>
                   },
-                  ...(pencaCode === "GENERAL2026" ? [{
-                    num: "5", title: "Premio",
+                  ...(pencaCode === "GENERAL2026" ? [
+                  {
+                    num: "5", title: "Plazo de Vigencia",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">La Penca Mundial 2026 estará activa desde el <span className="font-semibold text-gray-700">11 de junio de 2026</span> (inicio del torneo) hasta el <span className="font-semibold text-gray-700">19 de julio de 2026</span> (final del Mundial). Fuera de ese período, la aplicación no recibirá nuevas predicciones ni actualizará puntajes.</p>
+                  },
+                  {
+                    num: "6", title: "Premio",
                     content: <ul className="space-y-1.5">{[
                       "El ganador de la Penca General recibirá un viaje para dos personas a Río de Janeiro, Brasil, financiado por Mundo Shop.",
                       "El premio incluye: pasaje aéreo con tasas e impuestos, bolso de mano, equipaje de mano (carry on en cabina), traslado compartido aeropuerto/hotel/aeropuerto, 7 noches de alojamiento y asistencia al viajero plan AC 60.",
                       "Para ser elegible, el participante debe ser mayor de edad (18 años o más) y cliente de Mundo Shop. Los empleados de Mundo Shop no participan de este premio.",
-                      "La fecha del viaje será elegida por el ganador en coordinación con Mundo Shop, debiendo realizarse en temporada baja.",
+                      "La fecha del viaje será elegida por el ganador en coordinación con Mundo Shop, debiendo realizarse en temporada baja. En caso de que el ganador desee viajar en una fecha fuera de temporada baja, deberá abonar la diferencia de costo correspondiente.",
                       "En caso de empate en puntos al finalizar el torneo, el ganador se determinará por la mayor cantidad de resultados exactos acertados (marcador exacto).",
                       "Si el empate persiste, se realizará un sorteo entre los participantes empatados.",
                       "El premio es personal e intransferible y no tiene valor en efectivo ni puede ser canjeado por dinero.",
-                      "Mundo Shop se reserva el derecho de modificar o cancelar el premio por causas de fuerza mayor, notificando a los participantes con la debida anticipación.",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFCA61" }} />{item}</li>
                     ))}</ul>
-                  }] : []),
+                  },
                   {
-                    num: pencaCode === "GENERAL2026" ? "6" : "5", title: "Privacidad y Datos Personales",
+                    num: "7", title: "Comunicación y Entrega del Premio",
+                    content: <ul className="space-y-1.5">{[
+                      "El ganador será notificado por correo electrónico a la dirección registrada en la aplicación, dentro de los 7 días hábiles posteriores a la finalización del torneo.",
+                      "El ganador dispondrá de 72 horas desde la recepción del correo para confirmar su aceptación. De no recibirse respuesta en ese plazo, el premio pasará al siguiente participante en el ranking.",
+                      "El resultado final y el nombre del ganador serán comunicados también a través de las redes sociales de Mundo Shop.",
+                      "Mundo Shop queda liberado de toda responsabilidad respecto al premio una vez realizada la entrega formal al ganador.",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#FFCA61" }} />{item}</li>
+                    ))}</ul>
+                  },
+                  {
+                    num: "8", title: "Veracidad de los Datos",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Si el participante ganador hubiera proporcionado datos incorrectos o incompletos que impidan la entrega del premio, Mundo Shop quedará eximido de toda responsabilidad. Dicho participante podrá continuar en la penca con fines recreativos, pero perderá el derecho al premio, el cual pasará al siguiente en el ranking.</p>
+                  },
+                  {
+                    num: "9", title: "Autorización de Imagen",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">El participante ganador autoriza a Mundo Shop a utilizar su nombre y fotografía con fines publicitarios relacionados con la Penca Mundial 2026, sin derecho a remuneración adicional.</p>
+                  },
+                  {
+                    num: "10", title: "Fuerza Mayor",
+                    content: <p className="text-sm text-gray-500 leading-relaxed">Mundo Shop no será responsable por el incumplimiento de estas bases cuando sea consecuencia de causas ajenas a su voluntad, incluyendo pero no limitadas a: cancelación o modificación del calendario del Mundial 2026 por parte de la FIFA, desastres naturales, actos de gobierno u otras circunstancias de fuerza mayor. En tales casos, Mundo Shop notificará a los participantes y resolverá la situación de la manera más equitativa posible.</p>
+                  },
+                  ] : []),
+                  {
+                    num: pencaCode === "GENERAL2026" ? "11" : "5", title: "Privacidad y Datos Personales",
                     content: <><p className="text-sm text-gray-500 leading-relaxed mb-2">Recopilamos y procesamos los siguientes datos:</p><ul className="space-y-1.5">{["Información de registro (nombre y correo electrónico).", "Predicciones realizadas y puntos obtenidos."].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
                     ))}</ul><p className="text-sm text-gray-500 leading-relaxed mt-2">Tus datos no serán compartidos con terceros salvo cuando sea necesario para el funcionamiento del servicio o cuando la ley lo requiera.</p></>
                   },
                   {
-                    num: pencaCode === "GENERAL2026" ? "7" : "6", title: "Uso Aceptable",
+                    num: pencaCode === "GENERAL2026" ? "12" : "6", title: "Uso Aceptable",
                     content: <ul className="space-y-1.5">{["No utilizar la Aplicación con fines ilegales o no autorizados.", "No intentar acceder de forma no autorizada a los sistemas de la Aplicación.", "No utilizar bots, scripts u otros medios automatizados.", "Respetar a los demás participantes."].map((item, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed"><span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#00217E" }} />{item}</li>
                     ))}</ul>
                   },
                   {
-                    num: pencaCode === "GENERAL2026" ? "8" : "7", title: "Disponibilidad del Servicio",
+                    num: pencaCode === "GENERAL2026" ? "13" : "7", title: "Disponibilidad del Servicio",
                     content: <p className="text-sm text-gray-500 leading-relaxed">Mundo Shop se esfuerza por mantener la Aplicación disponible, pero no garantiza un funcionamiento ininterrumpido. Puede modificar, suspender o discontinuar cualquier aspecto del servicio sin previo aviso.</p>
                   },
                   {
-                    num: pencaCode === "GENERAL2026" ? "9" : "8", title: "Ley Aplicable",
+                    num: pencaCode === "GENERAL2026" ? "14" : "8", title: "Ley Aplicable",
                     content: <p className="text-sm text-gray-500 leading-relaxed">Estas bases se rigen por las leyes de la República Oriental del Uruguay. Cualquier disputa será sometida a los tribunales competentes de Montevideo, Uruguay.</p>
                   },
                 ].map((section, i, arr) => (
