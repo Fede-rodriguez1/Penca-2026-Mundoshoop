@@ -1139,7 +1139,7 @@ function DashboardPageInner() {
                 <div>
                   <h2 className="text-lg font-black text-gray-900 mb-1">Bases y Condiciones</h2>
                   <p className="text-xs text-gray-400 mb-3">Última actualización: mayo de 2026</p>
-                  <p className="text-sm text-gray-500 leading-relaxed">Bienvenido a la Penca Mundial 2026 de Mundo Shop (en adelante, &quot;la Aplicación&quot;). Al registrarte y utilizar la Aplicación, aceptás estas Bases y Condiciones. Si no estás de acuerdo, no utilices la Aplicación.</p>
+                  <p className="text-sm text-gray-500 leading-relaxed">Al participar en la Penca Mundial 2026 de Mundo Shop, aceptás las siguientes bases y condiciones.</p>
                 </div>
 
                 {[
