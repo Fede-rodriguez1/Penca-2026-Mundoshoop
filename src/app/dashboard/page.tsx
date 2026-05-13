@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { matches, groupByDate, formatDate, type Match } from "@/data/fixture";
@@ -95,6 +95,18 @@ function DashboardPageInner() {
   const [pencaCode, setPencaCode] = useState<string | null>(null);
   const [showPrizePopup, setShowPrizePopup] = useState(false);
 
+  // Admin: ver ranking de cualquier penca sin cambiar la propia
+  const [adminPencas, setAdminPencas] = useState<{ id: string; name: string }[]>([]);
+  const [viewPencaId, setViewPencaIdState] = useState<string | null>(null);
+  const viewPencaIdRef = useRef<string | null>(null);
+
+  function setViewPencaId(id: string | null) {
+    viewPencaIdRef.current = id;
+    setViewPencaIdState(id);
+    if (id) localStorage.setItem("admin-view-pencaId", id);
+    else localStorage.removeItem("admin-view-pencaId");
+  }
+
   // Si viene de Google con ?pencaCode=, actualizar la penca y limpiar la URL
   useEffect(() => {
     const code = searchParams.get("pencaCode");
@@ -123,7 +135,9 @@ function DashboardPageInner() {
   }
 
   function fetchRanking() {
-    fetch("/api/ranking")
+    const pid = viewPencaIdRef.current;
+    const url = pid ? `/api/ranking?pencaId=${pid}` : "/api/ranking";
+    fetch(url)
       .then((r) => { if (!r.ok) return null; return r.json(); })
       .then((data) => {
         if (!data) return;
@@ -160,6 +174,16 @@ function DashboardPageInner() {
     }, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // Admin: cargar pencas disponibles y restaurar la vista guardada
+  useEffect(() => {
+    if (!session?.user?.isAdmin) return;
+    const saved = localStorage.getItem("admin-view-pencaId");
+    if (saved) { viewPencaIdRef.current = saved; setViewPencaIdState(saved); }
+    fetch("/api/admin/pencas")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setAdminPencas(data.map((p: { id: string; name: string }) => ({ id: p.id, name: p.name }))); });
+  }, [session?.user?.isAdmin]);
 
   function onPredictionSaved(p: Prediction) {
     setPredictions((prev) => {
@@ -604,6 +628,24 @@ function DashboardPageInner() {
           {/* ── Ranking ── */}
           {nav === "matches" && tab === "ranking" && (
             <div className="max-w-lg mx-auto space-y-3">
+              {session?.user?.isAdmin && adminPencas.length > 1 && (
+                <div className="flex items-center gap-1.5 p-1 rounded-2xl" style={{ backgroundColor: "#f3f4f6" }}>
+                  <span className="text-xs font-bold text-gray-400 px-2">Vista:</span>
+                  {adminPencas.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => { setViewPencaId(viewPencaId === p.id ? null : p.id); setRankingLoading(true); setTimeout(fetchRanking, 0); }}
+                      className="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      style={viewPencaId === p.id ? { backgroundColor: "#00217E", color: "white" } : { color: "#6b7280" }}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                  {viewPencaId && (
+                    <button onClick={() => { setViewPencaId(null); setRankingLoading(true); setTimeout(fetchRanking, 0); }} className="px-2 text-xs text-gray-400 hover:text-gray-600">✕</button>
+                  )}
+                </div>
+              )}
               {rankingHasLive && (
                 <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl" style={{ backgroundColor: "#fef2f2" }}>
                   <span className="relative flex h-2 w-2 flex-shrink-0">
@@ -657,6 +699,26 @@ function DashboardPageInner() {
           {/* ── Ranking ── */}
           {nav === "ranking" && (
             <div className="max-w-lg mx-auto space-y-6">
+
+              {/* Toggle de penca para admin */}
+              {session?.user?.isAdmin && adminPencas.length > 1 && (
+                <div className="flex items-center gap-1.5 p-1 rounded-2xl" style={{ backgroundColor: "#f3f4f6" }}>
+                  <span className="text-xs font-bold text-gray-400 px-2">Vista:</span>
+                  {adminPencas.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => { setViewPencaId(viewPencaId === p.id ? null : p.id); setRankingLoading(true); setTimeout(fetchRanking, 0); }}
+                      className="flex-1 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      style={viewPencaId === p.id ? { backgroundColor: "#00217E", color: "white" } : { color: "#6b7280" }}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                  {viewPencaId && (
+                    <button onClick={() => { setViewPencaId(null); setRankingLoading(true); setTimeout(fetchRanking, 0); }} className="px-2 text-xs text-gray-400 hover:text-gray-600">✕</button>
+                  )}
+                </div>
+              )}
 
               {/* Podio top 3 */}
               <style>{`

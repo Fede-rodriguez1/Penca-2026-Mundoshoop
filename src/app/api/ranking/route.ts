@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isAdmin } from "@/lib/isAdmin";
 import { matches } from "@/data/fixture";
 import { calcPoints } from "@/lib/scoring";
 
@@ -25,8 +26,14 @@ export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   let pencaId: string | null = null;
   if (session?.user?.id) {
-    const me = await prisma.user.findUnique({ where: { id: session.user.id }, select: { pencaId: true } });
-    pencaId = me?.pencaId ?? null;
+    // Admin puede pasar ?pencaId=xxx para ver el ranking de cualquier penca
+    const paramPencaId = req.nextUrl.searchParams.get("pencaId");
+    if (paramPencaId && isAdmin(session.user.email)) {
+      pencaId = paramPencaId;
+    } else {
+      const me = await prisma.user.findUnique({ where: { id: session.user.id }, select: { pencaId: true } });
+      pencaId = me?.pencaId ?? null;
+    }
   }
 
   const users = await prisma.user.findMany({
