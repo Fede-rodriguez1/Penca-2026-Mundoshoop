@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calcPoints } from "@/lib/scoring";
 
-// IDs de la API-Football que mapean a los matchIds del fixture local
-// ⚠️ TEST ONLY — borrar antes del Mundial 2026 y poner los IDs reales
+// IDs reales de API-Football para el Mundial 2026 — verificados el 13/05/2026
 const FIXTURE_MAP: Record<number, string> = {
   // GRUPO A
   1489369: "A1",  // Mexico vs South Africa        (11/06)
