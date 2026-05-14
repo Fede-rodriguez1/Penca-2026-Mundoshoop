@@ -12,6 +12,8 @@ function RegisterForm() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [ci, setCi] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ function RegisterForm() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, pencaCode: pencaCode || undefined }),
+      body: JSON.stringify({ name, email, password, pencaCode: pencaCode || undefined, ci: ci || undefined, phone: phone || undefined }),
     });
     if (!res.ok) {
       const data = await res.json();
@@ -143,6 +145,38 @@ function RegisterForm() {
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent transition"
                 style={{ "--tw-ring-color": "#00217E" } as React.CSSProperties}
               />
+            </div>
+
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label htmlFor="ci" className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                  Cédula <span className="text-gray-400 normal-case font-normal">(opcional)</span>
+                </label>
+                <input
+                  id="ci"
+                  type="text"
+                  inputMode="numeric"
+                  value={ci}
+                  onChange={(e) => setCi(e.target.value)}
+                  placeholder="12345678"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent transition"
+                  style={{ "--tw-ring-color": "#00217E" } as React.CSSProperties}
+                />
+              </div>
+              <div className="flex-1">
+                <label htmlFor="phone" className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                  Celular <span className="text-gray-400 normal-case font-normal">(opcional)</span>
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="099 123 456"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent transition"
+                  style={{ "--tw-ring-color": "#00217E" } as React.CSSProperties}
+                />
+              </div>
             </div>
 
             <div>

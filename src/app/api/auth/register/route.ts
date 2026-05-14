@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Demasiados intentos. Esperá un momento." }, { status: 429 });
   }
 
-  const { name, email, password, pencaCode } = await req.json();
+  const { name, email, password, pencaCode, ci, phone } = await req.json();
 
   if (!name || !email || !password) {
     return NextResponse.json({ error: "Todos los campos son obligatorios" }, { status: 400 });
@@ -33,6 +33,14 @@ export async function POST(req: NextRequest) {
 
   if (password.length < 8) {
     return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres" }, { status: 400 });
+  }
+
+  if (ci && !/^\d{6,8}$/.test(ci.replace(/[.\-]/g, ""))) {
+    return NextResponse.json({ error: "Cédula inválida" }, { status: 400 });
+  }
+
+  if (phone && !/^\d{8,15}$/.test(phone.replace(/[\s\-\+\(\)]/g, ""))) {
+    return NextResponse.json({ error: "Celular inválido" }, { status: 400 });
   }
 
   // Resolver la penca — si viene código lo usamos, si no la default
@@ -51,7 +59,14 @@ export async function POST(req: NextRequest) {
 
   const hashed = await bcrypt.hash(password, 12);
   const user = await prisma.user.create({
-    data: { name, email, password: hashed, pencaId: penca.id },
+    data: {
+      name,
+      email,
+      password: hashed,
+      pencaId: penca.id,
+      ci: ci ? ci.replace(/[.\-]/g, "") : null,
+      phone: phone ? phone.replace(/[\s\-\+\(\)]/g, "") : null,
+    },
   });
 
   return NextResponse.json({ id: user.id, email: user.email, name: user.name }, { status: 201 });

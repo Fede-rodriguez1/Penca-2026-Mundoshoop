@@ -27,6 +27,8 @@ model User {
   provider    String       @default("credentials") // "credentials" | "google"
   avatarColor String       @default("#00217E")
   pencaId     String?
+  ci          String?
+  phone       String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   penca       Penca?       @relation(fields: [pencaId], references: [id])
