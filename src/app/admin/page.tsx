@@ -7,7 +7,7 @@ import { matches, groupByDate, formatDate } from "@/data/fixture";
 import { QRCodeCanvas } from "qrcode.react";
 
 type MatchResult = { matchId: string; homeScore: number; awayScore: number };
-type PencaUser = { id: string; name: string; email: string; createdAt: string };
+type PencaUser = { id: string; name: string; email: string; ci: string | null; phone: string | null; createdAt: string };
 type Penca = { id: string; name: string; code: string; isDefault: boolean; _count: { users: number }; users: PencaUser[] };
 
 export default function AdminPage() {
@@ -385,12 +385,19 @@ export default function AdminPage() {
                           penca.users.map((user, idx) => (
                             <div key={user.id}>
                               {idx > 0 && <div className="h-px bg-gray-50" />}
-                              <div className="flex items-center justify-between px-4 py-2.5">
-                                <div>
+                              <div className="flex items-center justify-between px-4 py-2.5 gap-3">
+                                <div className="flex-1 min-w-0">
                                   <p className="text-xs font-semibold text-gray-800">{user.name}</p>
-                                  <p className="text-xs text-gray-400">{user.email}</p>
+                                  <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                                  {(user.ci || user.phone) && (
+                                    <p className="text-xs text-gray-300 mt-0.5">
+                                      {user.ci && <span>CI: {user.ci}</span>}
+                                      {user.ci && user.phone && <span className="mx-1">·</span>}
+                                      {user.phone && <span>📱 {user.phone}</span>}
+                                    </p>
+                                  )}
                                 </div>
-                                <p className="text-xs text-gray-300">
+                                <p className="text-xs text-gray-300 flex-shrink-0">
                                   {new Date(user.createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit" })}
                                 </p>
                               </div>
