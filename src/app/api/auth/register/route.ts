@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   const { name, email, password, pencaCode, ci, phone } = await req.json();
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !ci || !phone) {
     return NextResponse.json({ error: "Todos los campos son obligatorios" }, { status: 400 });
   }
 
@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres" }, { status: 400 });
   }
 
-  if (ci && !/^\d{6,8}$/.test(ci.replace(/[.\-]/g, ""))) {
+  if (!/^\d{6,8}$/.test(ci.replace(/[.\-]/g, ""))) {
     return NextResponse.json({ error: "Cédula inválida" }, { status: 400 });
   }
 
-  if (phone && !/^\d{8,15}$/.test(phone.replace(/[\s\-\+\(\)]/g, ""))) {
+  if (!/^\d{8,15}$/.test(phone.replace(/[\s\-\+\(\)]/g, ""))) {
     return NextResponse.json({ error: "Celular inválido" }, { status: 400 });
   }
 

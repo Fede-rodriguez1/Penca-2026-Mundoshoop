@@ -28,7 +28,7 @@ function RegisterForm() {
   }, [pencaCode]);
 
   const passwordMatch = confirm === "" || password === confirm;
-  const canSubmit = name && email && password && confirm && passwordMatch;
+  const canSubmit = name && email && ci && phone && password && confirm && passwordMatch;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -150,12 +150,13 @@ function RegisterForm() {
             <div className="flex gap-3">
               <div className="flex-1">
                 <label htmlFor="ci" className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                  Cédula <span className="text-gray-400 normal-case font-normal">(opcional)</span>
+                  Cédula
                 </label>
                 <input
                   id="ci"
                   type="text"
                   inputMode="numeric"
+                  required
                   value={ci}
                   onChange={(e) => setCi(e.target.value)}
                   placeholder="12345678"
@@ -165,11 +166,12 @@ function RegisterForm() {
               </div>
               <div className="flex-1">
                 <label htmlFor="phone" className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                  Celular <span className="text-gray-400 normal-case font-normal">(opcional)</span>
+                  Celular
                 </label>
                 <input
                   id="phone"
                   type="tel"
+                  required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="099 123 456"
