@@ -94,23 +94,6 @@ function RegisterForm() {
             </div>
           )}
 
-          {/* Google */}
-          <button
-            type="button"
-            onClick={() => signIn("google", { callbackUrl: pencaCode ? `/dashboard?pencaCode=${pencaCode}` : "/dashboard" })}
-            className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-6"
-          >
-            <GoogleIcon />
-            Registrarse con Google
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-400">o completá el formulario</span>
-            <div className="flex-1 h-px bg-gray-100" />
-          </div>
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -239,7 +222,24 @@ function RegisterForm() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-400 mt-8">
+          {/* Divider */}
+          <div className="flex items-center gap-3 mt-6">
+            <div className="flex-1 h-px bg-gray-100" />
+            <span className="text-xs text-gray-400">o registrate con Google</span>
+            <div className="flex-1 h-px bg-gray-100" />
+          </div>
+
+          {/* Google */}
+          <button
+            type="button"
+            onClick={() => signIn("google", { callbackUrl: pencaCode ? `/dashboard?pencaCode=${pencaCode}` : "/dashboard" })}
+            className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors mt-3"
+          >
+            <GoogleIcon />
+            Registrarse con Google
+          </button>
+
+          <p className="text-center text-xs text-gray-400 mt-6">
             ¿Ya tenés cuenta?{" "}
             <Link href="/login" className="font-semibold hover:underline" style={{ color: "#00217E" }}>
               Iniciá sesión
