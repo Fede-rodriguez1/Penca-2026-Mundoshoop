@@ -111,21 +111,17 @@ function DashboardPageInner() {
   useEffect(() => {
     const code = searchParams.get("pencaCode");
     if (!code || !session?.user?.id) return;
-    fetch(`/api/pencas/validate?code=${code}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.id) {
-          fetch("/api/users/me", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ pencaId: data.id }),
-          }).then(() => {
-            setPencaCode(code);
-            setPencaName(data.name);
-            router.replace("/dashboard");
-          });
-        }
-      });
+    fetch("/api/users/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pencaCode: code }),
+    }).then((r) => r.json()).then((data) => {
+      if (data?.penca) {
+        setPencaCode(data.penca.code);
+        setPencaName(data.penca.name);
+        router.replace("/dashboard");
+      }
+    });
   }, [searchParams, session?.user?.id]);
 
   function fetchResults() {

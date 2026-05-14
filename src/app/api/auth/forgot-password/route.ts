@@ -3,7 +3,29 @@ import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 import crypto from "crypto";
 
+// Rate limiting: máx 3 intentos por IP cada 15 minutos
+const attempts = new Map<string, { count: number; resetAt: number }>();
+const MAX_ATTEMPTS = 3;
+const WINDOW_MS = 15 * 60 * 1000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = attempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= MAX_ATTEMPTS) return false;
+  entry.count++;
+  return true;
+}
+
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ error: "Demasiados intentos. Esperá 15 minutos." }, { status: 429 });
+  }
+
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { email } = await req.json();
   if (!email) {
