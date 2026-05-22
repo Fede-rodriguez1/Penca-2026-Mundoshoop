@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -7,8 +9,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "matchId requerido" }, { status: 400 });
   }
 
+  // Obtener la penca del usuario logueado para filtrar solo sus compañeros
+  const session = await getServerSession(authOptions);
+  let pencaId: string | null = null;
+  if (session?.user?.id) {
+    const me = await prisma.user.findUnique({ where: { id: session.user.id }, select: { pencaId: true } });
+    pencaId = me?.pencaId ?? null;
+  }
+
   const predictions = await prisma.prediction.findMany({
-    where: { matchId },
+    where: {
+      matchId,
+      ...(pencaId ? { user: { pencaId } } : {}),
+    },
     select: { homeScore: true, awayScore: true },
   });
 
