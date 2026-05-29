@@ -486,6 +486,40 @@ function DashboardPageInner() {
                 );
               })()}
 
+              {/* Botones sociales — solo mobile (en desktop están en el sidebar) */}
+              <section className="lg:hidden space-y-3 pb-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-1 h-5 rounded-full bg-gray-200" />
+                  <h2 className="text-sm font-bold text-gray-800">Seguinos</h2>
+                </div>
+                <a
+                  href="https://www.instagram.com/mundoshop.uy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white shadow-sm text-sm font-semibold transition-all hover:shadow-md"
+                  style={{ color: "#00217E" }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                  Seguinos en Instagram
+                </a>
+                <a
+                  href="https://www.mercadolibre.com.uy/tienda/mundoshop"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-btn"
+                >
+                  <div className="ml-btn-border" />
+                  <div className="ml-btn-inner">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Visitanos en Mercado Libre
+                  </div>
+                </a>
+              </section>
+
             </div>
           )}
 
