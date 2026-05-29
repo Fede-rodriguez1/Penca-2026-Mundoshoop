@@ -13,7 +13,7 @@ export async function GET() {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
-  const [pencas, users, predictions] = await Promise.all([
+  const [pencas, users, predictions, events] = await Promise.all([
     prisma.penca.findMany({
       select: { id: true, name: true, _count: { select: { users: true } } },
       orderBy: { createdAt: "asc" },
@@ -24,6 +24,9 @@ export async function GET() {
     }),
     prisma.prediction.findMany({
       select: { userId: true, createdAt: true },
+    }),
+    prisma.event.findMany({
+      select: { type: true, duration: true },
     }),
   ]);
 
@@ -90,6 +93,14 @@ export async function GET() {
     else dist.high++;
   }
 
+  // Eventos: clicks y sesiones
+  const clickMl = events.filter(e => e.type === "click_ml").length;
+  const clickInstagram = events.filter(e => e.type === "click_instagram").length;
+  const sessionEvents = events.filter(e => e.type === "session" && typeof e.duration === "number");
+  const avgSessionSeconds = sessionEvents.length > 0
+    ? Math.round(sessionEvents.reduce((acc, e) => acc + (e.duration ?? 0), 0) / sessionEvents.length)
+    : 0;
+
   return NextResponse.json({
     totalMatches: TOTAL_MATCHES,
     totalUsers,
@@ -101,5 +112,9 @@ export async function GET() {
     registrationsByDay,
     topUsers,
     distribution: dist,
+    clickMl,
+    clickInstagram,
+    avgSessionSeconds,
+    totalSessions: sessionEvents.length,
   });
 }

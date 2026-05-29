@@ -20,6 +20,10 @@ type Analytics = {
   registrationsByDay: { date: string; count: number }[];
   topUsers: { name: string; email: string; pencaName: string; predictions: number; completion: number }[];
   distribution: { inactive: number; low: number; mid: number; high: number };
+  clickMl: number;
+  clickInstagram: number;
+  avgSessionSeconds: number;
+  totalSessions: number;
 };
 
 export default function AdminPage() {
@@ -449,6 +453,33 @@ export default function AdminPage() {
                       <p className="text-2xl font-black" style={{ color: "#00217E" }}>{c.value}</p>
                     </div>
                   ))}
+                </div>
+
+                {/* Engagement — clicks y sesiones */}
+                <div className="bg-white rounded-2xl shadow-sm p-5">
+                  <h2 className="text-sm font-bold mb-3" style={{ color: "#00217E" }}>Engagement</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: "#FFCA6120" }}>
+                      <p className="text-xs text-gray-400 mb-1">Clicks Mercado Libre</p>
+                      <p className="text-2xl font-black" style={{ color: "#FF8C00" }}>{analytics.clickMl}</p>
+                    </div>
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: "#e040fb18" }}>
+                      <p className="text-xs text-gray-400 mb-1">Clicks Instagram</p>
+                      <p className="text-2xl font-black" style={{ color: "#c2185b" }}>{analytics.clickInstagram}</p>
+                    </div>
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: "#eff6ff" }}>
+                      <p className="text-xs text-gray-400 mb-1">Sesiones registradas</p>
+                      <p className="text-2xl font-black" style={{ color: "#00217E" }}>{analytics.totalSessions}</p>
+                    </div>
+                    <div className="p-3 rounded-xl" style={{ backgroundColor: "#f0fdf4" }}>
+                      <p className="text-xs text-gray-400 mb-1">Tiempo promedio</p>
+                      <p className="text-2xl font-black" style={{ color: "#16a34a" }}>
+                        {analytics.avgSessionSeconds >= 60
+                          ? `${Math.floor(analytics.avgSessionSeconds / 60)}m ${analytics.avgSessionSeconds % 60}s`
+                          : `${analytics.avgSessionSeconds}s`}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Por penca */}

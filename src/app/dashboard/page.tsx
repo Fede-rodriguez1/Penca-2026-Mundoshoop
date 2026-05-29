@@ -181,6 +181,25 @@ function DashboardPageInner() {
       .then((data) => { if (Array.isArray(data)) setAdminPencas(data.map((p: { id: string; name: string }) => ({ id: p.id, name: p.name }))); });
   }, [session?.user?.isAdmin]);
 
+  // Session duration tracking
+  useEffect(() => {
+    const startTime = Date.now();
+    const handleUnload = () => {
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      navigator.sendBeacon("/api/events", JSON.stringify({ type: "session", duration }));
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, []);
+
+  function trackEvent(type: "click_ml" | "click_instagram") {
+    fetch("/api/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+    }).catch(() => {});
+  }
+
   function onPredictionSaved(p: Prediction) {
     setPredictions((prev) => {
       const idx = prev.findIndex((x) => x.matchId === p.matchId);
@@ -330,6 +349,7 @@ function DashboardPageInner() {
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.14)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; }}
+            onClick={() => trackEvent("click_instagram")}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -343,6 +363,7 @@ function DashboardPageInner() {
             target="_blank"
             rel="noopener noreferrer"
             className="ml-btn"
+            onClick={() => trackEvent("click_ml")}
           >
             <div className="ml-btn-border" />
             <div className="ml-btn-inner">
@@ -498,6 +519,7 @@ function DashboardPageInner() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white shadow-sm text-sm font-semibold transition-all hover:shadow-md"
                   style={{ color: "#00217E" }}
+                  onClick={() => trackEvent("click_instagram")}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -509,6 +531,7 @@ function DashboardPageInner() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-btn"
+                  onClick={() => trackEvent("click_ml")}
                 >
                   <div className="ml-btn-border" />
                   <div className="ml-btn-inner">
