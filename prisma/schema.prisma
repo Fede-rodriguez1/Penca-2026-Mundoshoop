@@ -54,6 +54,14 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 }
 
+model Event {
+  id        String   @id @default(cuid())
+  type      String   // "click_ml" | "click_instagram" | "session"
+  userId    String?
+  duration  Int?     // segundos, solo para eventos "session"
+  createdAt DateTime @default(now())
+}
+
 model Prediction {
   id        String   @id @default(cuid())
   userId    String
