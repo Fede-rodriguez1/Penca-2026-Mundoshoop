@@ -32,11 +32,13 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
   overflow: hidden;
   z-index: 0;
+  animation: ml-breathe 2.8s ease-in-out infinite;
 }
 
 .ml-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(255, 202, 97, 0.4);
+  box-shadow: 0 10px 28px rgba(255, 202, 97, 0.55);
+  animation-play-state: paused;
 }
 
 .ml-btn:active {
@@ -115,4 +117,9 @@ body {
 @keyframes ml-rotate {
   0%   { transform: translate(-50%, -50%) rotate(0deg); }
   100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ml-breathe {
+  0%, 100% { box-shadow: 0 4px 12px rgba(255, 202, 97, 0.3); }
+  50%       { box-shadow: 0 8px 28px rgba(255, 202, 97, 0.75); }
 }
