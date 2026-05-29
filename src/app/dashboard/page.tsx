@@ -316,7 +316,7 @@ function DashboardPageInner() {
         </nav>
 
         {/* Botones sociales — parte inferior del sidebar */}
-        <div className="mt-auto pt-6 px-1 space-y-2">
+        <div className="mt-auto pt-6 px-1 space-y-4">
           {/* Instagram */}
           <a
             href="https://www.instagram.com/mundoshop.uy/"
