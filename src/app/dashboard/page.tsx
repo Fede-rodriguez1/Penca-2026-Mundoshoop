@@ -317,13 +317,6 @@ function DashboardPageInner() {
 
         {/* Botones sociales — parte inferior del sidebar */}
         <div className="mt-auto pt-6 px-1 space-y-2">
-          <style>{`
-            @keyframes sidebar-pulse {
-              0%, 100% { box-shadow: 0 0 0 0 rgba(255,202,97,0.5); }
-              50% { box-shadow: 0 0 0 6px rgba(255,202,97,0); }
-            }
-          `}</style>
-
           {/* Instagram */}
           <a
             href="https://www.instagram.com/mundoshop.uy/"
@@ -349,24 +342,11 @@ function DashboardPageInner() {
             href="https://www.mercadolibre.com.uy/tienda/mundoshop"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-xs font-bold transition-all"
-            style={{
-              backgroundColor: "#FFCA61",
-              border: "1px solid #FFCA61",
-              color: "#00217E",
-              animation: "sidebar-pulse 2.5s ease-in-out infinite",
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLAnchorElement;
-              el.style.backgroundColor = "#ffd980";
-              el.style.animationPlayState = "paused";
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLAnchorElement;
-              el.style.backgroundColor = "#FFCA61";
-              el.style.animationPlayState = "running";
-            }}
+            className="ml-btn"
           >
+            <div className="ml-btn-glow">
+              <div className="ml-btn-glow-inner" />
+            </div>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
