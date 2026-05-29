@@ -9,6 +9,18 @@ import { QRCodeCanvas } from "qrcode.react";
 type MatchResult = { matchId: string; homeScore: number; awayScore: number };
 type PencaUser = { id: string; name: string; email: string; ci: string | null; phone: string | null; createdAt: string };
 type Penca = { id: string; name: string; code: string; isDefault: boolean; _count: { users: number }; users: PencaUser[] };
+type Analytics = {
+  totalMatches: number;
+  totalUsers: number;
+  usersWithPredictions: number;
+  totalPredictions: number;
+  avgPredictions: number;
+  avgCompletion: number;
+  pencaStats: { id: string; name: string; totalUsers: number; activeUsers: number; totalPredictions: number; avgCompletion: number }[];
+  registrationsByDay: { date: string; count: number }[];
+  topUsers: { name: string; email: string; pencaName: string; predictions: number; completion: number }[];
+  distribution: { inactive: number; low: number; mid: number; high: number };
+};
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -25,7 +37,8 @@ export default function AdminPage() {
   const [newPencaCode, setNewPencaCode] = useState("");
   const [pencaError, setPencaError] = useState("");
   const [pencaSaving, setPencaSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"matches" | "pencas" | "reset">("matches");
+  const [activeTab, setActiveTab] = useState<"matches" | "pencas" | "analytics" | "reset">("matches");
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [resetting, setResetting] = useState<string | null>(null);
   const [resetDone, setResetDone] = useState<string | null>(null);
   const [myPencaId, setMyPencaId] = useState<string | null>(null);
@@ -52,6 +65,9 @@ export default function AdminPage() {
     fetch("/api/users/me")
       .then((r) => r.json())
       .then((data) => { if (data?.penca?.id) setMyPencaId(data.penca.id); });
+    fetch("/api/admin/analytics")
+      .then((r) => r.json())
+      .then((data) => { if (data?.totalUsers !== undefined) setAnalytics(data); });
   }, [status, router]);
 
   async function saveResult(matchId: string) {
@@ -152,7 +168,7 @@ export default function AdminPage() {
       {/* Tabs */}
       <div className="bg-white border-b border-gray-100 px-5">
         <div className="flex gap-1 py-2">
-          {(["matches", "pencas", "reset"] as const).map((t) => (
+          {(["matches", "pencas", "analytics", "reset"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -163,7 +179,7 @@ export default function AdminPage() {
                   : { color: t === "reset" ? "#dc2626" : "#6b7280" }
               }
             >
-              {t === "matches" ? "Resultados" : t === "pencas" ? "Pencas" : "Reset"}
+              {t === "matches" ? "Resultados" : t === "pencas" ? "Pencas" : t === "analytics" ? "Analytics" : "Reset"}
             </button>
           ))}
         </div>
@@ -411,6 +427,121 @@ export default function AdminPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* ── Tab Analytics ── */}
+        {activeTab === "analytics" && (
+          <div className="space-y-4">
+            {!analytics ? (
+              <p className="text-xs text-gray-400 text-center py-8">Cargando...</p>
+            ) : (
+              <>
+                {/* Cards globales */}
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Usuarios totales", value: analytics.totalUsers },
+                    { label: "Con predicciones", value: analytics.usersWithPredictions },
+                    { label: "Predicciones totales", value: analytics.totalPredictions },
+                    { label: "Completitud promedio", value: `${analytics.avgCompletion}%` },
+                  ].map((c) => (
+                    <div key={c.label} className="bg-white rounded-2xl shadow-sm p-4">
+                      <p className="text-xs text-gray-400 mb-1">{c.label}</p>
+                      <p className="text-2xl font-black" style={{ color: "#00217E" }}>{c.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Por penca */}
+                <div className="bg-white rounded-2xl shadow-sm p-5">
+                  <h2 className="text-sm font-bold mb-3" style={{ color: "#00217E" }}>Por penca</h2>
+                  <div className="space-y-3">
+                    {analytics.pencaStats.map((p) => (
+                      <div key={p.id} className="p-3 rounded-xl bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-bold text-gray-800">{p.name}</p>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#eff6ff", color: "#00217E" }}>
+                            {p.totalUsers} usuarios
+                          </span>
+                        </div>
+                        <div className="flex gap-4 text-xs text-gray-500">
+                          <span>Activos: <b className="text-gray-800">{p.activeUsers}</b></span>
+                          <span>Predicciones: <b className="text-gray-800">{p.totalPredictions}</b></span>
+                          <span>Completitud: <b className="text-gray-800">{p.avgCompletion}%</b></span>
+                        </div>
+                        <div className="mt-2 h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${p.avgCompletion}%`, backgroundColor: "#00217E" }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Distribución de actividad */}
+                <div className="bg-white rounded-2xl shadow-sm p-5">
+                  <h2 className="text-sm font-bold mb-3" style={{ color: "#00217E" }}>Distribución de actividad</h2>
+                  <div className="grid grid-cols-4 gap-2 text-center">
+                    {[
+                      { label: "Sin predicciones", value: analytics.distribution.inactive, color: "#e5e7eb" },
+                      { label: "1–10 partidos", value: analytics.distribution.low, color: "#FFCA61" },
+                      { label: "11–50 partidos", value: analytics.distribution.mid, color: "#00217E" },
+                      { label: "51+ partidos", value: analytics.distribution.high, color: "#16a34a" },
+                    ].map((d) => (
+                      <div key={d.label} className="p-3 rounded-xl" style={{ backgroundColor: `${d.color}18` }}>
+                        <p className="text-xl font-black" style={{ color: d.color === "#e5e7eb" ? "#9ca3af" : d.color }}>{d.value}</p>
+                        <p className="text-xs text-gray-400 mt-0.5 leading-tight">{d.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Registros por día */}
+                {analytics.registrationsByDay.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-sm p-5">
+                    <h2 className="text-sm font-bold mb-3" style={{ color: "#00217E" }}>Registros por día</h2>
+                    <div className="space-y-1.5">
+                      {analytics.registrationsByDay.map((d) => {
+                        const max = Math.max(...analytics.registrationsByDay.map(x => x.count));
+                        return (
+                          <div key={d.date} className="flex items-center gap-3">
+                            <span className="text-xs text-gray-400 w-24 flex-shrink-0">{d.date.slice(5)}</span>
+                            <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${(d.count / max) * 100}%`, backgroundColor: "#00217E" }} />
+                            </div>
+                            <span className="text-xs font-bold text-gray-700 w-4 text-right">{d.count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Top usuarios */}
+                {analytics.topUsers.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="px-5 py-4 border-b border-gray-50">
+                      <h2 className="text-sm font-bold" style={{ color: "#00217E" }}>Top usuarios más activos</h2>
+                    </div>
+                    {analytics.topUsers.map((u, idx) => (
+                      <div key={u.email}>
+                        {idx > 0 && <div className="h-px bg-gray-50" />}
+                        <div className="flex items-center gap-3 px-5 py-3">
+                          <span className="text-xs font-bold w-4 text-gray-300">{idx + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-gray-800 truncate">{u.name}</p>
+                            <p className="text-xs text-gray-400 truncate">{u.pencaName}</p>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <p className="text-xs font-bold" style={{ color: "#00217E" }}>{u.predictions} pred.</p>
+                            <p className="text-xs text-gray-400">{u.completion}%</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         )}
 
         {/* ── Tab Reset ── */}
