@@ -20,92 +20,96 @@ body {
 }
 
 /* ── Botón ML sidebar ── */
+/* Wrapper: el gradiente giratorio ES el borde */
 .ml-btn {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #00217E;
-  background-color: #FFCA61;
-  border: none;
-  cursor: pointer;
+  padding: 2px;
+  border-radius: 13px;
   text-decoration: none;
+  cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
   z-index: 0;
 }
 
 .ml-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(255, 202, 97, 0.35);
+  box-shadow: 0 10px 28px rgba(255, 202, 97, 0.4);
 }
 
 .ml-btn:active {
-  transform: translateY(0px);
-  box-shadow: 0 4px 10px rgba(255, 202, 97, 0.3);
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 202, 97, 0.3);
 }
 
 /* Ripple al hover */
 .ml-btn::after {
   content: "";
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  border-radius: 12px;
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
+  border-radius: 13px;
+  background: #FFCA61;
   z-index: -1;
-  background-color: #FFCA61;
-  transition: transform 0.4s, opacity 0.4s;
+  transition: transform 0.45s, opacity 0.45s;
 }
 
 .ml-btn:hover::after {
-  transform: scaleX(1.08) scaleY(1.5);
+  transform: scaleX(1.1) scaleY(1.6);
   opacity: 0;
 }
 
-/* Glow giratorio */
-.ml-btn-glow {
+/* Gradiente giratorio como borde */
+.ml-btn-border {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 108%;
-  height: 140%;
+  inset: 0;
+  border-radius: 13px;
   overflow: hidden;
-  border-radius: 12px;
   z-index: -2;
-  filter: blur(8px);
-  transition: filter 0.3s;
 }
 
-.ml-btn:hover .ml-btn-glow {
-  filter: blur(4px);
-}
-
-.ml-btn-glow-inner {
+.ml-btn-border::before {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
+  width: 200%;
   aspect-ratio: 1;
-  border-radius: 100%;
-  background-image: linear-gradient(
-    90deg,
-    #FFCA61,
-    #FFB347,
+  transform: translate(-50%, -50%) rotate(0deg);
+  background: conic-gradient(
+    from 0deg,
     #FF8C00,
+    #FFB347,
     #FFCA61,
     #FFE08A,
-    #FFCA61
+    #FFCA61,
+    #FFB347,
+    #FF8C00
   );
   animation: ml-rotate 3s linear infinite;
+}
+
+/* Superficie interior amarilla */
+.ml-btn-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 11px;
+  background: #FFCA61;
+  color: #00217E;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+
+.ml-btn:hover .ml-btn-inner {
+  background: #ffd980;
 }
 
 @keyframes ml-rotate {
