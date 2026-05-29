@@ -315,31 +315,59 @@ function DashboardPageInner() {
           })}
         </nav>
 
-        {/* Botón ML — parte inferior del sidebar */}
-        <div className="mt-auto pt-6 px-1">
+        {/* Botones sociales — parte inferior del sidebar */}
+        <div className="mt-auto pt-6 px-1 space-y-2">
+          <style>{`
+            @keyframes sidebar-pulse {
+              0%, 100% { box-shadow: 0 0 0 0 rgba(255,202,97,0.5); }
+              50% { box-shadow: 0 0 0 6px rgba(255,202,97,0); }
+            }
+          `}</style>
+
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/mundoshop.uy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs font-semibold transition-all"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              color: "rgba(255,255,255,0.7)",
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.14)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+            Seguinos en Instagram
+          </a>
+
+          {/* Mercado Libre */}
           <a
             href="https://www.mercadolibre.com.uy/tienda/mundoshop"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-xs font-semibold transition-all"
+            className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-xs font-bold transition-all"
             style={{
-              background: "rgba(255,255,255,0.08)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              boxShadow: "0 4px 16px 0 rgba(0,0,0,0.2)",
-              color: "rgba(255,255,255,0.85)",
+              backgroundColor: "#FFCA61",
+              border: "1px solid #FFCA61",
+              color: "#00217E",
+              animation: "sidebar-pulse 2.5s ease-in-out infinite",
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.16)";
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.3)";
+              const el = e.currentTarget as HTMLAnchorElement;
+              el.style.backgroundColor = "#ffd980";
+              el.style.animationPlayState = "paused";
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)";
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.15)";
+              const el = e.currentTarget as HTMLAnchorElement;
+              el.style.backgroundColor = "#FFCA61";
+              el.style.animationPlayState = "running";
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
             Visitanos en Mercado Libre
