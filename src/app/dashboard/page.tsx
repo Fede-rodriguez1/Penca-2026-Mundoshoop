@@ -463,7 +463,7 @@ function DashboardPageInner() {
                   </button>
                 </div>
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  {upcoming.slice(0, 6).map((match, idx) => (
+                  {[...upcoming].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 6).map((match, idx) => (
                     <div key={match.id}>
                       {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
                       <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
