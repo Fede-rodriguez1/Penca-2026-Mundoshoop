@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calcPoints } from "@/lib/scoring";
+import { matches as fixtureMatches } from "@/data/fixture";
 
 // IDs reales de API-Football para el Mundial 2026 — verificados el 13/05/2026
 const FIXTURE_MAP: Record<number, string> = {
@@ -105,15 +106,31 @@ function getMatchStatus(apiStatus: string): "live" | "finished" | null {
 
 async function fetchFixturesByIds(ids: number[]): Promise<ApiFixture[]> {
   if (ids.length === 0) return [];
-  const res = await fetch(
-    `https://v3.football.api-sports.io/fixtures?ids=${ids.join("-")}`,
-    {
-      headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY! },
-      next: { revalidate: 0 },
+
+  const BATCH_SIZE = 20;
+  const results: ApiFixture[] = [];
+
+  for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+    const batch = ids.slice(i, i + BATCH_SIZE);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    try {
+      const res = await fetch(
+        `https://v3.football.api-sports.io/fixtures?ids=${batch.join("-")}`,
+        {
+          headers: { "x-apisports-key": process.env.API_FOOTBALL_KEY! },
+          next: { revalidate: 0 },
+          signal: controller.signal,
+        }
+      );
+      const data = await res.json();
+      results.push(...(data.response ?? []));
+    } finally {
+      clearTimeout(timeout);
     }
-  );
-  const data = await res.json();
-  return data.response ?? [];
+  }
+
+  return results;
 }
 
 export async function POST(req: NextRequest) {
@@ -126,9 +143,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "API_FOOTBALL_KEY no configurada" }, { status: 500 });
   }
 
-  const mappedIds = Object.keys(FIXTURE_MAP).map(Number);
+  // Solo sincronizar partidos de hoy y ayer (para capturar live + recién finalizados)
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+  const relevantMatchIds = new Set(
+    fixtureMatches
+      .filter(m => m.date === todayStr || m.date === yesterdayStr)
+      .map(m => m.id)
+  );
+
+  const mappedIds = Object.entries(FIXTURE_MAP)
+    .filter(([, matchId]) => relevantMatchIds.has(matchId))
+    .map(([apiId]) => Number(apiId));
+
   if (mappedIds.length === 0) {
-    return NextResponse.json({ message: "Sin partidos mapeados todavía", synced: 0 });
+    return NextResponse.json({ message: "Sin partidos hoy/ayer", synced: 0 });
   }
 
   const fixtures = await fetchFixturesByIds(mappedIds);
