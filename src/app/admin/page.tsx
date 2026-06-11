@@ -48,6 +48,7 @@ export default function AdminPage() {
   const [myPencaId, setMyPencaId] = useState<string | null>(null);
   const [switchingPenca, setSwitchingPenca] = useState(false);
   const [expandedPenca, setExpandedPenca] = useState<string | null>(null);
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") { router.replace("/login"); return; }
@@ -417,9 +418,28 @@ export default function AdminPage() {
                                     </p>
                                   )}
                                 </div>
-                                <p className="text-xs text-gray-300 flex-shrink-0">
-                                  {new Date(user.createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit" })}
-                                </p>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <p className="text-xs text-gray-300">
+                                    {new Date(user.createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit" })}
+                                  </p>
+                                  <button
+                                    onClick={async () => {
+                                      if (!confirm(`¿Eliminar a ${user.name}? Esta acción no se puede deshacer.`)) return;
+                                      setDeletingUser(user.id);
+                                      await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
+                                      setPencas(prev => prev.map(p => p.id === penca.id
+                                        ? { ...p, users: p.users.filter(u => u.id !== user.id), _count: { users: p._count.users - 1 } }
+                                        : p
+                                      ));
+                                      setDeletingUser(null);
+                                    }}
+                                    disabled={deletingUser === user.id}
+                                    className="text-gray-300 hover:text-red-400 transition-colors disabled:opacity-40"
+                                    title="Eliminar usuario"
+                                  >
+                                    {deletingUser === user.id ? "..." : "✕"}
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ))
