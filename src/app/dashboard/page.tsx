@@ -26,7 +26,7 @@ type Standing = {
   pts: number;
 };
 
-function computeStandings(group: string): Standing[] {
+function computeStandings(group: string, dbResults: MatchResult[]): Standing[] {
   const groupMatches = matches.filter((m) => m.group === group);
   const table: Record<string, Standing> = {};
 
@@ -36,21 +36,21 @@ function computeStandings(group: string): Standing[] {
     if (!table[m.away.name]) table[m.away.name] = { team: m.away, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
   });
 
-  // Compute from finished matches only
-  groupMatches
-    .filter((m) => m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined)
-    .forEach((m) => {
-      const h = table[m.home.name];
-      const a = table[m.away.name];
-      const hg = m.homeScore!;
-      const ag = m.awayScore!;
-      h.played++; a.played++;
-      h.gf += hg; h.ga += ag;
-      a.gf += ag; a.ga += hg;
-      if (hg > ag) { h.won++; h.pts += 3; a.lost++; }
-      else if (hg < ag) { a.won++; a.pts += 3; h.lost++; }
-      else { h.drawn++; h.pts++; a.drawn++; a.pts++; }
-    });
+  // Compute from finished matches using DB results
+  groupMatches.forEach((m) => {
+    const r = dbResults.find((res) => res.matchId === m.id);
+    if (!r || r.status !== "finished") return;
+    const h = table[m.home.name];
+    const a = table[m.away.name];
+    const hg = r.homeScore;
+    const ag = r.awayScore;
+    h.played++; a.played++;
+    h.gf += hg; h.ga += ag;
+    a.gf += ag; a.ga += hg;
+    if (hg > ag) { h.won++; h.pts += 3; a.lost++; }
+    else if (hg < ag) { a.won++; a.pts += 3; h.lost++; }
+    else { h.drawn++; h.pts++; a.drawn++; a.pts++; }
+  });
 
   return Object.values(table).sort((a, b) =>
     b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf
@@ -660,7 +660,7 @@ function DashboardPageInner() {
                     </tr>
                   </thead>
                   <tbody>
-                    {computeStandings(selectedGroup).map((row, idx) => {
+                    {computeStandings(selectedGroup, results).map((row, idx) => {
                       const qualified = idx < 2;
                       return (
                         <tr key={row.team.name} className="border-b border-gray-50 last:border-0">
