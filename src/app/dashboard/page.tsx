@@ -107,21 +107,32 @@ function DashboardPageInner() {
     else localStorage.removeItem("admin-view-pencaId");
   }
 
-  // Si viene de Google con ?pencaCode=, actualizar la penca y limpiar la URL
+  // Si viene de Google con ?pencaCode=, actualizar la penca solo si el usuario no tiene una asignada
   useEffect(() => {
     const code = searchParams.get("pencaCode");
     if (!code || !session?.user?.id) return;
-    fetch("/api/users/me", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pencaCode: code }),
-    }).then((r) => r.json()).then((data) => {
-      if (data?.penca) {
-        setPencaCode(data.penca.code);
-        setPencaName(data.penca.name);
-        router.replace("/dashboard");
-      }
-    });
+    // Primero verificar si ya tiene penca — si tiene, no sobreescribir
+    fetch("/api/users/me")
+      .then((r) => r.json())
+      .then((me) => {
+        if (me?.penca?.id) {
+          // Ya tiene penca asignada, solo limpiar la URL
+          router.replace("/dashboard");
+          return;
+        }
+        // Sin penca — asignar la del código
+        return fetch("/api/users/me", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pencaCode: code }),
+        }).then((r) => r.json()).then((data) => {
+          if (data?.penca) {
+            setPencaCode(data.penca.code);
+            setPencaName(data.penca.name);
+            router.replace("/dashboard");
+          }
+        });
+      });
   }, [searchParams, session?.user?.id]);
 
   function fetchResults() {
