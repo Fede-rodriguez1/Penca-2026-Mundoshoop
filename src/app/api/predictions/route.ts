@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
   if (!match) {
     return NextResponse.json({ error: "Partido no encontrado" }, { status: 404 });
   }
-  if (match.status !== "upcoming") {
+
+  // Verificar status real en DB (el fixture.ts queda siempre "upcoming")
+  const dbResult = await prisma.matchResult.findUnique({ where: { matchId } });
+  if (dbResult || match.status !== "upcoming") {
     return NextResponse.json({ error: "El partido ya no acepta predicciones" }, { status: 400 });
   }
 
