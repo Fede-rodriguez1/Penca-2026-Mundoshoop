@@ -1510,7 +1510,7 @@ function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: (
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-300 mr-1.5 mb-0.5" />
           Grupo {match.group} — Fecha {match.matchday}
         </span>
-        <span className="text-xs font-semibold text-gray-500">{match.time}</span>
+        <span className="text-xs font-semibold text-gray-500">{match.date.slice(8)}/{match.date.slice(5,7)} · {match.time}</span>
       </div>
       {countdown && (
         <div className="mb-3 flex justify-center">

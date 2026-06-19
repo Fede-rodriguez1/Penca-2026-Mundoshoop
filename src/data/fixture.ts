@@ -95,15 +95,15 @@ export const matches: Match[] = [
   // GRUPO C
   { id: "C1", date: "2026-06-13", time: "19:00", group: "C", matchday: 1, home: t.BRA, away: t.MAR, venue: "Los Ángeles", status: "upcoming" },
   { id: "C2", date: "2026-06-13", time: "22:00", group: "C", matchday: 1, home: t.HAI, away: t.SCO, venue: "Kansas City", status: "upcoming" },
-  { id: "C3", date: "2026-06-19", time: "16:00", group: "C", matchday: 2, home: t.SCO, away: t.MAR, venue: "Dallas", status: "upcoming" },
-  { id: "C4", date: "2026-06-19", time: "22:00", group: "C", matchday: 2, home: t.BRA, away: t.HAI, venue: "Miami", status: "upcoming" },
+  { id: "C3", date: "2026-06-19", time: "19:00", group: "C", matchday: 2, home: t.SCO, away: t.MAR, venue: "Dallas", status: "upcoming" },
+  { id: "C4", date: "2026-06-19", time: "21:30", group: "C", matchday: 2, home: t.BRA, away: t.HAI, venue: "Philadelphia", status: "upcoming" },
   { id: "C5", date: "2026-06-24", time: "19:00", group: "C", matchday: 3, home: t.SCO, away: t.BRA, venue: "Atlanta", status: "upcoming" },
   { id: "C6", date: "2026-06-24", time: "19:00", group: "C", matchday: 3, home: t.MAR, away: t.HAI, venue: "Boston", status: "upcoming" },
   // GRUPO D
   { id: "D1", date: "2026-06-12", time: "22:00", group: "D", matchday: 1, home: t.USA, away: t.PAR, venue: "Los Ángeles", status: "upcoming" },
   { id: "D2", date: "2026-06-14", time: "01:00", group: "D", matchday: 1, home: t.AUS, away: t.TUR, venue: "Dallas", status: "upcoming" },
-  { id: "D3", date: "2026-06-19", time: "16:00", group: "D", matchday: 2, home: t.TUR, away: t.PAR, venue: "San Francisco", status: "upcoming" },
-  { id: "D4", date: "2026-06-20", time: "01:00", group: "D", matchday: 2, home: t.USA, away: t.AUS, venue: "New York", status: "upcoming" },
+  { id: "D3", date: "2026-06-19", time: "22:00", group: "D", matchday: 2, home: t.TUR, away: t.PAR, venue: "San Francisco", status: "upcoming" },
+  { id: "D4", date: "2026-06-19", time: "16:00", group: "D", matchday: 2, home: t.USA, away: t.AUS, venue: "New York", status: "upcoming" },
   { id: "D5", date: "2026-06-25", time: "23:00", group: "D", matchday: 3, home: t.TUR, away: t.USA, venue: "Atlanta", status: "upcoming" },
   { id: "D6", date: "2026-06-25", time: "23:00", group: "D", matchday: 3, home: t.PAR, away: t.AUS, venue: "Dallas", status: "upcoming" },
   // GRUPO E
