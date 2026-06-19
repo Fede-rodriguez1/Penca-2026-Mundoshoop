@@ -102,7 +102,7 @@ export const matches: Match[] = [
   // GRUPO D
   { id: "D1", date: "2026-06-12", time: "22:00", group: "D", matchday: 1, home: t.USA, away: t.PAR, venue: "Los Ángeles", status: "upcoming" },
   { id: "D2", date: "2026-06-14", time: "01:00", group: "D", matchday: 1, home: t.AUS, away: t.TUR, venue: "Dallas", status: "upcoming" },
-  { id: "D3", date: "2026-06-19", time: "22:00", group: "D", matchday: 2, home: t.TUR, away: t.PAR, venue: "San Francisco", status: "upcoming" },
+  { id: "D3", date: "2026-06-20", time: "00:00", group: "D", matchday: 2, home: t.TUR, away: t.PAR, venue: "San Francisco", status: "upcoming" },
   { id: "D4", date: "2026-06-19", time: "16:00", group: "D", matchday: 2, home: t.USA, away: t.AUS, venue: "New York", status: "upcoming" },
   { id: "D5", date: "2026-06-25", time: "23:00", group: "D", matchday: 3, home: t.TUR, away: t.USA, venue: "Atlanta", status: "upcoming" },
   { id: "D6", date: "2026-06-25", time: "23:00", group: "D", matchday: 3, home: t.PAR, away: t.AUS, venue: "Dallas", status: "upcoming" },
