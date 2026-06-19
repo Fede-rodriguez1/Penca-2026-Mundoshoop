@@ -143,16 +143,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "API_FOOTBALL_KEY no configurada" }, { status: 500 });
   }
 
-  // Solo sincronizar partidos de hoy y ayer (para capturar live + recién finalizados)
-  const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
-  const yesterday = new Date(now);
+  // Solo sincronizar partidos de hoy, ayer y mañana en hora Argentina
+  // (fixture.ts usa fechas en hora Argentina, no UTC)
+  const nowAR = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+  const todayStr = nowAR.toISOString().slice(0, 10);
+  const yesterday = new Date(nowAR);
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  const tomorrow = new Date(nowAR);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
 
   const relevantMatchIds = new Set(
     fixtureMatches
-      .filter(m => m.date === todayStr || m.date === yesterdayStr)
+      .filter(m => m.date === todayStr || m.date === yesterdayStr || m.date === tomorrowStr)
       .map(m => m.id)
   );
 
