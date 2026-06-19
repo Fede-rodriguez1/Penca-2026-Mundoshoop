@@ -40,6 +40,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "El partido ya no acepta predicciones" }, { status: 400 });
   }
 
+  // Guardar historial si ya existe una predicción con valores distintos
+  const existing = await prisma.prediction.findUnique({
+    where: { userId_matchId: { userId: session.user.id, matchId } },
+  });
+
+  if (existing && (existing.homeScore !== homeScore || existing.awayScore !== awayScore)) {
+    await prisma.predictionHistory.create({
+      data: {
+        predictionId: existing.id,
+        homeScore: existing.homeScore,
+        awayScore: existing.awayScore,
+      },
+    });
+  }
+
   const prediction = await prisma.prediction.upsert({
     where: { userId_matchId: { userId: session.user.id, matchId } },
     update: { homeScore, awayScore },
