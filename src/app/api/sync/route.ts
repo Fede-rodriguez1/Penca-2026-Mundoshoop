@@ -89,7 +89,12 @@ const FIXTURE_MAP: Record<number, string> = {
   1489403: "L4",  // Panama vs Croatia              (23/06)
   1489422: "L5",  // Panama vs England              (27/06)
   1489420: "L6",  // Croatia vs Ghana               (27/06)
-  // ELIMINATORIAS — se agregan cuando API-Football publique los IDs
+  // ELIMINATORIAS — 16vos de final
+  1561329: "P73",  // South Africa vs Canada           (28/06)
+  1562345: "P75",  // Netherlands vs Morocco            (29/06)
+  1562344: "P76",  // Brazil vs Japan                  (29/06)
+  1564789: "P78",  // Ivory Coast vs Norway             (30/06)
+  1562586: "P81",  // USA vs Bosnia & Herzegovina       (01/07)
 };
 
 type ApiFixture = {
