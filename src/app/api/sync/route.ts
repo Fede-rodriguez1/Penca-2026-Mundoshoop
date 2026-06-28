@@ -91,10 +91,21 @@ const FIXTURE_MAP: Record<number, string> = {
   1489420: "L6",  // Croatia vs Ghana               (27/06)
   // ELIMINATORIAS — 16vos de final
   1561329: "P73",  // South Africa vs Canada           (28/06)
+  1565176: "P74",  // Germany vs Paraguay              (29/06)
   1562345: "P75",  // Netherlands vs Morocco            (29/06)
   1562344: "P76",  // Brazil vs Japan                  (29/06)
+  1565177: "P77",  // France vs Sweden                 (30/06)
   1564789: "P78",  // Ivory Coast vs Norway             (30/06)
+  1567306: "P79",  // Mexico vs Ecuador                (30/06)
+  1567307: "P80",  // England vs Congo DR              (01/07)
   1562586: "P81",  // USA vs Bosnia & Herzegovina       (01/07)
+  1567308: "P82",  // Belgium vs Senegal               (01/07)
+  1567309: "P83",  // Portugal vs Croatia              (02/07)
+  1567311: "P84",  // Spain vs Austria                 (02/07)
+  1567312: "P85",  // Switzerland vs Algeria           (03/07)
+  1565179: "P86",  // Argentina vs Cape Verde          (03/07)
+  1567310: "P87",  // Colombia vs Ghana                (03/07)
+  1565178: "P88",  // Australia vs Egypt               (03/07)
 };
 
 type ApiFixture = {
