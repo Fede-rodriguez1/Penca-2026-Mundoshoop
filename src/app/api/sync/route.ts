@@ -112,6 +112,9 @@ type ApiFixture = {
   fixture: { id: number; status: { short: string; elapsed: number | null } };
   teams: { home: { name: string }; away: { name: string } };
   goals: { home: number | null; away: number | null };
+  score: {
+    fulltime: { home: number | null; away: number | null };
+  };
 };
 
 function getMatchStatus(apiStatus: string): "live" | "finished" | null {
@@ -219,14 +222,21 @@ export async function POST(req: NextRequest) {
     synced++;
 
     // Calcular puntos solo cuando el partido pasa a finished por primera vez
+    // Para AET/PEN usar score.fulltime (90 min) en vez de goals (que incluye prórroga)
     if (matchStatus === "finished" && existing?.status !== "finished") {
+      const apiStatus = f.fixture.status.short;
+      const useFulltime = (apiStatus === "AET" || apiStatus === "PEN") &&
+        f.score.fulltime.home !== null && f.score.fulltime.away !== null;
+      const scoreHome = useFulltime ? f.score.fulltime.home! : f.goals.home!;
+      const scoreAway = useFulltime ? f.score.fulltime.away! : f.goals.away!;
+
       const predictions = await prisma.prediction.findMany({ where: { matchId } });
       await Promise.all(
         predictions.map((p) =>
           prisma.prediction.update({
             where: { id: p.id },
             data: {
-              points: calcPoints(p.homeScore, p.awayScore, f.goals.home!, f.goals.away!),
+              points: calcPoints(p.homeScore, p.awayScore, scoreHome, scoreAway),
             },
           })
         )
