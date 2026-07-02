@@ -106,6 +106,12 @@ const FIXTURE_MAP: Record<number, string> = {
   1565179: "P86",  // Argentina vs Cape Verde          (03/07)
   1567310: "P87",  // Colombia vs Ghana                (03/07)
   1565178: "P88",  // Australia vs Egypt               (03/07)
+  // ELIMINATORIAS — Octavos de final
+  1569870: "P89",  // Paraguay vs France               (04/07)
+  1567824: "P90",  // Canada vs Morocco                (04/07)
+  1568100: "P91",  // Brazil vs Norway                 (05/07)
+  1570714: "P92",  // Mexico vs England                (05/07)
+  1570715: "P94",  // USA vs Belgium                   (06/07)
 };
 
 type ApiFixture = {
