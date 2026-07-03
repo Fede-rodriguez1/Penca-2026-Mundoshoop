@@ -186,7 +186,7 @@ export const matches: Match[] = [
   { id: "P90",  date: "2026-07-04", time: "14:00", group: "8vos",    matchday: 2, home: t.CAN, away: t.MAR, venue: "Houston",       status: "upcoming" },
   { id: "P91",  date: "2026-07-05", time: "17:00", group: "8vos",    matchday: 3, home: t.BRA, away: t.NOR, venue: "Nueva Jersey",  status: "upcoming" },
   { id: "P92",  date: "2026-07-05", time: "21:00", group: "8vos",    matchday: 4, home: t.MEX, away: t.ENG, venue: "Ciudad de México", status: "upcoming" },
-  { id: "P93",  date: "2026-07-06", time: "--:--", group: "8vos",    matchday: 5, home: ph("Gan. P83"), away: ph("Gan. P84"), venue: "Dallas",        status: "upcoming" },
+  { id: "P93",  date: "2026-07-06", time: "16:00", group: "8vos",    matchday: 5, home: t.POR, away: t.ESP, venue: "Dallas",        status: "upcoming" },
   { id: "P94",  date: "2026-07-06", time: "21:00", group: "8vos",    matchday: 6, home: t.USA, away: t.BEL, venue: "Seattle",       status: "upcoming" },
   { id: "P95",  date: "2026-07-07", time: "--:--", group: "8vos",    matchday: 7, home: ph("Gan. P86"), away: ph("Gan. P88"), venue: "Atlanta",       status: "upcoming" },
   { id: "P96",  date: "2026-07-07", time: "--:--", group: "8vos",    matchday: 8, home: ph("Gan. P85"), away: ph("Gan. P87"), venue: "Vancouver",     status: "upcoming" },

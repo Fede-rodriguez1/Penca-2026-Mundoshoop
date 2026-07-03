@@ -111,6 +111,7 @@ const FIXTURE_MAP: Record<number, string> = {
   1567824: "P90",  // Canada vs Morocco                (04/07)
   1568100: "P91",  // Brazil vs Norway                 (05/07)
   1570714: "P92",  // Mexico vs England                (05/07)
+  1576756: "P93",  // Portugal vs Spain                 (06/07)
   1570715: "P94",  // USA vs Belgium                   (06/07)
 };
 
