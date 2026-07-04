@@ -113,6 +113,8 @@ const FIXTURE_MAP: Record<number, string> = {
   1570714: "P92",  // Mexico vs England                (05/07)
   1576756: "P93",  // Portugal vs Spain                 (06/07)
   1570715: "P94",  // USA vs Belgium                   (06/07)
+  1576804: "P95",  // Argentina vs Egypt               (07/07)
+  1576805: "P96",  // Switzerland vs Colombia           (07/07)
 };
 
 type ApiFixture = {
