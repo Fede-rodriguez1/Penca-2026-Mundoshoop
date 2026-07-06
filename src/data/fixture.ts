@@ -192,9 +192,9 @@ export const matches: Match[] = [
   { id: "P96",  date: "2026-07-07", time: "17:00", group: "8vos",    matchday: 8, home: t.SUI, away: t.COL, venue: "Vancouver",     status: "upcoming" },
 
   // ── CUARTOS DE FINAL ─────────────────────────────────────────────
-  { id: "P97",  date: "2026-07-09", time: "--:--", group: "Cuartos", matchday: 1, home: ph("Gan. P89"), away: ph("Gan. P90"), venue: "Boston",        status: "upcoming" },
+  { id: "P97",  date: "2026-07-09", time: "17:00", group: "Cuartos", matchday: 1, home: t.FRA, away: t.MAR, venue: "Boston",        status: "upcoming" },
   { id: "P98",  date: "2026-07-10", time: "--:--", group: "Cuartos", matchday: 2, home: ph("Gan. P93"), away: ph("Gan. P94"), venue: "Los Ángeles",   status: "upcoming" },
-  { id: "P99",  date: "2026-07-11", time: "--:--", group: "Cuartos", matchday: 3, home: ph("Gan. P91"), away: ph("Gan. P92"), venue: "Miami",         status: "upcoming" },
+  { id: "P99",  date: "2026-07-11", time: "18:00", group: "Cuartos", matchday: 3, home: t.NOR, away: t.ENG, venue: "Miami",         status: "upcoming" },
   { id: "P100", date: "2026-07-11", time: "--:--", group: "Cuartos", matchday: 4, home: ph("Gan. P95"), away: ph("Gan. P96"), venue: "Kansas City",   status: "upcoming" },
 
   // ── SEMIFINALES ───────────────────────────────────────────────────
