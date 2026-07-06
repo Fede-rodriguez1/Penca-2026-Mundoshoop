@@ -1132,8 +1132,24 @@ function DashboardPageInner() {
           )}
 
           {/* ── Historial ── */}
-          {nav === "profile" && profileView === "history" && (
-            <div className="max-w-lg mx-auto space-y-4 pb-4">
+          {nav === "profile" && profileView === "history" && (() => {
+            const groupOrder = ["A","B","C","D","E","F","G","H","I","J","K","L","16vos","8vos","Cuartos","Semis","3° Puesto","Final"];
+            const groupLabels: Record<string, string> = {
+              "A":"Grupo A","B":"Grupo B","C":"Grupo C","D":"Grupo D","E":"Grupo E","F":"Grupo F",
+              "G":"Grupo G","H":"Grupo H","I":"Grupo I","J":"Grupo J","K":"Grupo K","L":"Grupo L",
+              "16vos":"16vos de final","8vos":"Octavos de final","Cuartos":"Cuartos de final",
+              "Semis":"Semifinales","3° Puesto":"3° Puesto","Final":"Final"
+            };
+            const grouped = predictions.reduce<Record<string, typeof predictions>>((acc, pred) => {
+              const match = matches.find((m) => m.id === pred.matchId);
+              if (!match) return acc;
+              const g = match.group;
+              if (!acc[g]) acc[g] = [];
+              acc[g].push(pred);
+              return acc;
+            }, {});
+            return (
+            <div className="max-w-lg mx-auto space-y-3 pb-4">
               <button onClick={() => setProfileView("main")} className="flex items-center gap-2 text-sm font-semibold px-1" style={{ color: "#00217E" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 Volver
@@ -1143,45 +1159,81 @@ function DashboardPageInner() {
                   <p className="text-gray-400 text-sm">Todavía no hiciste ninguna predicción.</p>
                 </div>
               ) : (
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  {predictions.map((pred, idx) => {
-                    const match = matches.find((m) => m.id === pred.matchId);
-                    if (!match) return null;
-                    const result = results.find((r) => r.matchId === match.id);
+                groupOrder.filter(g => grouped[g]?.length).map(g => {
+                  const preds = grouped[g];
+                  let totalPts = 0;
+                  let allFinished = true;
+                  preds.forEach(pred => {
+                    const match = matches.find(m => m.id === pred.matchId)!;
+                    const result = results.find(r => r.matchId === match.id);
                     const isFinished = effectiveStatus(match) === "finished";
+                    if (!isFinished) allFinished = false;
                     const actualHome = result?.homeScore ?? match.homeScore;
                     const actualAway = result?.awayScore ?? match.awayScore;
-                    const pts = isFinished && actualHome !== undefined && actualAway !== undefined
-                      ? calcPoints(pred.homeScore, pred.awayScore, actualHome, actualAway)
-                      : null;
-                    return (
-                      <div key={pred.matchId}>
-                        {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                        <div className="px-4 py-4 flex items-center gap-3">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-400 mb-1">Grupo {match.group} — {match.home.shortName} vs {match.away.shortName}</p>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-gray-700">Tu predicción: {pred.homeScore}–{pred.awayScore}</span>
-                              {isFinished && actualHome !== undefined && actualAway !== undefined && (
-                                <span className="text-xs text-gray-400">| Real: {actualHome}–{actualAway}</span>
-                              )}
-                            </div>
-                          </div>
-                          {pts !== null ? (
-                            <span className="text-sm font-black flex-shrink-0" style={{ color: pts >= 8 ? "#16a34a" : pts >= 5 ? "#00217E" : pts >= 3 ? "#d97706" : "#9ca3af" }}>
-                              +{pts} pts
-                            </span>
-                          ) : (
-                            <span className="text-xs text-gray-300 flex-shrink-0">Pendiente</span>
-                          )}
+                    if (isFinished && actualHome !== undefined && actualAway !== undefined) {
+                      totalPts += calcPoints(pred.homeScore, pred.awayScore, actualHome, actualAway);
+                    }
+                  });
+                  const isKnockout = !g.match(/^[A-L]$/);
+                  return (
+                    <details key={g} className="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                      <summary className="px-4 py-3 flex items-center justify-between cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: isKnockout ? "#7c3aed" : "#00217E" }}>
+                            {groupLabels[g] ?? g}
+                          </span>
+                          <span className="text-xs text-gray-400">{preds.length} {preds.length === 1 ? "partido" : "partidos"}</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                          {totalPts > 0 && (
+                            <span className="text-xs font-bold" style={{ color: "#00217E" }}>{totalPts} pts</span>
+                          )}
+                          <svg className="w-4 h-4 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                      </summary>
+                      <div className="border-t border-gray-100">
+                        {preds.map((pred, idx) => {
+                          const match = matches.find(m => m.id === pred.matchId);
+                          if (!match) return null;
+                          const result = results.find(r => r.matchId === match.id);
+                          const isFinished = effectiveStatus(match) === "finished";
+                          const actualHome = result?.homeScore ?? match.homeScore;
+                          const actualAway = result?.awayScore ?? match.awayScore;
+                          const pts = isFinished && actualHome !== undefined && actualAway !== undefined
+                            ? calcPoints(pred.homeScore, pred.awayScore, actualHome, actualAway)
+                            : null;
+                          return (
+                            <div key={pred.matchId}>
+                              {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
+                              <div className="px-4 py-3 flex items-center gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs text-gray-400 mb-0.5">{match.home.shortName} vs {match.away.shortName}</p>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-bold text-gray-700">{pred.homeScore}–{pred.awayScore}</span>
+                                    {isFinished && actualHome !== undefined && actualAway !== undefined && (
+                                      <span className="text-xs text-gray-400">| Real: {actualHome}–{actualAway}</span>
+                                    )}
+                                  </div>
+                                </div>
+                                {pts !== null ? (
+                                  <span className="text-sm font-black flex-shrink-0" style={{ color: pts >= 8 ? "#16a34a" : pts >= 5 ? "#00217E" : pts >= 3 ? "#d97706" : "#9ca3af" }}>
+                                    +{pts}
+                                  </span>
+                                ) : (
+                                  <span className="text-xs text-gray-300 flex-shrink-0">Pendiente</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
+                    </details>
+                  );
+                })
               )}
             </div>
-          )}
+            );
+          })()}
 
           {/* ── Reglas ── */}
           {nav === "profile" && profileView === "rules" && (
