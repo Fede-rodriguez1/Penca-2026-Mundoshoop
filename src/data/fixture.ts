@@ -199,7 +199,7 @@ export const matches: Match[] = [
 
   // ── SEMIFINALES ───────────────────────────────────────────────────
   { id: "P101", date: "2026-07-14", time: "16:00", group: "Semis",   matchday: 1, home: t.FRA, away: t.ESP, venue: "Dallas",        status: "upcoming" },
-  { id: "P102", date: "2026-07-15", time: "--:--", group: "Semis",   matchday: 2, home: ph("Gan. P99"),  away: ph("Gan. P100"), venue: "Atlanta",       status: "upcoming" },
+  { id: "P102", date: "2026-07-15", time: "--:--", group: "Semis",   matchday: 2, home: t.ENG, away: t.ARG, venue: "Atlanta",       status: "upcoming" },
 
   // ── TERCER PUESTO Y FINAL ─────────────────────────────────────────
   { id: "P103", date: "2026-07-18", time: "--:--", group: "3° Puesto", matchday: 1, home: ph("Perd. P101"), away: ph("Perd. P102"), venue: "Miami",       status: "upcoming" },
