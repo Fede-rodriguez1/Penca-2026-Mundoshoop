@@ -122,6 +122,7 @@ const FIXTURE_MAP: Record<number, string> = {
   1582681: "P100", // Argentina vs Switzerland          (11/07)
   // ELIMINATORIAS — Semifinales
   1585131: "P101", // France vs Spain                   (14/07)
+  1586077: "P102", // England vs Argentina              (15/07)
 };
 
 type ApiFixture = {
