@@ -217,21 +217,28 @@ export async function POST(req: NextRequest) {
     if (!matchStatus) continue; // partido no empezó o cancelado
     if (f.goals.home === null || f.goals.away === null) continue;
 
+    // Para AET/PEN usar score.fulltime (90 min) en vez de goals (que incluye prórroga)
+    const apiStatus = f.fixture.status.short;
+    const useFulltime = (apiStatus === "AET" || apiStatus === "PEN") &&
+      f.score.fulltime.home !== null && f.score.fulltime.away !== null;
+    const scoreHome = useFulltime ? f.score.fulltime.home! : f.goals.home!;
+    const scoreAway = useFulltime ? f.score.fulltime.away! : f.goals.away!;
+
     // Verificar si ya estaba finished antes de upsert
     const existing = await prisma.matchResult.findUnique({ where: { matchId } });
 
     await prisma.matchResult.upsert({
       where: { matchId },
       update: {
-        homeScore: f.goals.home,
-        awayScore: f.goals.away,
+        homeScore: scoreHome,
+        awayScore: scoreAway,
         elapsed: f.fixture.status.elapsed,
         status: matchStatus,
       },
       create: {
         matchId,
-        homeScore: f.goals.home,
-        awayScore: f.goals.away,
+        homeScore: scoreHome,
+        awayScore: scoreAway,
         elapsed: f.fixture.status.elapsed,
         status: matchStatus,
       },
@@ -239,13 +246,7 @@ export async function POST(req: NextRequest) {
     synced++;
 
     // Calcular puntos solo cuando el partido pasa a finished por primera vez
-    // Para AET/PEN usar score.fulltime (90 min) en vez de goals (que incluye prórroga)
     if (matchStatus === "finished" && existing?.status !== "finished") {
-      const apiStatus = f.fixture.status.short;
-      const useFulltime = (apiStatus === "AET" || apiStatus === "PEN") &&
-        f.score.fulltime.home !== null && f.score.fulltime.away !== null;
-      const scoreHome = useFulltime ? f.score.fulltime.home! : f.goals.home!;
-      const scoreAway = useFulltime ? f.score.fulltime.away! : f.goals.away!;
 
       const predictions = await prisma.prediction.findMany({ where: { matchId } });
       await Promise.all(
