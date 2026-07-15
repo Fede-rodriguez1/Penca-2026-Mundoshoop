@@ -445,15 +445,24 @@ function DashboardPageInner() {
                     <p className="text-gray-400 text-sm">No hay partidos en curso ahora</p>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    {live.map((match, idx) => (
-                      <div key={match.id}>
-                        {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                        <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
-                          <FinishedRow match={withResult(match)} />
-                        </button>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    {live.map((match) => {
+                      const isSpecial = match.group === "Final" || match.group === "3\u00B0 Puesto";
+                      return (
+                        <div
+                          key={match.id}
+                          className={
+                            isSpecial
+                              ? `rounded-2xl overflow-hidden ${match.group === "Final" ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`
+                              : "bg-white rounded-2xl shadow-sm overflow-hidden"
+                          }
+                        >
+                          <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
+                            <FinishedRow match={withResult(match)} />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </section>
@@ -473,13 +482,22 @@ function DashboardPageInner() {
                     Ver todos
                   </button>
                 </div>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  {[...upcoming].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 6).map((match, idx) => (
-                    <div key={match.id}>
-                      {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
-                      <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  {[...upcoming].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 6).map((match) => {
+                    const isSpecial = match.group === "Final" || match.group === "3\u00B0 Puesto";
+                    return (
+                      <div
+                        key={match.id}
+                        className={
+                          isSpecial
+                            ? `rounded-2xl overflow-hidden ${match.group === "Final" ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`
+                            : "bg-white rounded-2xl shadow-sm overflow-hidden"
+                        }
+                      >
+                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
 
@@ -560,14 +578,36 @@ function DashboardPageInner() {
           {/* ── Partidos ── */}
           {nav === "matches" && tab === "upcoming" && (
             <div className="max-w-2xl mx-auto space-y-6">
-              {upcomingDates.map((date) => (
+              {upcomingDates.map((date) => {
+                const dateMatches = upcomingByDate[date];
+                const hasSpecial = dateMatches.some((m) => m.group === "Final" || m.group === "3\u00B0 Puesto");
+                return (
                 <section key={date}>
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-1 h-5 rounded-full" style={{ backgroundColor: "#FFCA61" }} />
                     <h2 className="text-sm font-bold text-gray-800">{formatDate(date)}</h2>
                   </div>
+                  {hasSpecial ? (
+                    <div className="space-y-4">
+                      {dateMatches.map((match) => {
+                        const eff = effectiveStatus(match);
+                        const isFinal = match.group === "Final";
+                        return (
+                          <div key={match.id} className={`rounded-2xl overflow-hidden ${isFinal ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`}>
+                            {eff === "live" ? (
+                              <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
+                                <FinishedRow match={withResult(match)} />
+                              </button>
+                            ) : (
+                              <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
                   <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    {upcomingByDate[date].map((match, idx) => {
+                    {dateMatches.map((match, idx) => {
                       const eff = effectiveStatus(match);
                       return (
                         <div key={match.id}>
@@ -583,8 +623,10 @@ function DashboardPageInner() {
                       );
                     })}
                   </div>
+                  )}
                 </section>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -599,22 +641,41 @@ function DashboardPageInner() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {finishedDates.map((date) => (
+                  {finishedDates.map((date) => {
+                    const dateMatches = finishedByDate[date];
+                    const hasSpecial = dateMatches.some((m) => m.group === "Final" || m.group === "3\u00B0 Puesto");
+                    return (
                     <section key={date}>
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-1 h-5 rounded-full bg-gray-300" />
                         <h2 className="text-sm font-bold text-gray-800">{formatDate(date)}</h2>
                       </div>
+                      {hasSpecial ? (
+                        <div className="space-y-4">
+                          {dateMatches.map((match) => {
+                            const isFinal = match.group === "Final";
+                            return (
+                              <div key={match.id} className={`rounded-2xl overflow-hidden ${isFinal ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`}>
+                                <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
+                                  <FinishedRow match={withResult(match)} />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
                       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                        {finishedByDate[date].map((match, idx) => (
+                        {dateMatches.map((match, idx) => (
                           <div key={match.id}>
                             {idx > 0 && <div className="h-px bg-gray-100 mx-4" />}
                             <FinishedRow match={withResult(match)} />
                           </div>
                         ))}
                       </div>
+                      )}
                     </section>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1553,8 +1614,237 @@ function useCountdown(match: Match): string | null {
   return countdown;
 }
 
+function SpecialMatchRow({ match, onPredict, prediction, countdown }: { match: Match; onPredict: () => void; prediction?: Prediction; countdown: string | null }) {
+  const isFinal = match.group === "Final";
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        background: isFinal
+          ? "linear-gradient(145deg, #0a1628 0%, #122040 40%, #1a2d50 100%)"
+          : "linear-gradient(145deg, #faf7f2 0%, #f5efe4 50%, #ede5d6 100%)",
+        padding: isFinal ? "32px 20px 28px" : "24px 16px 20px",
+      }}
+    >
+      {/* Decorative gold glow corners — Final only */}
+      {isFinal && (
+        <>
+          <div className="absolute top-0 left-0 w-32 h-32 opacity-[0.07]" style={{ background: "radial-gradient(circle at top left, #FFCA61, transparent 70%)" }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{ background: "radial-gradient(circle at top right, #FFCA61, transparent 70%)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-24 opacity-[0.05]" style={{ background: "radial-gradient(circle at bottom, #FFCA61, transparent 70%)" }} />
+        </>
+      )}
+
+      {/* Trophy / Medal label */}
+      <div className="relative flex items-center justify-center gap-2 mb-1">
+        <div className="h-px flex-1" style={{ background: isFinal ? "linear-gradient(90deg, transparent, rgba(255,202,97,0.25))" : "linear-gradient(90deg, transparent, rgba(205,127,50,0.2))" }} />
+        <span className="text-base">{isFinal ? "\u{1F3C6}" : "\u{1F949}"}</span>
+        <span
+          className="text-[10px] font-black tracking-[0.25em] uppercase"
+          style={{ color: isFinal ? "#FFCA61" : "#B8860B" }}
+        >
+          {isFinal ? "GRAN FINAL" : "3ER Y 4TO PUESTO"}
+        </span>
+        <span className="text-base">{isFinal ? "\u{1F3C6}" : "\u{1F949}"}</span>
+        <div className="h-px flex-1" style={{ background: isFinal ? "linear-gradient(90deg, rgba(255,202,97,0.25), transparent)" : "linear-gradient(90deg, rgba(205,127,50,0.2), transparent)" }} />
+      </div>
+
+      {/* Venue */}
+      <div className="relative text-center mb-0.5">
+        <span className="text-[10px] tracking-widest uppercase" style={{ color: isFinal ? "rgba(255,255,255,0.4)" : "#a89070" }}>
+          {match.venue}
+        </span>
+      </div>
+
+      {/* Date / time */}
+      <div className="relative text-center mb-5">
+        <span className="text-xs font-semibold" style={{ color: isFinal ? "rgba(255,202,97,0.7)" : "#8B7355" }}>
+          {match.date.slice(8)}/{match.date.slice(5, 7)} · {match.time}
+        </span>
+      </div>
+
+      {/* Countdown */}
+      {countdown && (
+        <div className="relative mb-5 flex justify-center">
+          <span
+            className="text-xs font-bold px-4 py-1.5 rounded-full"
+            style={countdown.startsWith("\u00A1")
+              ? { backgroundColor: "rgba(239,68,68,0.15)", color: "#ef4444" }
+              : { backgroundColor: isFinal ? "rgba(255,202,97,0.12)" : "rgba(184,134,11,0.1)", color: isFinal ? "#FFCA61" : "#B8860B" }}
+          >
+            {countdown}
+          </span>
+        </div>
+      )}
+
+      {/* Teams + Predict */}
+      <div className="relative flex items-center justify-between">
+        {/* Home */}
+        <div className="flex flex-col items-center gap-2 w-28">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={match.home.shield || "/trophy.png"}
+            alt={match.home.name}
+            className="object-contain"
+            style={{ width: isFinal ? 68 : 56, height: isFinal ? 68 : 56, ...(isFinal ? { filter: "drop-shadow(0 0 10px rgba(255,202,97,0.25))" } : {}) }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/trophy.png"; }}
+          />
+          <span className="text-xs font-bold text-center leading-tight" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>
+            {match.home.shortName}
+          </span>
+        </div>
+
+        {/* Center */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-sm font-extrabold tracking-widest" style={{ color: isFinal ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)" }}>VS</span>
+          {prediction && (
+            <span className="text-xs font-bold" style={{ color: isFinal ? "#FFCA61" : "#B8860B" }}>
+              {prediction.homeScore} — {prediction.awayScore}
+            </span>
+          )}
+          <button
+            onClick={onPredict}
+            className={`px-6 py-2.5 rounded-full text-xs font-bold tracking-wider transition-all hover:scale-105${!prediction ? " btn-predict" : ""}`}
+            style={{
+              backgroundColor: prediction
+                ? (isFinal ? "rgba(255,202,97,0.15)" : "rgba(184,134,11,0.1)")
+                : (isFinal ? "#FFCA61" : "#B8860B"),
+              color: prediction
+                ? (isFinal ? "#FFCA61" : "#B8860B")
+                : (isFinal ? "#0a1628" : "#fff"),
+              ...(isFinal && !prediction ? { boxShadow: "0 0 24px rgba(255,202,97,0.3)" } : {}),
+            }}
+          >
+            {prediction ? "EDITAR" : "PREDECIR"}
+          </button>
+        </div>
+
+        {/* Away */}
+        <div className="flex flex-col items-center gap-2 w-28">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={match.away.shield || "/trophy.png"}
+            alt={match.away.name}
+            className="object-contain"
+            style={{ width: isFinal ? 68 : 56, height: isFinal ? 68 : 56, ...(isFinal ? { filter: "drop-shadow(0 0 10px rgba(255,202,97,0.25))" } : {}) }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/trophy.png"; }}
+          />
+          <span className="text-xs font-bold text-center leading-tight" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>
+            {match.away.shortName}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom accent line */}
+      {isFinal && (
+        <div className="relative mt-6 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.25), transparent)" }} />
+      )}
+    </div>
+  );
+}
+
+function SpecialFinishedRow({ match, isLive }: { match: Match & { elapsed?: number | null }; isLive: boolean }) {
+  const isFinal = match.group === "Final";
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        background: isFinal
+          ? "linear-gradient(145deg, #0a1628 0%, #122040 40%, #1a2d50 100%)"
+          : "linear-gradient(145deg, #faf7f2 0%, #f5efe4 50%, #ede5d6 100%)",
+        padding: isFinal ? "32px 20px 28px" : "24px 16px 20px",
+      }}
+    >
+      {isFinal && (
+        <>
+          <div className="absolute top-0 left-0 w-32 h-32 opacity-[0.07]" style={{ background: "radial-gradient(circle at top left, #FFCA61, transparent 70%)" }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{ background: "radial-gradient(circle at top right, #FFCA61, transparent 70%)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-24 opacity-[0.05]" style={{ background: "radial-gradient(circle at bottom, #FFCA61, transparent 70%)" }} />
+        </>
+      )}
+
+      {/* Label */}
+      <div className="relative flex items-center justify-center gap-2 mb-1">
+        <div className="h-px flex-1" style={{ background: isFinal ? "linear-gradient(90deg, transparent, rgba(255,202,97,0.25))" : "linear-gradient(90deg, transparent, rgba(205,127,50,0.2))" }} />
+        <span className="text-base">{isFinal ? "\u{1F3C6}" : "\u{1F949}"}</span>
+        <span className="text-[10px] font-black tracking-[0.25em] uppercase" style={{ color: isFinal ? "#FFCA61" : "#B8860B" }}>
+          {isFinal ? "GRAN FINAL" : "3ER Y 4TO PUESTO"}
+        </span>
+        <span className="text-base">{isFinal ? "\u{1F3C6}" : "\u{1F949}"}</span>
+        <div className="h-px flex-1" style={{ background: isFinal ? "linear-gradient(90deg, rgba(255,202,97,0.25), transparent)" : "linear-gradient(90deg, rgba(205,127,50,0.2), transparent)" }} />
+      </div>
+
+      {/* Status */}
+      <div className="relative flex items-center justify-center gap-2 mb-5">
+        {isLive ? (
+          <span className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            <span className="text-xs font-bold text-red-500 uppercase tracking-wide">En vivo</span>
+          </span>
+        ) : (
+          <span className="text-xs font-semibold" style={{ color: isFinal ? "rgba(255,202,97,0.7)" : "#8B7355" }}>{match.time}</span>
+        )}
+      </div>
+
+      {/* Teams & Score */}
+      <div className="relative flex items-center justify-between">
+        <div className="flex flex-col items-center gap-2 w-28">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={match.home.shield || "/trophy.png"}
+            alt={match.home.name}
+            className="object-contain"
+            style={{ width: isFinal ? 68 : 56, height: isFinal ? 68 : 56, ...(isFinal ? { filter: "drop-shadow(0 0 10px rgba(255,202,97,0.25))" } : {}) }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/trophy.png"; }}
+          />
+          <span className="text-xs font-bold text-center leading-tight" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>
+            {match.home.shortName}
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-4">
+            <span className="text-4xl font-black" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>{match.homeScore ?? 0}</span>
+            <span className="text-xl font-light" style={{ color: isFinal ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.2)" }}>&ndash;</span>
+            <span className="text-4xl font-black" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>{match.awayScore ?? 0}</span>
+          </div>
+          {isLive && (
+            <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+              {match.elapsed != null ? `${match.elapsed}'` : "En curso"}
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-col items-center gap-2 w-28">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={match.away.shield || "/trophy.png"}
+            alt={match.away.name}
+            className="object-contain"
+            style={{ width: isFinal ? 68 : 56, height: isFinal ? 68 : 56, ...(isFinal ? { filter: "drop-shadow(0 0 10px rgba(255,202,97,0.25))" } : {}) }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/trophy.png"; }}
+          />
+          <span className="text-xs font-bold text-center leading-tight" style={{ color: isFinal ? "#fff" : "#1a1a1a" }}>
+            {match.away.shortName}
+          </span>
+        </div>
+      </div>
+
+      {isFinal && (
+        <div className="relative mt-6 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.25), transparent)" }} />
+      )}
+    </div>
+  );
+}
+
 function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: () => void; prediction?: Prediction }) {
   const countdown = useCountdown(match);
+  if (match.group === "Final" || match.group === "3\u00B0 Puesto") {
+    return <SpecialMatchRow match={match} onPredict={onPredict} prediction={prediction} countdown={countdown} />;
+  }
   return (
     <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-4">
@@ -1600,6 +1890,9 @@ function MatchRow({ match, onPredict, prediction }: { match: Match; onPredict: (
 
 function FinishedRow({ match }: { match: Match & { elapsed?: number | null } }) {
   const isLive = match.status === "live";
+  if (match.group === "Final" || match.group === "3\u00B0 Puesto") {
+    return <SpecialFinishedRow match={match} isLive={isLive} />;
+  }
   return (
     <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-4">
