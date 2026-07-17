@@ -202,7 +202,7 @@ export const matches: Match[] = [
   { id: "P102", date: "2026-07-15", time: "16:00", group: "Semis",   matchday: 2, home: t.ENG, away: t.ARG, venue: "Atlanta",       status: "upcoming" },
 
   // ── TERCER PUESTO Y FINAL ─────────────────────────────────────────
-  { id: "P103", date: "2026-07-18", time: "--:--", group: "3° Puesto", matchday: 1, home: t.FRA, away: t.ENG, venue: "Miami",       status: "upcoming" },
+  { id: "P103", date: "2026-07-18", time: "18:00", group: "3° Puesto", matchday: 1, home: t.FRA, away: t.ENG, venue: "Miami",       status: "upcoming" },
   { id: "P104", date: "2026-07-19", time: "16:00", group: "Final",     matchday: 1, home: t.ESP, away: t.ARG, venue: "Nueva Jersey", status: "upcoming" },
 ];
 

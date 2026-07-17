@@ -123,6 +123,8 @@ const FIXTURE_MAP: Record<number, string> = {
   // ELIMINATORIAS — Semifinales
   1585131: "P101", // France vs Spain                   (14/07)
   1586077: "P102", // England vs Argentina              (15/07)
+  // ELIMINATORIAS — 3er puesto
+  1591865: "P103", // France vs England                 (18/07)
   // ELIMINATORIAS — Final
   1591866: "P104", // Spain vs Argentina                (19/07)
 };
