@@ -1334,9 +1334,9 @@ function DashboardPageInner() {
                 {[
                   { pts: "+8", label: "Resultado exacto", desc: "Predijiste 2-1 y terminó 2-1. ¡Máximo de puntos!", bg: "#e0f2e9", color: "#16a34a",
                     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
-                  { pts: "+5", label: "Ganador + diferencia correcta", desc: "Predijiste 3-1 y terminó 2-0. Ganador y diferencia de goles correctos.", bg: "#dbeafe", color: "#00217E",
+                  { pts: "+5", label: "Resultado + diferencia correcta", desc: "Predijiste 3-1 y terminó 2-0, o 1-1 y terminó 0-0. Resultado y diferencia correctos.", bg: "#dbeafe", color: "#00217E",
                     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00217E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
-                  { pts: "+3", label: "Ganador o empate correcto", desc: "Predijiste 2-0 y terminó 1-0. Solo el resultado es correcto.", bg: "#fef3c7", color: "#d97706",
+                  { pts: "+3", label: "Ganador correcto", desc: "Predijiste 2-0 y terminó 1-0. Solo el ganador es correcto.", bg: "#fef3c7", color: "#d97706",
                     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> },
                   { pts: "+0", label: "Predicción incorrecta", desc: "Predijiste 2-0 pero terminó 0-1. El resultado no coincidió.", bg: "#fee2e2", color: "#ef4444",
                     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> },
