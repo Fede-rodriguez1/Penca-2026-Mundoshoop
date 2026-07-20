@@ -14,6 +14,9 @@ export function calcPoints(
 
   if (predResult !== realResult) return 0;
 
+  // Empate no exacto → siempre 3
+  if (predResult === 0) return 3;
+
   // Ganador correcto — verificar diferencia de goles
   const predDiff = Math.abs(predHome - predAway);
   const realDiff = Math.abs(realHome - realAway);
