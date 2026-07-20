@@ -431,73 +431,99 @@ function DashboardPageInner() {
           {nav === "home" && (
             <div className="max-w-2xl mx-auto space-y-6">
 
-              {/* En vivo */}
+              {/* Campeones de la Penca */}
               <section>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: "#ef4444" }} />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-                  </span>
-                  <h2 className="text-sm font-bold text-gray-800">En vivo</h2>
-                </div>
-                {live.length === 0 ? (
-                  <div className="bg-white rounded-2xl shadow-sm px-5 py-6 text-center">
-                    <p className="text-gray-400 text-sm">No hay partidos en curso ahora</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {live.map((match) => {
-                      const isSpecial = match.group === "Final" || match.group === "3\u00B0 Puesto";
-                      return (
-                        <div
-                          key={match.id}
-                          className={
-                            isSpecial
-                              ? `rounded-2xl overflow-hidden ${match.group === "Final" ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`
-                              : "bg-white rounded-2xl shadow-sm overflow-hidden"
-                          }
-                        >
-                          <button className="w-full text-left" onClick={() => setViewMatch(withResult(match))}>
-                            <FinishedRow match={withResult(match)} />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </section>
+                <div
+                  className="relative overflow-hidden rounded-2xl shadow-[0_0_40px_rgba(255,202,97,0.15)] ring-1 ring-[#FFCA61]/20"
+                  style={{ background: "linear-gradient(145deg, #0a1628 0%, #122040 40%, #1a2d50 100%)" }}
+                >
+                  {/* Decorative glows */}
+                  <div className="absolute top-0 left-0 w-40 h-40 opacity-[0.06]" style={{ background: "radial-gradient(circle at top left, #FFCA61, transparent 70%)" }} />
+                  <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.06]" style={{ background: "radial-gradient(circle at top right, #FFCA61, transparent 70%)" }} />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-32 opacity-[0.04]" style={{ background: "radial-gradient(circle at bottom, #FFCA61, transparent 70%)" }} />
 
-              {/* Próximos partidos */}
-              <section>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1 h-5 rounded-full" style={{ backgroundColor: "#FFCA61" }} />
-                    <h2 className="text-sm font-bold text-gray-800">Próximos partidos</h2>
-                  </div>
-                  <button
-                    onClick={() => setNav("matches")}
-                    className="text-xs font-semibold hover:underline"
-                    style={{ color: "#00217E" }}
-                  >
-                    Ver todos
-                  </button>
-                </div>
-                <div className="space-y-4">
-                  {[...upcoming].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 6).map((match) => {
-                    const isSpecial = match.group === "Final" || match.group === "3\u00B0 Puesto";
-                    return (
-                      <div
-                        key={match.id}
-                        className={
-                          isSpecial
-                            ? `rounded-2xl overflow-hidden ${match.group === "Final" ? "shadow-[0_0_30px_rgba(255,202,97,0.2)] ring-1 ring-[#FFCA61]/25" : "shadow-md ring-1 ring-[#B8860B]/15"}`
-                            : "bg-white rounded-2xl shadow-sm overflow-hidden"
-                        }
-                      >
-                        <MatchRow match={match} onPredict={() => setSelectedMatch(match)} prediction={predictions.find((p) => p.matchId === match.id)} />
+                  <div className="relative px-6 pt-8 pb-7">
+                    {/* Trophy */}
+                    <div className="flex justify-center mb-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/trophy.png"
+                        alt="Copa del Mundo"
+                        className="object-contain"
+                        style={{ width: 100, height: 100, filter: "drop-shadow(0 0 20px rgba(255,202,97,0.35))" }}
+                      />
+                    </div>
+
+                    {/* Title */}
+                    <div className="text-center mb-1">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <div className="h-px flex-1 max-w-[60px]" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.3))" }} />
+                        <span className="text-[10px] font-black tracking-[0.3em] uppercase" style={{ color: "#FFCA61" }}>
+                          PENCA MUNDOSHOP 2026
+                        </span>
+                        <div className="h-px flex-1 max-w-[60px]" style={{ background: "linear-gradient(90deg, rgba(255,202,97,0.3), transparent)" }} />
                       </div>
-                    );
-                  })}
+                      <h2 className="text-xl font-black uppercase tracking-wide text-white">
+                        Campeones de la Penca
+                      </h2>
+                    </div>
+
+                    {/* Subtitle */}
+                    <p className="text-center text-xs mb-6" style={{ color: "rgba(255,255,255,0.45)" }}>
+                      Ambos empataron en puntos y en todas las categor&iacute;as de aciertos
+                    </p>
+
+                    {/* Champions */}
+                    <div className="flex items-stretch justify-center gap-4 mb-6">
+                      {/* Daniel */}
+                      <div className="flex-1 max-w-[200px] rounded-xl px-4 py-5 text-center" style={{ background: "rgba(255,202,97,0.08)", border: "1px solid rgba(255,202,97,0.15)" }}>
+                        <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FFCA61, #e5a800)" }}>
+                          <span className="text-lg font-black" style={{ color: "#0a1628" }}>DV</span>
+                        </div>
+                        <p className="text-sm font-bold text-white leading-tight">Daniel Varela</p>
+                        <p className="text-[22px] font-black mt-2" style={{ color: "#FFCA61" }}>328</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,202,97,0.6)" }}>puntos</p>
+                      </div>
+
+                      {/* Adriana */}
+                      <div className="flex-1 max-w-[200px] rounded-xl px-4 py-5 text-center" style={{ background: "rgba(255,202,97,0.08)", border: "1px solid rgba(255,202,97,0.15)" }}>
+                        <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FFCA61, #e5a800)" }}>
+                          <span className="text-lg font-black" style={{ color: "#0a1628" }}>AE</span>
+                        </div>
+                        <p className="text-sm font-bold text-white leading-tight">Adriana Ercoli</p>
+                        <p className="text-[22px] font-black mt-2" style={{ color: "#FFCA61" }}>328</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,202,97,0.6)" }}>puntos</p>
+                      </div>
+                    </div>
+
+                    {/* Stats row */}
+                    <div className="flex justify-center gap-6 mb-6">
+                      {[
+                        { value: "17", label: "Exactos" },
+                        { value: "15", label: "Dif. goles" },
+                        { value: "39", label: "Ganador" },
+                        { value: "33", label: "Errados" },
+                      ].map((s) => (
+                        <div key={s.label} className="text-center">
+                          <p className="text-sm font-bold text-white">{s.value}</p>
+                          <p className="text-[9px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px mb-5" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.2), transparent)" }} />
+
+                    {/* Sorteo message */}
+                    <div className="text-center rounded-lg px-4 py-3" style={{ background: "rgba(255,202,97,0.06)" }}>
+                      <p className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>
+                        El ganador se definir&aacute; mediante <span style={{ color: "#FFCA61", fontWeight: 800 }}>sorteo</span>
+                      </p>
+                      <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+                        Empate total en puntos y en todas las categor&iacute;as de aciertos
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </section>
 
