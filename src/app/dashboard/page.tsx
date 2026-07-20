@@ -519,8 +519,10 @@ function DashboardPageInner() {
                       <p className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>
                         El ganador se definir&aacute; mediante <span style={{ color: "#FFCA61", fontWeight: 800 }}>sorteo</span>
                       </p>
-                      <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        Empate total en puntos y en todas las categor&iacute;as de aciertos
+                      <p className="text-[10px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        El sorteo se realizar&aacute; ma&ntilde;ana y se anunciar&aacute; v&iacute;a Instagram.
+                        <br />
+                        Nos comunicaremos con el ganador por mail.
                       </p>
                     </div>
                   </div>
