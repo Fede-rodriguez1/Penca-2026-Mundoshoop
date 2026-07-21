@@ -464,40 +464,22 @@ function DashboardPageInner() {
                         <div className="h-px flex-1 max-w-[60px]" style={{ background: "linear-gradient(90deg, rgba(255,202,97,0.3), transparent)" }} />
                       </div>
                       <h2 className="text-xl font-black uppercase tracking-wide text-white">
-                        Campeones de la Penca
+                        Ganador de la Penca
                       </h2>
                     </div>
 
-                    {/* Subtitle */}
-                    <p className="text-center text-xs mb-6" style={{ color: "rgba(255,255,255,0.45)" }}>
-                      Ambos empataron en puntos y en todas las categor&iacute;as de aciertos
-                    </p>
-
-                    {/* Champions */}
-                    <div className="flex items-stretch justify-center gap-4 mb-6">
-                      {/* Daniel */}
-                      <div className="flex-1 max-w-[200px] rounded-xl px-4 py-5 text-center" style={{ background: "rgba(255,202,97,0.08)", border: "1px solid rgba(255,202,97,0.15)" }}>
-                        <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FFCA61, #e5a800)" }}>
-                          <span className="text-lg font-black" style={{ color: "#0a1628" }}>DV</span>
-                        </div>
-                        <p className="text-sm font-bold text-white leading-tight">Daniel Varela</p>
-                        <p className="text-[22px] font-black mt-2" style={{ color: "#FFCA61" }}>328</p>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,202,97,0.6)" }}>puntos</p>
+                    {/* Winner */}
+                    <div className="flex flex-col items-center mb-5">
+                      <div className="w-16 h-16 rounded-full mb-3 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FFCA61, #e5a800)", boxShadow: "0 0 30px rgba(255,202,97,0.4)" }}>
+                        <span className="text-xl font-black" style={{ color: "#0a1628" }}>DV</span>
                       </div>
-
-                      {/* Adriana */}
-                      <div className="flex-1 max-w-[200px] rounded-xl px-4 py-5 text-center" style={{ background: "rgba(255,202,97,0.08)", border: "1px solid rgba(255,202,97,0.15)" }}>
-                        <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FFCA61, #e5a800)" }}>
-                          <span className="text-lg font-black" style={{ color: "#0a1628" }}>AE</span>
-                        </div>
-                        <p className="text-sm font-bold text-white leading-tight">Adriana Ercoli</p>
-                        <p className="text-[22px] font-black mt-2" style={{ color: "#FFCA61" }}>328</p>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,202,97,0.6)" }}>puntos</p>
-                      </div>
+                      <p className="text-lg font-bold text-white leading-tight">Daniel Varela</p>
+                      <p className="text-[28px] font-black mt-1" style={{ color: "#FFCA61" }}>328</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,202,97,0.6)" }}>puntos</p>
                     </div>
 
                     {/* Stats row */}
-                    <div className="flex justify-center gap-6 mb-6">
+                    <div className="flex justify-center gap-6 mb-5">
                       {[
                         { value: "17", label: "Exactos" },
                         { value: "15", label: "Dif. goles" },
@@ -512,17 +494,17 @@ function DashboardPageInner() {
                     </div>
 
                     {/* Divider */}
-                    <div className="h-px mb-5" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.2), transparent)" }} />
+                    <div className="h-px mb-4" style={{ background: "linear-gradient(90deg, transparent, rgba(255,202,97,0.2), transparent)" }} />
 
-                    {/* Sorteo message */}
+                    {/* Sorteo result */}
                     <div className="text-center rounded-lg px-4 py-3" style={{ background: "rgba(255,202,97,0.06)" }}>
                       <p className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>
-                        El ganador se definir&aacute; mediante <span style={{ color: "#FFCA61", fontWeight: 800 }}>sorteo</span>
+                        Ganador del sorteo entre Daniel Varela y Adriana Ercoli
                       </p>
                       <p className="text-[10px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
-                        El sorteo se realizar&aacute; ma&ntilde;ana y se anunciar&aacute; v&iacute;a Instagram.
+                        Ambos terminaron con 328 puntos y estad&iacute;sticas id&eacute;nticas.
                         <br />
-                        Nos comunicaremos con el ganador por mail.
+                        El ganador se defini&oacute; por sorteo.
                       </p>
                     </div>
                   </div>
